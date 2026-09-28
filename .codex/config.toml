@@ -1,0 +1,2 @@
+[mcp_servers.supabase_reference_local]
+url = "http://127.0.0.1:55321/mcp"

@@ -1,0 +1,10 @@
+node_modules/
+.next/
+out/
+coverage/
+*.tsbuildinfo
+.env*
+!.env.example
+.DS_Store
+Supabase_Job_Application_Reference_Project_Codex_Plan.md
+*.log

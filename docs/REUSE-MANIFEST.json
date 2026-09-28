@@ -1,0 +1,60 @@
+{
+  "recordedOn": "2026-09-27",
+  "basis": "User-authorized selective reuse of current working files; no repository history, secrets, commercial logic, or assets copied.",
+  "files": [
+    {
+      "source": "botstories-web/tsconfig.json",
+      "target": "tsconfig.json",
+      "sha256": "5c51df4c59f4510d8c7dadf07a5c32132228826a3b331da5e286207b4df7ef9c",
+      "treatment": "Copied unchanged after review"
+    },
+    {
+      "source": "botstories-web/eslint.config.mjs",
+      "target": "eslint.config.mjs",
+      "sha256": "870f1adccecf3051cbcd9fd307cef51d7633cf510979c181a81f4b1797273493",
+      "treatment": "Copied unchanged after review"
+    },
+    {
+      "source": "botstories-web/postcss.config.mjs",
+      "target": "postcss.config.mjs",
+      "sha256": "dfac7ac2d86d326a0e5adb024e7943c181393ed17a5fcb8f0315b24c7da6ddde",
+      "treatment": "Copied unchanged after review"
+    },
+    {
+      "source": "botstories-web/src/components/ui/button.tsx",
+      "target": "src/components/ui/button.tsx",
+      "sha256": "11f1fb607a5fb7b84fa58edd5983dbd9c647ae7d21b401120a3521040e5da911",
+      "treatment": "Copied unchanged after review"
+    },
+    {
+      "source": "botstories-web/src/components/ui/input.tsx",
+      "target": "src/components/ui/input.tsx",
+      "sha256": "9e26269c3aee28aa5441264e2ebf2e87801190b0104217b757c729b5f35c8ed6",
+      "treatment": "Copied unchanged after review"
+    },
+    {
+      "source": "botstories-web/src/components/ui/card.tsx",
+      "target": "src/components/ui/card.tsx",
+      "sha256": "0c0caca95dbaa6ab41fdd9088f730f532fb7aded84c6cd0a7c7229f584094a6c",
+      "treatment": "Copied unchanged after review"
+    },
+    {
+      "source": "botstories-web/src/components/ui/label.tsx",
+      "target": "src/components/ui/label.tsx",
+      "sha256": "fe4e5801fe31a8065fa5755afd805f2b6ab92030835201c0f0532697a48f1afe",
+      "treatment": "Copied unchanged after review"
+    },
+    {
+      "source": "botstories-web/src/components/ui/textarea.tsx",
+      "target": "src/components/ui/textarea.tsx",
+      "sha256": "594e371788f9bd9311c9033a5681a4535895bee55b1b74798425b4beed82cb5b",
+      "treatment": "Copied unchanged after review"
+    },
+    {
+      "source": "botstories-web/src/lib/utils.ts",
+      "target": "src/lib/utils.ts",
+      "sha256": "54b12b8b66c7dfee6c564eb906814b1017361f3d5539e774313d733756bf1834",
+      "treatment": "Copied unchanged after review"
+    }
+  ]
+}

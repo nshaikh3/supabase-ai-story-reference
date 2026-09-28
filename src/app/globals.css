@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-background: #f7faf8;
+  --color-foreground: #14251c;
+  --color-card: #ffffff;
+  --color-card-foreground: #14251c;
+  --color-primary: #166e47;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #e9f3ec;
+  --color-secondary-foreground: #204932;
+  --color-muted: #edf1ee;
+  --color-muted-foreground: #56685b;
+  --color-border: #dce5df;
+  --color-input: #b7c8bc;
+  --color-ring: #168350;
+  --color-accent: #e9f3ec;
+  --color-accent-foreground: #204932;
+  --color-destructive: #b42318;
+  --color-destructive-foreground: #ffffff;
+  --font-sans: Arial, Helvetica, sans-serif;
+}
+
+body { margin: 0; background: var(--color-background); color: var(--color-foreground); font-family: var(--font-sans); }
+* { border-color: var(--color-border); }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }

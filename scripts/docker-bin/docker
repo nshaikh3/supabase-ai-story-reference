@@ -1,0 +1,2 @@
+#!/bin/sh
+exec "${STORY_REFERENCE_NODE_BIN:?Use the project Supabase scripts}" "$(dirname "$0")/../docker-cli.mjs" "$@"
