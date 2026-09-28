@@ -1,0 +1,12 @@
+begin;
+create extension if not exists pgtap with schema extensions;
+set local search_path = public, extensions;
+select plan(6);
+select is((select count(*) from auth.users where email in ('alice@example.test','bob@example.test')), 2::bigint, 'Two synthetic identities');
+select is((select count(*) from public.stories), 3::bigint, 'Three synthetic stories');
+select is((select count(*) from public.story_pages), 3::bigint, 'Three synthetic pages');
+select is((select count(*) from public.assets), 0::bigint, 'No metadata for nonexistent storage objects');
+select results_eq($$select page_number from public.story_pages order by page_number$$, array[1,2,3], 'Example pages are ordered and contiguous');
+select is((select count(*) from auth.users where email in ('alice@example.test','bob@example.test') and nullif(encrypted_password,'') is not null), 0::bigint, 'Database fixtures contain no login passwords');
+select * from finish();
+rollback;
