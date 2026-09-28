@@ -1,0 +1,17 @@
+# Supabase AI Story Reference
+
+Work in reviewed phases. Phase 1 is the local foundation; Auth and owner access are Phase 2.
+Keep implementation and verification status explicit. Never claim a planned feature is complete.
+
+- Read current official Supabase Agent Skills (`supabase/agent-skills`, skills `supabase` and `supabase-postgres-best-practices`) and relevant official documentation before Supabase or SQL changes.
+- Keep schema changes in CLI-created migrations. Enable RLS and set explicit grants in the same change as every exposed table. Never weaken RLS to fix a test.
+- Use `npm run db:reset`, `npm run db:test`, `npm run db:lint`, and `npm run db:types:check` for local database checks; `npm run check` for application checks.
+- Local scripts deliberately reject arbitrary flags and hosted targets. Do not bypass those protections to troubleshoot a local issue.
+- Never connect tooling to the commercial application's Supabase project. Never copy environment files, customer data, private prompts, premium features, or commercial assets.
+- Selective reuse of generic code from the user's existing app is authorized; record source paths and hashes in `docs/REUSE-MANIFEST.json`.
+- Keep secrets out of browser code, logs, documentation, and Git. Phase 1 needs no API keys.
+- Record actual documentation friction in `docs/CONTRIBUTION-NOTES.md`, with reproducible evidence before proposing an upstream issue.
+- Review the installed Next.js documentation in `node_modules/next/dist/docs/` when changing framework-specific behavior.
+- Do not advance phases with failing or unexecuted required checks.
+
+Run only this project's local Docker stack. Do not stop, prune, reset, or remove other projects' containers or volumes.
