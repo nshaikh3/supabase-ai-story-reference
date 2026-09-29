@@ -17,7 +17,7 @@ select has_index('public', 'stories', 'stories_owner_created_idx', 'Dashboard ha
 select has_index('public', 'story_pages', 'story_pages_story_page_key', 'Page uniqueness also indexes the parent FK');
 select has_index('public', 'assets', 'assets_story_id_idx', 'Asset parent FK is indexed');
 select is((select count(*) from pg_class c join pg_namespace n on n.oid = c.relnamespace where n.nspname = 'public' and c.relname in ('stories', 'story_pages', 'assets') and c.relrowsecurity), 3::bigint, 'RLS enabled on every application table');
-select is((select count(*) from pg_policies where schemaname = 'public' and tablename in ('stories', 'story_pages', 'assets')), 0::bigint, 'No permissive policies before Phase 2');
+select is((select count(*) from pg_policies where schemaname = 'public' and tablename in ('stories', 'story_pages', 'assets')), 6::bigint, 'Six operation-specific owner policies');
 select ok(not (select prosecdef from pg_proc where oid = 'private.set_story_updated_at()'::regprocedure), 'Timestamp helper runs as invoker');
 select is((select proconfig[1] from pg_proc where oid = 'private.set_story_updated_at()'::regprocedure), 'search_path=""', 'Helper has an empty search path');
 select ok(not has_function_privilege('anon', 'private.set_story_updated_at()', 'EXECUTE'), 'Anonymous role cannot invoke private helper');
