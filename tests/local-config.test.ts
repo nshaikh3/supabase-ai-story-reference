@@ -22,6 +22,7 @@ describe("local development boundary", () => {
   });
   it("pins resets to local and stops to this project", () => {
     expect(commandFor("reset")).toContain("--local");
+    expect(commandFor("advisors")).toContain("--local");
     expect(commandFor("stop").slice(0, 3)).toEqual(["stop", "--project-id", "supabase-ai-story-reference"]);
   });
   it("keeps core startup isolated without skipping health checks", () => {

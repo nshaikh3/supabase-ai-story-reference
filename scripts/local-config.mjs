@@ -18,6 +18,8 @@ export function validateConfig(config, linked = false) {
   if (JSON.stringify(config.api?.schemas) !== '["public"]') throw new Error("Expose only the public application schema.");
   if (config.api?.auto_expose_new_tables !== false) throw new Error("Automatic Data API grants must be disabled.");
   if (config.db?.major_version !== 17) throw new Error("This migration baseline targets Postgres 17.");
+  if (config.auth?.site_url !== "http://127.0.0.1:3100" || JSON.stringify(config.auth?.additional_redirect_urls) !== '["http://127.0.0.1:3100/auth/callback"]') throw new Error("Auth redirects must target this reference app only.");
+  if (config.auth?.enable_anonymous_sign_ins !== false || config.auth?.enable_refresh_token_rotation !== true || config.auth?.email?.enable_confirmations !== true || !Number.isInteger(config.auth?.minimum_password_length) || config.auth?.minimum_password_length < 10) throw new Error("Keep email confirmation, password strength and session rotation enabled; anonymous sign-in disabled.");
   return config;
 }
 
@@ -37,6 +39,8 @@ export function commandFor(action, extras = []) {
     types: ["gen", "types", "--local", "--lang", "typescript", "--schema", "public"],
     "types-check": ["gen", "types", "--local", "--lang", "typescript", "--schema", "public"],
     check: [],
+    env: ["status", "--output", "json"],
+    advisors: ["db", "advisors", "--local", "--type", "all", "--level", "info", "--fail-on", "error"],
   };
   if (!Object.hasOwn(commands, action)) throw new Error("Unknown local operation.");
   return [...commands[action], "--workdir", root];

@@ -1,6 +1,6 @@
 import { spawnSync } from "node:child_process";
 import { createServer } from "node:net";
-import { mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { delimiter, isAbsolute, join } from "node:path";
 import { commandFor, loadConfig, localEnvironment, networkId, root, validateBindings } from "./local-config.mjs";
 
@@ -53,6 +53,7 @@ try {
     if (JSON.parse(network.stdout)[0]?.Options?.["com.docker.network.bridge.host_binding_ipv4"] !== "127.0.0.1") throw new Error("Reference network must bind published ports to loopback.");
   }
   const generating = action === "types" || action === "types-check";
+  const environment = action === "env";
   const resolvedDocker = spawnSync("which", ["docker"], { encoding: "utf8", timeout: 5000 });
   const dockerBinary = resolvedDocker.stdout?.trim();
   if (resolvedDocker.status !== 0 || !isAbsolute(dockerBinary ?? "")) throw new Error("Cannot resolve the local Docker CLI.");
@@ -65,13 +66,27 @@ try {
       PATH: `${join(root, "scripts/docker-bin")}${delimiter}${process.env.PATH ?? ""}`,
     },
     encoding: "utf8",
-    stdio: generating ? ["ignore", "pipe", "inherit"] : "inherit",
+    stdio: environment ? ["ignore", "pipe", "pipe"] : generating ? ["ignore", "pipe", "inherit"] : "inherit",
     // Initial public image downloads can exceed ten minutes on a small laptop.
     timeout: starting ? 1800000 : 600000,
     maxBuffer: 10 * 1024 * 1024,
   });
   if (result.error) throw result.error;
-  if (result.status !== 0) process.exit(result.status ?? 1);
+  if (result.status !== 0) {
+    if (environment) console.error("Cannot read local status. Start the reference stack and retry.");
+    process.exit(result.status ?? 1);
+  }
+  if (environment) {
+    const { publicEnvironmentFromStatus } = await import("./local-env.mjs");
+    const output = publicEnvironmentFromStatus(JSON.parse(result.stdout));
+    const target = join(root, ".env.local");
+    if (existsSync(target)) {
+      if (readFileSync(target, "utf8") !== output) throw new Error("Existing .env.local differs; review it before regenerating. It was not overwritten.");
+    } else {
+      writeFileSync(target, output, { mode: 0o600, flag: "wx" });
+    }
+    console.log("Local public configuration ready in ignored .env.local; no privileged credentials written.");
+  }
   if (starting) {
     const listed = docker(["ps", "--filter", "name=_supabase-ai-story-reference$", "--format", "{{.ID}}"]);
     if (listed.status !== 0) throw new Error(listed.stderr);

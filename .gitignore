@@ -8,3 +8,5 @@ coverage/
 .DS_Store
 Supabase_Job_Application_Reference_Project_Codex_Plan.md
 *.log
+test-results/
+playwright-report/
