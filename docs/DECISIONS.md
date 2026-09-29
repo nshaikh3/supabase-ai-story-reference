@@ -34,7 +34,7 @@ The documented custom-network recipe did not yield loopback-only published ports
 
 The local wrapper resolves the real Docker executable, then puts a repository-local adapter on the CLI subprocess's PATH. It modifies only `docker create` calls for this project's named services: allowed published ports gain an explicit `127.0.0.1` address, and Studio retains its actual health probe with a ten-second deadline and thirty-second startup grace period. Secret environment values are not added to arguments or logs. Other commands and projects pass through unchanged.
 
-Actual bindings are checked after startup and failures stop the reference containers. Unit tests cover port restrictions, project scope, and retention of the health probe. This is a compatibility measure tied to the pinned CLI, not a general container orchestrator. Review or remove it when upstream settings can express these requirements directly. Core mode remains available to omit Studio when MCP is unnecessary.
+Actual bindings are checked after startup and failures stop the reference containers. Unit tests cover port restrictions, project scope, and retention of the health probe. This is a compatibility measure tied to the pinned CLI, not a general container orchestrator. Review or remove it when upstream settings can express these requirements directly. Core mode omits Studio and postgres-meta when MCP is unnecessary. Phase 3 adds a bounded five-minute wait after starting this project’s Storage container, because the pinned CLI’s final health retry budget can expire during cold Node startup on a swapping host. The adapter accepts only the actual healthy probe status, fails on stopped/OOM/missing-probe services, supports cancellation and leaves other Docker commands/projects untouched. The CLI still performs its own final health checks. The pinned type generator introspects Postgres in-process and needs no running metadata service.
 
 ## ADR-009: Server-rendered Auth with fixed local redirects
 
@@ -48,6 +48,18 @@ Six separate policies implement owner SELECT/INSERT/UPDATE/DELETE on stories and
 
 Browser tests register random synthetic local users, read their own captured local mail, confirm through the actual callback and test session refresh, recovery and sign-out. No test-only bypass route or service-role client is added to the app. Recordings that could retain credentials are disabled. Database tests use synthetic claims in a transaction for exhaustive role/operation coverage; browser tests complement rather than replace those assertions. Resetting the disposable reference database removes test accounts.
 
+## ADR-012: Owner workspace and immutable private hero images
+
+Reuse the existing generic UI primitives for the dashboard, shared story form and illustration panel. Use server rendering, Server Actions and the existing verified user client. Keep drafts editable and generated status protected; lifecycle/editing locks belong to Phase 4. Paginate owner stories with deterministic creation-time/ID ordering.
+
+Use one private bucket with a 2 MiB byte cap and three raster MIME types. The application decodes, normalizes and strips metadata, then writes WebP at a random owner/story path with upsert disabled. The private image route revalidates bytes because direct Storage callers can spoof MIME. It avoids signed URL lifetime/revocation tradeoffs and shared image caching. Sharp is a pinned direct dependency already present in Next's dependency tree.
+
+## ADR-013: Retain failed reservations and remove bytes before rows
+
+Reserve immutable asset metadata before upload; one partial unique index admits one hero per story. A failed upload leaves that reservation for explicit removal and retry. Remove objects through the Storage API before deleting metadata/story rows. A narrow trigger-only definer guard prevents relational deletion while a committed object still exists, including parent cascades where invoker RLS cannot see the deleted parent. It has no client execute grants and never mutates Storage's managed schema/data.
+
+Storage preflight authorization and completion span separate transactions (verified in the pinned Storage v1.77.0 uploader). Do not pretend a policy row lock or SQL cascade can make this atomic. Concurrent late uploads/ambiguous transport failures remain a documented production limitation; add reconciliation and fault/concurrency testing during the security audit. No privileged cleanup client is placed in this local application.
+
 ## Future decisions
 
-Worker authorization, atomic job transitions, retry/idempotency, private Storage cleanup, and private Broadcast authorization require explicit decisions in their implementation phases. No paid AI API is needed for the foundation or the eventual mock generation path.
+Worker authorization, atomic job transitions, retry/idempotency, production object reconciliation/quotas, and private Broadcast authorization require explicit decisions in their implementation phases. No paid AI API is needed for the eventual mock generation path.

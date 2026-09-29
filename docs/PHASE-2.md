@@ -1,6 +1,6 @@
 # Phase 2 execution record
 
-Status: Phase 2 complete. All local acceptance gates passed; Phase 3 has not started.
+Status: Phase 2 complete. All local acceptance gates passed. This is the historical Phase 2 record; current work is recorded in [Phase 3](PHASE-3.md).
 
 ## Scope and starting point
 

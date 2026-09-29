@@ -6,9 +6,9 @@ Phase 2 uses Supabase email/password Auth with email confirmation and PKCE. Sign
 
 Next.js Server Actions validate inputs and use its built-in POST/origin protection. Password changes verify the user again. Sign-out uses `scope: local` so it ends this session without signing out unrelated devices. Provider errors and submitted credentials are not logged or echoed. Recovery responses do not identify whether an email exists.
 
-Every request gets its own `@supabase/ssr` client. Proxy verifies claims and refreshes cookies for Auth and account routes, passing cookies to both downstream server rendering and the browser. The protected account page and password action independently call `getUser()` at the data boundary. Unverified `getSession().user`, client-supplied IDs and editable user metadata never grant access.
+Every request gets its own `@supabase/ssr` client. Proxy verifies claims and refreshes cookies for Auth, account, story, dashboard and asset routes, passing cookies to both downstream server rendering and the browser. Protected pages, mutation actions and the image route independently call `getUser()` at the data boundary. Unverified `getSession().user`, client-supplied IDs and editable user metadata never grant access.
 
-Auth/account responses are dynamic and marked `private, no-store`; refresh cookies survive redirects. The callback sets `Referrer-Policy: no-referrer` and removes codes from the destination URL. Cookies use Supabase SSR's default encoding and SameSite=Lax. They remain browser-readable for compatibility with later Supabase browser features, so XSS prevention matters. React escapes text; no raw HTML or user-provided script is rendered. HTTPS and Secure cookies must be enforced before deployment; Phase 2 deliberately accepts only the fixed HTTP loopback development origins. Do not deploy these local guards or settings unchanged.
+Auth/workspace/image responses are dynamic and marked `private, no-store`; refresh cookies survive redirects. The callback sets `Referrer-Policy: no-referrer` and removes codes from the destination URL. Cookies use Supabase SSR's default encoding and SameSite=Lax. They remain browser-readable for compatibility with later Supabase browser features, so XSS prevention matters. React escapes text; no raw HTML or user-provided script is rendered. HTTPS and Secure cookies must be enforced before deployment; Phase 2 deliberately accepts only the fixed HTTP loopback development origins. Do not deploy these local guards or settings unchanged.
 
 Sign-out revokes the refresh session; previously issued access JWTs can remain valid until expiry. RLS enforces ownership, not immediate per-token revocation. Sensitive future operations must explicitly decide whether to validate active sessions, shorten token lifetimes or require reauthentication. MFA, CAPTCHA, production SMTP and deployment security headers remain production-preparation work.
 
@@ -20,14 +20,14 @@ All application tables have RLS enabled. Anonymous clients have no grants. Authe
 | --- | --- | --- |
 | Stories | Owner SELECT and DELETE; INSERT and UPDATE of title, child_name, prompt | ID, owner, status and timestamps cannot be supplied or overwritten; INSERT ownership and draft status checked; UPDATE checks old and resulting owner |
 | Pages | Owner SELECT through parent story | All direct client writes denied; owned parent deletion cascades |
-| Asset metadata | Owner SELECT through parent story | All client writes denied until private Storage policies ship; parent deletion cascades |
-| Storage objects | None yet | Phase 3 must authorize both metadata and bytes |
+| Asset metadata | Owner SELECT/DELETE; restricted hero INSERT | Immutable paths, identity and timestamps; current-owner namespace and parent checked; one hero per story; committed object blocks deletion |
+| Storage objects | Owner SELECT/INSERT/DELETE at a reserved path | Private bucket; owner namespace and RLS-visible metadata; no upsert/move or anonymous policy |
 | Realtime topics | None yet | Phase 5 must authorize private channels |
 | Generation jobs | None yet | Phase 4 must enforce a controlled lifecycle |
 
 An owner default is convenience, not authorization. RLS and column privileges are independent controls. A future broad table grant would weaken managed-field protection and must fail review and tests. Status transitions and concurrent editing during generation need a separate Phase 4 decision.
 
-Ownership derives from the parent, with no duplicate owner field on children. No SECURITY DEFINER functions or exposed views were added. The timestamp trigger remains invoker-only in non-exposed `private`, with an empty search path and no client execute grants.
+Ownership derives from the parent, with no duplicate owner field on children. No exposed views or privileged callable RPCs were added. Phase 3 adds one trigger-only SECURITY DEFINER deletion guard, described below. The timestamp trigger remains invoker-only in non-exposed `private`, with an empty search path and no client execute grants.
 
 The database tests set actual API roles and synthetic request claims. They prove own-row CRUD, cross-user denial, inaccessible child writes, forbidden field changes, absent-identity denial and parent cascades. A separate transaction-only grant section tests RLS independently. Test changes roll back. Database-admin setup is never counted as client authorization.
 
@@ -37,12 +37,24 @@ Wrappers validate project identity, ports, Auth redirects and security settings,
 
 `npm run local:env` captures CLI status without displaying it, writes only an allowlist of three public settings to ignored `.env.local` with mode 0600, and refuses to overwrite a differing existing file. Application configuration accepts only this reference stack's URL and a publishable key. No service-role or secret key is used by the app.
 
-MCP is privileged local development tooling, not end-user authentication. Core mode omits Studio and MCP to reduce memory use. No hosted project is connected. Other projects' containers and data must not be stopped, pruned or reset by reference tooling.
+MCP is privileged local development tooling, not end-user authentication. Core mode omits Studio, postgres-meta and MCP to reduce memory use. No hosted project is connected. Other projects' containers and data must not be stopped, pruned or reset by reference tooling.
 
-Fixtures use synthetic identities and fictional text. Browser tests generate random local credentials for `phase2-…@example.test` users and read only their own local test mailboxes; traces, videos and screenshots are disabled. A fresh reference DB reset removes generated test users. Mail is captured locally, not sent through production SMTP. No commercial environment files, customer data, prompts, payment code or assets were copied.
+Fixtures use synthetic identities and fictional text. Browser tests generate random local credentials for `phase2-…@example.test` / `phase3-…@example.test` users and read only their own local test mailboxes; Auth traces, videos and screenshots are disabled. The story test writes explicit screenshots of fictional story content only, to ignored test-results/. A fresh reference DB reset removes generated test users. Mail is captured locally, not sent through production SMTP. No commercial environment files, customer data, prompts, payment code or assets were copied.
 
 Never log access tokens, keys, passwords, emails, child names, full prompts or generated outputs. Keep operational logs to identifiers, operation, duration and safe error codes. CLI status includes local privileged credentials, so do not paste its raw output into issues or public documentation.
 
 ## Verification boundaries
 
-Actual results are recorded in PHASE-2.md. Human security review and the Phase 6 audit remain pending. Hosted CI, production deployment, object access, jobs and private channel authorization are not established by Phase 2 checks.
+Actual results are recorded in PHASE-2.md and PHASE-3.md. Human security review and the Phase 6 audit remain pending. Hosted CI, production deployment, generation jobs and private channel authorization remain unverified. Phase 3 verifies private object access locally.
+
+## Private images and cleanup
+
+The bucket is private, capped at 2 MiB and limited to PNG/JPEG/WebP MIME types. Application validation decodes pixels with Sharp (16 million input pixels, strict warnings, ten-second processing timeout), rejects type mismatches and animated inputs, auto-orients and resizes to 1600×1600 bounds, and writes WebP without source EXIF/GPS/ICC metadata. Next's Server Action body limit is 3 MiB to allow multipart overhead; browser and server validation enforce the stricter image limit. Filenames are generated UUIDs, never submitted names or URLs. No remote image is fetched from user input.
+
+A direct Storage caller can spoof MIME; bucket MIME filtering is not byte validation. `/assets/[id]` therefore independently verifies Auth, looks up metadata under RLS, downloads under the same user JWT, and decodes/re-encodes before display. It serves only WebP pixels with private/no-store, nosniff, same-origin resource policy and restrictive CSP. Missing, malformed, unauthorized and unrenderable assets all yield a generic 404. No public or signed bearer URL is handed out, and no shared image-optimizer cache stores private images. Supabase's own authorized Storage API remains available to the owner.
+
+Metadata reservation precedes byte upload. Duplicate hero uploads lose at the unique index. Failed/uncertain uploads retain a visible reservation so the user can remove and retry. Deletion accepts IDs only, resolves paths from owner-visible database rows, calls Storage remove first, and retains relational data when that call fails. The trigger-only definer guard blocks metadata/parent cascades while a committed Storage object exists; it has no client EXECUTE privilege, fixed empty search_path, no arguments or dynamic SQL, and only reads Storage metadata.
+
+**Limit:** this does not make a distributed transaction. Storage v1.77.0 checks RLS before storing bytes and completes database writes using its internal privileged context. A concurrent delete after preflight can race a late upload; a timeout can leave the outcome uncertain. The application reports recoverable failures but cannot prove absence of every late or orphaned object. Before production, add an audited reconciliation/cleanup workflow, quotas/rate limits and fault/concurrency tests. Do not describe the current guard as concurrency-safe or delete Storage metadata directly through SQL. Reference tests use fictional images, and their actual byte objects are explicitly removed through Storage before database reset.
+
+The image transform has bounded size/time per request, but no per-user rate limit, global transform queue, malware scanner or production storage quota is implemented in this local phase. Human review and the Phase 6 audit must address those resource/abuse controls and dependency/native-decoder maintenance. Never use real children's photos or private content for public demonstration fixtures.

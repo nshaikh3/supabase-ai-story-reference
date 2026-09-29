@@ -34,3 +34,9 @@ Current official Supabase skills and relevant RLS/privilege references were read
 - [Observability](https://supabase.com/docs/guides/observability), reached from the skill's monitoring/debugging URL.
 
 The agent inspected grants, policies, identity verification, caching, callback destinations and secret handling, and ran official local database advisors. This is an agent review, not a claim of human security approval or a completed Phase 6 audit. `PHASE-2.md` records actual results and remaining limits. Browser-test execution was briefly blocked by account usage limits in the automatic approval system; it resumed after the user's continue instruction.
+
+## Phase 3 work
+
+The user authorized continuing to the next phase on 2026-09-29. The agent reused the existing foundation and generic components, read the current official Supabase skills and Storage documentation, inspected installed Next.js Server Action documentation, and added owner story UI plus private uploads. The commercial application and its Docker stack were not modified.
+
+Image validation, object authorization, cross-account denial and failure recovery were developed with tests. A source review of the pinned Storage uploader changed the cleanup design: permission preflight does not hold a transaction through byte storage. The resulting implementation deliberately records that concurrency limitation instead of claiming atomic cleanup. Human review is still needed; automated passes are not a security certification. Executed results and any remaining failures are in PHASE-3.md.
