@@ -36,6 +36,18 @@ The local wrapper resolves the real Docker executable, then puts a repository-lo
 
 Actual bindings are checked after startup and failures stop the reference containers. Unit tests cover port restrictions, project scope, and retention of the health probe. This is a compatibility measure tied to the pinned CLI, not a general container orchestrator. Review or remove it when upstream settings can express these requirements directly. Core mode remains available to omit Studio when MCP is unnecessary.
 
+## ADR-009: Server-rendered Auth with fixed local redirects
+
+Use pinned Supabase SSR and JavaScript SDKs with a per-request server client and Next.js Server Actions. PKCE email confirmation and recovery return to one fixed callback and require the initiating browser. Proxy refreshes cookies and verifies claims; the protected data boundary independently calls Auth getUser. Auth responses are dynamic and never shared-cacheable. Current-session sign-out avoids invalidating sessions on other devices. Deployment configuration, Secure cookies, SMTP and CAPTCHA require a later explicit review. No commercial environment or hosted key is reused.
+
+## ADR-010: Owner policies plus column privileges
+
+Six separate policies implement owner SELECT/INSERT/UPDATE/DELETE on stories and parent-owner SELECT on pages/assets. Only title, child_name and prompt are client-writable. Ownership, status, IDs and timestamps stay database/server-managed. RLS uses both USING and WITH CHECK; column privileges prevent permitted owners from forging generated state. Child writes remain closed until an actual upload or generation workflow requires them. Avoid definer functions and duplicated ownership columns.
+
+## ADR-011: Reproducible Auth tests without privileged application credentials
+
+Browser tests register random synthetic local users, read their own captured local mail, confirm through the actual callback and test session refresh, recovery and sign-out. No test-only bypass route or service-role client is added to the app. Recordings that could retain credentials are disabled. Database tests use synthetic claims in a transaction for exhaustive role/operation coverage; browser tests complement rather than replace those assertions. Resetting the disposable reference database removes test accounts.
+
 ## Future decisions
 
 Worker authorization, atomic job transitions, retry/idempotency, private Storage cleanup, and private Broadcast authorization require explicit decisions in their implementation phases. No paid AI API is needed for the foundation or the eventual mock generation path.

@@ -42,3 +42,11 @@ CLI 2.118.0 emits quoted table names and unformatted TypeScript. The first wrapp
 Date · feature · documentation URL · problem · expected behavior · observed behavior · resolution · potential improvement · reproduction/verification status.
 
 No upstream issue or contribution has been submitted.
+
+## Phase 2 observations (2026-09-28)
+
+- The official SSR guide's `setAll` callback now receives cache headers as a second argument (SSR >=0.10.0). The implementation carries cookies into downstream requests and browser responses, and marks all Auth/account responses private/no-store. Earlier examples that omit these headers should not be copied without reviewing caching. Source: https://supabase.com/docs/guides/auth/server-side/creating-a-client and its advanced guide. No upstream issue was identified; current guidance covers the requirement.
+- The skill's monitoring/debugging URL redirects to the newer Observability section. The redirect works and is not treated as a bug. Source: https://supabase.com/docs/guides/monitoring-and-debugging.
+- After laptop idle, reference-container health checks timed out even while Docker tried to start their probes. The reference-only stop initially returned `StopContainerError`; inspection showed the containers did stop. Restarting in documented core mode restored database/Auth checks without touching the other stack. This is a host/runtime observation, not evidence that Supabase's Auth implementation failed.
+- The first browser-suite load treated an imported `.mjs` local guard as CommonJS. Using `.mts` for the Playwright config/spec fixed the test-runner module boundary. This is repository test setup, not a Supabase defect.
+- The pinned CLI retains an `inbucket` container name and an `INBUCKET_URL` status alias, but the running local mail service is Mailpit. An initial browser-test helper used Inbucket's mailbox API and received 404. It now uses Mailpit's `/api/v1/search` with an exact recipient filter and `/api/v1/message/{ID}`. The official password-auth guide already documents Mailpit; no upstream bug is claimed. Sources: https://supabase.com/docs/guides/auth/passwords and https://mailpit.axllent.org/docs/api-v1/.

@@ -2,13 +2,13 @@
 
 A small reference application exploring secure story workflows with Supabase and Next.js.
 
-[Architecture](docs/ARCHITECTURE.md) · [Security](docs/SECURITY.md) · [Database](docs/DATABASE.md) · [Phase status](docs/PHASE-1.md)
+[Architecture](docs/ARCHITECTURE.md) · [Security](docs/SECURITY.md) · [Database](docs/DATABASE.md) · [Phase status](docs/PHASE-2.md)
 
 ## Current scope
 
-Phase 1 provides an isolated local database, migrations, synthetic fixtures, generated types, tests, and a minimal Next.js page. Selected generic components and tooling were reused from an existing application with the owner's authorization; see the [reuse manifest](docs/REUSE-MANIFEST.json).
+Phases 1–2 provide an isolated local database, migrations, synthetic fixtures, generated types, automated tests, and email/password authentication with owner access. Selected generic components and tooling were reused from an existing application with the owner's authorization; see the [reuse manifest](docs/REUSE-MANIFEST.json).
 
-User sign-in, owner-access policies, story CRUD, private uploads, generation jobs, Edge Functions, and private Realtime Broadcast are subsequent phases. There is no deployed public demo yet.
+Sign-up, email confirmation, sign-in/out, password recovery and a protected account page are implemented. Story CRUD UI, private uploads, generation jobs, Edge Functions, and private Realtime Broadcast are subsequent phases. There is no deployed public demo yet.
 
 ## Requirements
 
@@ -16,24 +16,25 @@ User sign-in, owner-access policies, story CRUD, private uploads, generation job
 - A running local Docker-compatible daemon, with capacity for an additional Supabase stack.
 - Ports 3100 and 55320–55324 available.
 
-The Supabase CLI is pinned in the development dependencies. A hosted Supabase account or paid AI key is not required for Phase 1.
+The Supabase CLI is pinned in the development dependencies. A hosted Supabase account or paid AI key is not required for Phases 1–2.
 
 ## Local setup
 
 ```bash
 npm ci
 npm run local:check
-npm run supabase:start
+npm run supabase:start:core
+npm run local:env
 npm run db:reset
 npm run db:types
 npm run dev
 ```
 
-Open http://127.0.0.1:3100. Studio is http://127.0.0.1:55323, and local mail is http://127.0.0.1:55324. The static Phase 1 page needs no `.env.local`; `.env.example` documents placeholders for Phase 2.
+Open http://127.0.0.1:3100. Local mail is http://127.0.0.1:55324. Studio is http://127.0.0.1:55323 when using full mode (`npm run supabase:start`). `local:env` writes only the local public URL, publishable key and application URL to ignored `.env.local`. It never writes privileged keys and refuses to overwrite a differing file. Use `127.0.0.1` consistently so Auth cookies and redirects match.
 
 `db:reset` destroys and recreates **this reference project's local database**, including its seed data. It is intended for disposable development fixtures. The wrapper rejects linked projects and remote arguments. The seed identities are database fixtures, not working login accounts.
 
-The local start script omits Realtime, Storage, image transformation, Edge Runtime, analytics, and pooling until their implementation phases. It keeps Studio and metadata services for MCP. It uses a dedicated network with loopback host bindings, and does not stop another stack to free ports.
+The local start script omits Realtime, Storage, image transformation, Edge Runtime, analytics, and pooling until their implementation phases. Full mode keeps Studio and metadata services for MCP; the setup above uses core mode to reduce memory use. It uses a dedicated network with loopback host bindings, and does not stop another stack to free ports.
 
 A small project-scoped Docker adapter makes those bindings explicit and accommodates Studio's cold-start health check on this laptop. All health checks remain required, and actual bindings are verified after startup. See [ADR-008](docs/DECISIONS.md) before upgrading the pinned CLI.
 
@@ -44,13 +45,32 @@ On a memory-constrained machine, `npm run supabase:start:core` starts the databa
 ```bash
 npm run db:test
 npm run db:lint
+npm run db:advisors
 npm run db:types:check
 npm run check
 ```
 
-Database tests run against Supabase Postgres using pgTAP. Role tests exercise both actual grants and the separate RLS barrier. They do **not** establish owner-access behavior yet: all client access is intentionally denied in Phase 1.
+Database tests run against Supabase Postgres using pgTAP. Role tests exercise actual grants and the separate RLS barrier: owner CRUD, cross-user denial, protected columns, parent-derived child reads, anonymous denial and forbidden child writes. Pages and asset metadata are read-only for owners until their write workflows are implemented.
 
 After editing SQL, reset the local database, run the database suite, regenerate types, and review the resulting diff. Create new migration filenames with `npx supabase migration new <name>`; do not rename existing applied migrations. Migrations are the source of truth.
+
+## Try authentication
+
+1. Open http://127.0.0.1:3100/sign-up and create an account using a synthetic address such as `reader@example.test` and a password of at least 10 characters.
+2. Open the local inbox at http://127.0.0.1:55324. Mail is captured here; it is not delivered to a real email account.
+3. Follow the confirmation link in the same browser used to register. You will reach the protected account page.
+4. Sign out and back in, or use **Forgot password?** to test recovery through the local inbox. Recovery links also need the initiating browser.
+
+Seeded Alice/Bob identities are database test fixtures, not login accounts. New accounts correctly show zero stories. The story dashboard and editor are Phase 3. Every database reset deletes local login accounts and user-created data for this reference stack only.
+
+## Browser verification
+
+```bash
+npm run build
+npm run test:e2e
+```
+
+Stop an existing reference web server on port 3100 first; Playwright starts and stops its own production server. Local tests use installed Google Chrome. CI installs Playwright Chromium. Tests use random synthetic credentials and their own local mailboxes; no service-role key or test-only authentication bypass exists. Traces, screenshots and videos are disabled to avoid retaining credentials. Reset the reference database after a test run to remove test identities.
 
 ## Local MCP in Codex
 
@@ -61,7 +81,7 @@ This repository includes `.codex/config.toml`:
 url = "http://127.0.0.1:55321/mcp"
 ```
 
-That is TOML in a file, not a terminal command. Start this local stack first. Trust the project, then restart/reload MCP servers in Codex to discover tools. This endpoint connects to the local reference stack only. It does not configure access to a hosted project. The configuration contains no credentials.
+That is TOML in a file, not a terminal command. Start full mode (`npm run supabase:start`) first; core mode omits this endpoint. Trust the project, then restart/reload MCP servers in Codex to discover tools. This endpoint connects to the local reference stack only. It does not configure access to a hosted project. The configuration contains no credentials.
 
 The endpoint handshake and discovery of 11 tools passed during Phase 1. Loading those tools into a particular Codex desktop session is a separate client activation step.
 
@@ -77,6 +97,7 @@ This targets only `supabase-ai-story-reference` and retains local data. If Docke
 
 ## Development record
 
+- [Phase 1 results](docs/PHASE-1.md) and [Phase 2 results](docs/PHASE-2.md)
 - [Decisions](docs/DECISIONS.md)
 - [AI-assisted development](docs/AI-DEVELOPMENT.md)
 - [Contribution notes](docs/CONTRIBUTION-NOTES.md)

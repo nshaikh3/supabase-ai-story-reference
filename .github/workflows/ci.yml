@@ -5,9 +5,9 @@ on:
 permissions:
   contents: read
 jobs:
-  foundation:
+  reference:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -15,11 +15,16 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - run: npm run check
-      - run: npm run supabase:start
+      - run: npm run supabase:start:core
+      - run: npm run local:env
       - run: npm run db:reset
       - run: npm run db:test
       - run: npm run db:lint
+      - run: npm run db:advisors
       - run: npm run db:types:check
+      - run: npm run check
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - run: npm run db:reset && npm run db:test
       - if: always()
         run: npm run supabase:stop

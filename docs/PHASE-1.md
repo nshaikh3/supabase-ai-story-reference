@@ -1,6 +1,6 @@
 # Phase 1 execution record
 
-Status: Phase 1 complete. Local acceptance checks passed; Phase 2 has not started.
+Status: Phase 1 complete. This is the historical acceptance record before Phase 2 began; see [Phase 2](PHASE-2.md) for current work.
 
 ## Approved scope
 
