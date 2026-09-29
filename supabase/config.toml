@@ -57,7 +57,8 @@ api_url = "http://127.0.0.1"
 [realtime]
 enabled = false
 [storage]
-enabled = false
+enabled = true
+file_size_limit = "2MiB"
 [storage.vector]
 enabled = false
 [edge_runtime]

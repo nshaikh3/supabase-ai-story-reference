@@ -7,7 +7,7 @@ export const root = fileURLToPath(new URL("../", import.meta.url));
 export const projectId = "supabase-ai-story-reference";
 // CLI 2.118.0 uses this name even when --network-id specifies another network.
 export const networkId = `supabase_network_${projectId}`;
-export const excludedServices = "realtime,storage-api,imgproxy,edge-runtime,logflare,vector,supavisor";
+export const excludedServices = "realtime,imgproxy,edge-runtime,logflare,vector,supavisor";
 
 export function validateConfig(config, linked = false) {
   if (linked) throw new Error("Local scripts refuse a linked hosted project. Remove the link before local development.");
@@ -18,6 +18,7 @@ export function validateConfig(config, linked = false) {
   if (JSON.stringify(config.api?.schemas) !== '["public"]') throw new Error("Expose only the public application schema.");
   if (config.api?.auto_expose_new_tables !== false) throw new Error("Automatic Data API grants must be disabled.");
   if (config.db?.major_version !== 17) throw new Error("This migration baseline targets Postgres 17.");
+  if (config.storage?.enabled !== true || config.storage?.file_size_limit !== "2MiB") throw new Error("Private image Storage requires the bounded 2 MiB local upload limit.");
   if (config.auth?.site_url !== "http://127.0.0.1:3100" || JSON.stringify(config.auth?.additional_redirect_urls) !== '["http://127.0.0.1:3100/auth/callback"]') throw new Error("Auth redirects must target this reference app only.");
   if (config.auth?.enable_anonymous_sign_ins !== false || config.auth?.enable_refresh_token_rotation !== true || config.auth?.email?.enable_confirmations !== true || !Number.isInteger(config.auth?.minimum_password_length) || config.auth?.minimum_password_length < 10) throw new Error("Keep email confirmation, password strength and session rotation enabled; anonymous sign-in disabled.");
   return config;
@@ -31,7 +32,7 @@ export function commandFor(action, extras = []) {
   if (extras.length) throw new Error("Extra arguments are not accepted: local scripts cannot target remote databases.");
   const commands = {
     start: ["start", "--exclude", excludedServices, "--network-id", networkId],
-    "start-core": ["start", "--exclude", `${excludedServices},studio`, "--network-id", networkId],
+    "start-core": ["start", "--exclude", `${excludedServices},studio,postgres-meta`, "--network-id", networkId],
     stop: ["stop", "--project-id", projectId],
     reset: ["db", "reset", "--local", "--yes"],
     test: ["test", "db", "--local", "supabase/tests/database"],

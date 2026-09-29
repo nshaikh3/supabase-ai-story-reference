@@ -28,9 +28,17 @@ describe("local development boundary", () => {
   it("keeps core startup isolated without skipping health checks", () => {
     const args = commandFor("start-core");
     expect(args[args.indexOf("--exclude") + 1].split(",")).toContain("studio");
+    expect(args[args.indexOf("--exclude") + 1].split(",")).toContain("postgres-meta");
     expect(args[args.indexOf("--network-id") + 1]).toBe(networkId);
     expect(args).not.toContain("--ignore-health-check");
     expect(() => commandFor("start-core", ["--ignore-health-check"])).toThrow("Extra arguments");
+  });
+  it("requires bounded Storage and includes it in core startup", () => {
+    const config = loadConfig();
+    expect(() => validateConfig({ ...config, storage: { ...config.storage, enabled: false } })).toThrow("Storage");
+    expect(() => validateConfig({ ...config, storage: { ...config.storage, file_size_limit: "1GiB" } })).toThrow("Storage");
+    const args = commandFor("start-core");
+    expect(args[args.indexOf("--exclude") + 1].split(",")).not.toContain("storage-api");
   });
   it("strips hosted credentials without losing Docker or PATH", () => {
     expect(localEnvironment({ SUPABASE_ACCESS_TOKEN: "private", SUPABASE_PROJECT_ID: "private", DATABASE_URL: "private", PGPASSWORD: "private", PATH: "/bin", DOCKER_HOST: "unix:///socket" })).toEqual({ PATH: "/bin", DOCKER_HOST: "unix:///socket" });

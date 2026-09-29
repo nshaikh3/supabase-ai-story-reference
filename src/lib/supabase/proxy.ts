@@ -22,7 +22,7 @@ export async function updateSession(request: NextRequest) {
   });
   // Verify the JWT; a cookie's unverified user object is never authorization.
   const { data, error } = await supabase.auth.getClaims();
-  if (request.nextUrl.pathname.startsWith("/account") && (error || !data?.claims.sub)) {
+  if (["/account", "/dashboard", "/stories"].some(path => request.nextUrl.pathname === path || request.nextUrl.pathname.startsWith(`${path}/`)) && (error || !data?.claims.sub)) {
     const redirect = NextResponse.redirect(new URL("/sign-in", appUrl));
     response.cookies.getAll().forEach((cookie) => redirect.cookies.set(cookie));
     response = redirect;

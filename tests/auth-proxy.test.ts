@@ -6,9 +6,9 @@ vi.mock("@/lib/supabase/config", () => ({ getSupabaseConfig: () => ({ url: "http
 import { updateSession } from "@/lib/supabase/proxy";
 beforeEach(() => { vi.resetAllMocks(); mocks.createServerClient.mockReturnValue({ auth: { getClaims: mocks.getClaims } }); });
 describe("session refresh and route protection", () => {
-  it("redirects a missing session without trusting next or forwarded host", async () => {
+  it.each(["/account", "/dashboard", "/stories/new", "/stories/aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1"])("protects %s without trusting next or forwarded host", async path => {
     mocks.getClaims.mockResolvedValue({ data: null, error: null });
-    const response = await updateSession(new NextRequest("http://127.0.0.1:3100/account?next=https://evil.test", { headers: { "x-forwarded-host": "evil.test" } }));
+    const response = await updateSession(new NextRequest(`http://127.0.0.1:3100${path}?next=https://evil.test`, { headers: { "x-forwarded-host": "evil.test" } }));
     expect(response.headers.get("location")).toBe("http://127.0.0.1:3100/sign-in");
     expect(response.headers.get("cache-control")).toBe("private, no-store");
   });

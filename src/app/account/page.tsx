@@ -23,7 +23,8 @@ export default async function Account({ searchParams }: { searchParams: Promise<
     <div className="mt-10 grid items-start gap-6 md:grid-cols-2">
       <Card><CardHeader><CardTitle>Your story workspace</CardTitle></CardHeader><CardContent className="space-y-4">
         {error ? <p role="alert">We couldn’t load your story count. Please try again later.</p> : <p><strong className="text-3xl text-primary">{count ?? 0}</strong> stories in your account</p>}
-        <p className="leading-relaxed text-muted-foreground">Your account is ready. Creating stories and uploading images arrive in the next phase.</p>
+        <p className="leading-relaxed text-muted-foreground">Create and edit story drafts, and add private hero illustrations.</p>
+      <Button asChild><Link href="/dashboard" prefetch={false}>Open my stories</Link></Button>
       </CardContent></Card>
       <Card><CardHeader><CardTitle>Change your password</CardTitle></CardHeader><CardContent><AuthForm mode="password" /></CardContent></Card>
     </div>

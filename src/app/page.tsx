@@ -13,7 +13,7 @@ export default function Home() {
     <main className="mx-auto max-w-6xl px-6 py-8 sm:px-10">
       <nav aria-label="Main" className="flex flex-wrap items-center justify-between gap-4 border-b pb-6">
         <a className="font-semibold tracking-tight" href="#">Supabase AI Story Reference</a>
-        <span className="rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground">Phase 2 · Auth & ownership</span>
+        <span className="rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground">Phase 3 · Stories & private images</span>
       </nav>
       <section className="max-w-3xl py-20 sm:py-28">
         <p className="mb-5 text-sm font-semibold uppercase tracking-widest text-primary">Small stories. Thoughtful architecture.</p>
@@ -34,7 +34,7 @@ export default function Home() {
       </section>
       <section id="next" className="my-16 grid gap-5 border-y py-10 sm:grid-cols-2">
         <h2 className="text-2xl font-semibold tracking-tight">A foundation, ready to grow.</h2>
-        <p className="leading-relaxed text-muted-foreground">Sign-in, email confirmation, password recovery, and owner access are ready. Story management and private uploads come next, followed by AI generation and live progress.</p>
+        <p className="leading-relaxed text-muted-foreground">Create your account, draft stories, and upload private hero illustrations. AI generation and live progress are next.</p>
       </section>
       <footer className="pb-6 text-sm text-muted-foreground">Next.js · PostgreSQL · Supabase · TypeScript</footer>
     </main>
