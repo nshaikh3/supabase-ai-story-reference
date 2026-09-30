@@ -43,6 +43,60 @@ export type Database = {
                     }
                 ];
             };
+            "generation_jobs": {
+                Row: {
+                    "completed_at": string | null;
+                    "created_at": string;
+                    "error_code": string | null;
+                    "error_message": string | null;
+                    "id": string;
+                    "job_type": string;
+                    "lease_expires_at": string;
+                    "provider": string | null;
+                    "started_at": string | null;
+                    "status": string;
+                    "story_id": string;
+                };
+                Insert: {
+                    "completed_at"?: string | null;
+                    "created_at"?: string;
+                    "error_code"?: string | null;
+                    "error_message"?: string | null;
+                    "id"?: string;
+                    "job_type"?: string;
+                    "lease_expires_at"?: string;
+                    "provider"?: string | null;
+                    "started_at"?: string | null;
+                    "status"?: string;
+                    "story_id": string;
+                };
+                Update: {
+                    "completed_at"?: string | null;
+                    "created_at"?: string;
+                    "error_code"?: string | null;
+                    "error_message"?: string | null;
+                    "id"?: string;
+                    "job_type"?: string;
+                    "lease_expires_at"?: string;
+                    "provider"?: string | null;
+                    "started_at"?: string | null;
+                    "status"?: string;
+                    "story_id"?: string;
+                };
+                Relationships: [
+                    {
+                        foreignKeyName: "generation_jobs_story_id_fkey";
+                        columns: [
+                            "story_id"
+                        ];
+                        isOneToOne: false;
+                        referencedRelation: "stories";
+                        referencedColumns: [
+                            "id"
+                        ];
+                    }
+                ];
+            };
             "stories": {
                 Row: {
                     "child_name": string;
@@ -118,7 +172,27 @@ export type Database = {
             [_ in never]: never;
         };
         Functions: {
-            [_ in never]: never;
+            "claim_generation": {
+                Args: {
+                    "p_job_id": string;
+                    "p_provider": string;
+                };
+                Returns: boolean;
+            };
+            "enqueue_generation": {
+                Args: {
+                    "p_story_id": string;
+                };
+                Returns: string;
+            };
+            "finish_generation": {
+                Args: {
+                    "p_error_code"?: string;
+                    "p_job_id": string;
+                    "p_pages"?: Json;
+                };
+                Returns: boolean;
+            };
         };
         Enums: {
             [_ in never]: never;

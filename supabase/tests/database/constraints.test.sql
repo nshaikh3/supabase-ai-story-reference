@@ -28,9 +28,9 @@ select set_config('request.jwt.claims','{"sub":"11111111-1111-4111-8111-11111111
 insert into public.stories(id,title,child_name,prompt) values ('eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee','Default owner','Nova','A map');
 select is((select owner_id from public.stories where id='eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee'), '11111111-1111-4111-8111-111111111111'::uuid, 'Owner default uses the request identity');
 select is((select status from public.stories where id='eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee'), 'draft', 'Story defaults to draft');
-update public.stories set title='Updated title' where id='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1';
-select ok((select updated_at > '2026-01-01T12:00:00Z'::timestamptz from public.stories where id='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1'), 'Update advances updated_at');
-select is((select created_at from public.stories where id='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1'), '2026-01-01T12:00:00Z'::timestamptz, 'Update preserves created_at');
+update public.stories set title='Updated title' where id='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2';
+select ok((select updated_at > '2026-01-02T12:00:00Z'::timestamptz from public.stories where id='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2'), 'Update advances updated_at');
+select is((select created_at from public.stories where id='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2'), '2026-01-02T12:00:00Z'::timestamptz, 'Update preserves created_at');
 
 delete from public.stories where id='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1';
 select is((select count(*) from public.story_pages), 0::bigint, 'Deleting story cascades to its pages');

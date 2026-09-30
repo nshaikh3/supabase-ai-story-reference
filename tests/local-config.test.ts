@@ -40,6 +40,14 @@ describe("local development boundary", () => {
     const args = commandFor("start-core");
     expect(args[args.indexOf("--exclude") + 1].split(",")).not.toContain("storage-api");
   });
+  it("requires the isolated Edge runtime and gateway JWT checks", () => {
+    const config = loadConfig();
+    expect(() => validateConfig({ ...config, edge_runtime: { ...config.edge_runtime, enabled: false } })).toThrow("Edge");
+    expect(() => validateConfig({ ...config, functions: { "generate-story": { verify_jwt: false } } })).toThrow("JWT");
+    const args = commandFor("start-core");
+    expect(args[args.indexOf("--exclude") + 1].split(",")).not.toContain("edge-runtime");
+    expect(() => commandFor("generation-setup", ["--db-url=postgres://remote"])).toThrow("Extra arguments");
+  });
   it("strips hosted credentials without losing Docker or PATH", () => {
     expect(localEnvironment({ SUPABASE_ACCESS_TOKEN: "private", SUPABASE_PROJECT_ID: "private", DATABASE_URL: "private", PGPASSWORD: "private", PATH: "/bin", DOCKER_HOST: "unix:///socket" })).toEqual({ PATH: "/bin", DOCKER_HOST: "unix:///socket" });
   });

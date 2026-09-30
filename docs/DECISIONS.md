@@ -36,6 +36,8 @@ The local wrapper resolves the real Docker executable, then puts a repository-lo
 
 Actual bindings are checked after startup and failures stop the reference containers. Unit tests cover port restrictions, project scope, and retention of the health probe. This is a compatibility measure tied to the pinned CLI, not a general container orchestrator. Review or remove it when upstream settings can express these requirements directly. Core mode omits Studio and postgres-meta when MCP is unnecessary. Phase 3 adds a bounded five-minute wait after starting this project’s Storage container, because the pinned CLI’s final health retry budget can expire during cold Node startup on a swapping host. The adapter accepts only the actual healthy probe status, fails on stopped/OOM/missing-probe services, supports cancellation and leaves other Docker commands/projects untouched. The CLI still performs its own final health checks. The pinned type generator introspects Postgres in-process and needs no running metadata service.
 
+Phase 4 local readiness follow-up: a measured `docker info` call completed in 25 seconds while the host was using about 11.3 GiB of swap. Its bounded readiness deadline is now 60 seconds (other short Docker operations remain at 20 seconds); no health probe or target guard is bypassed.
+
 ## ADR-009: Server-rendered Auth with fixed local redirects
 
 Use pinned Supabase SSR and JavaScript SDKs with a per-request server client and Next.js Server Actions. PKCE email confirmation and recovery return to one fixed callback and require the initiating browser. Proxy refreshes cookies and verifies claims; the protected data boundary independently calls Auth getUser. Auth responses are dynamic and never shared-cacheable. Current-session sign-out avoids invalidating sessions on other devices. Deployment configuration, Secure cookies, SMTP and CAPTCHA require a later explicit review. No commercial environment or hosted key is reused.
@@ -62,4 +64,20 @@ Storage preflight authorization and completion span separate transactions (verif
 
 ## Future decisions
 
-Worker authorization, atomic job transitions, retry/idempotency, production object reconciliation/quotas, and private Broadcast authorization require explicit decisions in their implementation phases. No paid AI API is needed for the eventual mock generation path.
+Production object reconciliation/quotas and private Broadcast authorization require explicit decisions in their implementation phases. No paid AI API is needed for mock generation.
+
+## ADR-014: Caller authorization plus a narrow worker capability
+
+Keep the caller's JWT on every generation database request. RLS establishes owner visibility before enqueue; private lifecycle functions repeat explicit `auth.uid()`/parent ownership checks. An owner may enqueue and read jobs, but cannot publish pages or forge completion through the Data API. Claim/finish additionally require a 256-bit random `x-generation-worker` secret set by Edge code, never copied from request headers. Only a SHA-256 hash is stored in an unexposed table with RLS and no client grants. Public RPC wrappers are invokers; private definer implementations have empty search paths and no dynamic SQL. The `authenticated` role has private schema USAGE and only the three required function EXECUTEs, not table access. The worker guard itself is not directly executable by clients.
+
+This deliberately avoids a service-role application client. The elevated SQL surface is limited to the lifecycle of a story owned by the authenticated caller. The capability is not sufficient without a valid owner JWT, and cannot grant general table writes. Local setup generates the secret in ignored `supabase/functions/.env` (0600); reset provisions its hash via the exact local reference database container. This is local provisioning, not a hosted secret-management implementation. Production must provision/rotate the capability through reviewed secret-management operations and keep request headers out of logs.
+
+## ADR-015: One active job, bounded synchronous work and explicit recovery
+
+Story row locks serialize enqueue/claim/finish. A partial unique index backs the one-active-job invariant. Queued/generating jobs have two-minute leases; retries replace expired jobs and reject stale writes by job ID/status/lease. Completion validates five sequential pages and commits pages plus both terminal statuses atomically. Duplicate HTTP requests reuse the current job or return the existing completed story. Three total attempts per story bound this local demo; they are not account-wide rate limits.
+
+Use request/response Edge execution with a 30-second provider deadline rather than an unimplemented durable background queue. A lost worker or failure-reporting write leaves a recoverable lease, not a promise of automatic delivery. Manual refresh/resume supports interruption; no periodic polling is added before private Broadcast. Inputs become immutable while active and after completion. Failed inputs may change. Owner deletion cancels persistence by cascading the job; it cannot undo an external provider call already in flight.
+
+## ADR-016: Mock first; optional Gemini behind explicit configuration
+
+Default to deterministic mock prose with no network or paid credentials. Gemini uses the documented generateContent REST endpoint and JSON schema, with an explicit model environment variable rather than an assumed permanent model name. Only title, fictional hero name and story idea leave the app in this optional mode; images are excluded. A fixed HTTPS host, rejected redirects, header key, deadline, byte cap and repeated structural validation constrain the provider boundary. Treat output as untrusted text, keep the user's title and store only allowlisted failure metadata. Structural validation is not content moderation; this remains a reference demo requiring a safety/usage review before public use.

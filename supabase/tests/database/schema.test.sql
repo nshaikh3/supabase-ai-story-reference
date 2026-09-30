@@ -16,8 +16,8 @@ select hasnt_column('public', 'assets', 'owner_id', 'Assets do not duplicate own
 select has_index('public', 'stories', 'stories_owner_created_idx', 'Dashboard has an owner/order index');
 select has_index('public', 'story_pages', 'story_pages_story_page_key', 'Page uniqueness also indexes the parent FK');
 select has_index('public', 'assets', 'assets_story_id_idx', 'Asset parent FK is indexed');
-select is((select count(*) from pg_class c join pg_namespace n on n.oid = c.relnamespace where n.nspname = 'public' and c.relname in ('stories', 'story_pages', 'assets') and c.relrowsecurity), 3::bigint, 'RLS enabled on every application table');
-select is((select count(*) from pg_policies where schemaname = 'public' and tablename in ('stories', 'story_pages', 'assets')), 8::bigint, 'Eight operation-specific owner policies');
+select is((select count(*) from pg_class c join pg_namespace n on n.oid = c.relnamespace where n.nspname = 'public' and c.relname in ('stories', 'story_pages', 'assets', 'generation_jobs') and c.relrowsecurity), 4::bigint, 'RLS enabled on every application table');
+select is((select count(*) from pg_policies where schemaname = 'public' and tablename in ('stories', 'story_pages', 'assets', 'generation_jobs')), 9::bigint, 'Nine operation-specific owner policies');
 select ok(not (select prosecdef from pg_proc where oid = 'private.set_story_updated_at()'::regprocedure), 'Timestamp helper runs as invoker');
 select is((select proconfig[1] from pg_proc where oid = 'private.set_story_updated_at()'::regprocedure), 'search_path=""', 'Helper has an empty search path');
 select ok(not has_function_privilege('anon', 'private.set_story_updated_at()', 'EXECUTE'), 'Anonymous role cannot invoke private helper');

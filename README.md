@@ -2,21 +2,21 @@
 
 A small reference application exploring secure story workflows with Supabase and Next.js.
 
-[Architecture](docs/ARCHITECTURE.md) · [Security](docs/SECURITY.md) · [Database](docs/DATABASE.md) · [Phase status](docs/PHASE-3.md)
+[Architecture](docs/ARCHITECTURE.md) · [Security](docs/SECURITY.md) · [Database](docs/DATABASE.md) · [Phase status](docs/PHASE-4.md)
 
 ## Current scope
 
-Phases 1–3 provide an isolated local database, migrations, synthetic fixtures, generated types, automated tests, and email/password authentication with owner access. Selected generic components and tooling were reused from an existing application with the owner's authorization; see the [reuse manifest](docs/REUSE-MANIFEST.json).
+Phases 1–4 provide an isolated local database, migrations, synthetic fixtures, generated types, automated tests, and email/password authentication with owner access. Selected generic components and tooling were reused from an existing application with the owner's authorization; see the [reuse manifest](docs/REUSE-MANIFEST.json).
 
-Sign-up, email confirmation, sign-in/out, password recovery and a protected account page are implemented. The owner dashboard, story editor, deletion and private hero-image uploads are implemented. Generation jobs, Edge Functions, and private Realtime Broadcast remain subsequent phases. There is no deployed public demo yet.
+Sign-up, email confirmation, sign-in/out, password recovery and a protected account page are implemented. The owner dashboard, story editor, deletion and private hero-image uploads are implemented. Phase 4 adds protected generation jobs, an authenticated Edge Function, mock generation and optional Gemini. Private Realtime Broadcast remains the next phase; see the phase record for verification status. There is no deployed public demo yet.
 
 ## Requirements
 
 - Node.js 24 and npm.
 - A running local Docker-compatible daemon, with capacity for an additional Supabase stack.
-- Ports 3100 and 55320–55324 available.
+- Ports 3100, 55320–55324 and 55328 available.
 
-The Supabase CLI is pinned in the development dependencies. A hosted Supabase account or paid AI key is not required for Phases 1–3.
+The Supabase CLI is pinned in the development dependencies. A hosted Supabase account or paid AI key is not required for the default mock workflow.
 
 ## Local setup
 
@@ -34,7 +34,7 @@ Open http://127.0.0.1:3100. Local mail is http://127.0.0.1:55324. Studio is http
 
 `db:reset` destroys and recreates **this reference project's local database**, including its seed data. It is intended for disposable development fixtures. The wrapper rejects linked projects and remote arguments. The seed identities are database fixtures, not working login accounts.
 
-The local start script omits Realtime, image transformation, Edge Runtime, analytics, and pooling until their implementation phases. Full mode keeps Studio and metadata services for MCP; the setup above uses core mode to reduce memory use. It uses a dedicated network with loopback host bindings, and does not stop another stack to free ports.
+The local start script omits Realtime, image transformation, analytics, and pooling until their implementation phases. Full mode keeps Studio and metadata services for MCP; the setup above uses core mode to reduce memory use. It uses a dedicated network with loopback host bindings, and does not stop another stack to free ports.
 
 A small project-scoped Docker adapter makes those bindings explicit and accommodates Studio's cold-start health check on this laptop. All health checks remain required, and actual bindings are verified after startup. See [ADR-008](docs/DECISIONS.md) before upgrading the pinned CLI.
 
@@ -69,7 +69,15 @@ Create a story with a fictional hero name and prompt. Open the story to edit it 
 
 Images are served through an authenticated, uncached route, not a public URL. Story deletion requires the form's confirmation checkbox and removes objects before relational rows. Do not delete Storage object metadata through SQL: that does not remove bytes. Cross-service failures and concurrent direct uploads need the [cleanup review](docs/SECURITY.md#private-images-and-cleanup) before production use.
 
-The dashboard displays 20 stories per page in a deterministic order. AI generation is not active yet; new stories stay in `draft`.
+The dashboard displays 20 stories per page in a deterministic order. New stories start in `draft`. Save edits, then choose **Generate story** to produce five pages. Details lock during generation and after completion. Failed stories can be edited and retried, up to three attempts. **Refresh status** reads current state; interrupted runs can be resumed after two minutes. There is no automatic polling.
+
+## Generation configuration
+
+Startup creates ignored `supabase/functions/.env` with `AI_PROVIDER=mock` and a random worker capability (mode 0600). Database reset provisions only its hash in the private schema. After applying migrations without a reset, run `npm run generation:setup`. Keep this file secret: it is separate from the public Next.js `.env.local`. No service-role application client is used.
+
+Mock mode is free and makes no AI network calls. To deliberately enable Gemini, edit the Edge environment file, preserving `GENERATION_WORKER_SECRET`, and set `AI_PROVIDER=gemini`, `GEMINI_API_KEY` and `GEMINI_MODEL` to a currently available generateContent model supporting structured JSON. Then restart **only this reference stack**. Never put the AI key or worker secret in `NEXT_PUBLIC_*` variables. The optional provider sends title, fictional hero name and idea to Google; it does not receive images. Tests refuse to call a paid provider. Live Gemini validation requires your own optional key and is not part of the mock acceptance gate.
+
+The Edge Function authenticates independently of the gateway and uses the caller's RLS context. Narrow lifecycle RPCs require the worker capability as well as owner identity. Database completion is atomic; provider calls and network delivery are not. A lost response should be followed by a status refresh before retrying. The local three-attempt cap does not replace production rate limiting. See [ADR-014–016](docs/DECISIONS.md).
 
 ## Browser verification
 
@@ -78,7 +86,7 @@ npm run build
 npm run test:e2e
 ```
 
-Stop an existing reference web server on port 3100 first; Playwright starts and stops its own production server. Local tests use installed Google Chrome. CI installs Playwright Chromium. Tests use random synthetic credentials and their own local mailboxes; no service-role key or test-only authentication bypass exists. Auth traces, screenshots and videos are disabled to avoid retaining credentials. The story scenario writes two explicit desktop/mobile screenshots containing only its fictional story fixture to ignored test-results/. Reset the reference database after a test run to remove test identities.
+Stop an existing reference web server on port 3100 first; Playwright starts and stops its own production server. Local tests use installed Google Chrome. CI installs Playwright Chromium. Tests use random synthetic credentials and their own local mailboxes; no service-role key or test-only authentication bypass exists. Auth traces, screenshots and videos are disabled to avoid retaining credentials. Story and generation scenarios write explicit desktop/mobile screenshots containing only its fictional story fixture to ignored test-results/. Reset the reference database after a test run to remove test identities.
 
 ## Local MCP in Codex
 
@@ -105,7 +113,7 @@ This targets only `supabase-ai-story-reference` and retains local data. If Docke
 
 ## Development record
 
-- [Phase 1 results](docs/PHASE-1.md), [Phase 2 results](docs/PHASE-2.md), and [Phase 3 results](docs/PHASE-3.md)
+- [Phase 1 results](docs/PHASE-1.md), [Phase 2 results](docs/PHASE-2.md), [Phase 3 results](docs/PHASE-3.md), and [Phase 4 results](docs/PHASE-4.md)
 - [Decisions](docs/DECISIONS.md)
 - [AI-assisted development](docs/AI-DEVELOPMENT.md)
 - [Contribution notes](docs/CONTRIBUTION-NOTES.md)

@@ -40,3 +40,9 @@ The agent inspected grants, policies, identity verification, caching, callback d
 The user authorized continuing to the next phase on 2026-09-29. The agent reused the existing foundation and generic components, read the current official Supabase skills and Storage documentation, inspected installed Next.js Server Action documentation, and added owner story UI plus private uploads. The commercial application and its Docker stack were not modified.
 
 Image validation, object authorization, cross-account denial and failure recovery were developed with tests. A source review of the pinned Storage uploader changed the cleanup design: permission preflight does not hold a transaction through byte storage. The resulting implementation deliberately records that concurrency limitation instead of claiming atomic cleanup. Human review is still needed; automated passes are not a security certification. Executed results and any remaining failures are in PHASE-3.md.
+
+## Phase 4 work
+
+AI assistance produced the generation migration, worker-capability boundary, mock/Gemini adapters, Edge handler, UI and tests. The implementation uses existing generic primitives and Auth/Storage foundations; no further commercial files were copied. Current official Supabase skills, Auth/Edge secrets/header docs, CLI help, PostgreSQL RLS guidance, Gemini generateContent/structured-output docs and installed Next.js Server Actions documentation were consulted.
+
+Verification status and observed failures are recorded in PHASE-4.md. No live Gemini request, public deployment or human security sign-off should be inferred from mocked provider tests. The custom capability/RPC boundary, concurrency guarantees, real-data privacy and production abuse controls particularly need human review before deployment.

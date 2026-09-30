@@ -25,9 +25,9 @@ All application tables have RLS enabled. Anonymous clients have no grants. Authe
 | Realtime topics | None yet | Phase 5 must authorize private channels |
 | Generation jobs | None yet | Phase 4 must enforce a controlled lifecycle |
 
-An owner default is convenience, not authorization. RLS and column privileges are independent controls. A future broad table grant would weaken managed-field protection and must fail review and tests. Status transitions and concurrent editing during generation need a separate Phase 4 decision.
+An owner default is convenience, not authorization. RLS and column privileges are independent controls. A future broad table grant would weaken managed-field protection and must fail review and tests. Phase 4 constrains transitions and concurrent editing as described below.
 
-Ownership derives from the parent, with no duplicate owner field on children. No exposed views or privileged callable RPCs were added. Phase 3 adds one trigger-only SECURITY DEFINER deletion guard, described below. The timestamp trigger remains invoker-only in non-exposed `private`, with an empty search path and no client execute grants.
+Ownership derives from the parent, with no duplicate owner field on children. No exposed views are present; Phase 4 lifecycle RPCs are described below. Phase 3 adds one trigger-only SECURITY DEFINER deletion guard, described below. The timestamp trigger remains invoker-only in non-exposed `private`, with an empty search path and no client execute grants.
 
 The database tests set actual API roles and synthetic request claims. They prove own-row CRUD, cross-user denial, inaccessible child writes, forbidden field changes, absent-identity denial and parent cascades. A separate transaction-only grant section tests RLS independently. Test changes roll back. Database-admin setup is never counted as client authorization.
 
@@ -45,7 +45,7 @@ Never log access tokens, keys, passwords, emails, child names, full prompts or g
 
 ## Verification boundaries
 
-Actual results are recorded in PHASE-2.md and PHASE-3.md. Human security review and the Phase 6 audit remain pending. Hosted CI, production deployment, generation jobs and private channel authorization remain unverified. Phase 3 verifies private object access locally.
+Actual results are recorded in PHASE-2.md, PHASE-3.md and PHASE-4.md. Human security review and the Phase 6 audit remain pending. Hosted CI, production deployment and private channel authorization remain unverified. Phase 3 verifies private object access locally.
 
 ## Private images and cleanup
 
@@ -58,3 +58,15 @@ Metadata reservation precedes byte upload. Duplicate hero uploads lose at the un
 **Limit:** this does not make a distributed transaction. Storage v1.77.0 checks RLS before storing bytes and completes database writes using its internal privileged context. A concurrent delete after preflight can race a late upload; a timeout can leave the outcome uncertain. The application reports recoverable failures but cannot prove absence of every late or orphaned object. Before production, add an audited reconciliation/cleanup workflow, quotas/rate limits and fault/concurrency tests. Do not describe the current guard as concurrency-safe or delete Storage metadata directly through SQL. Reference tests use fictional images, and their actual byte objects are explicitly removed through Storage before database reset.
 
 The image transform has bounded size/time per request, but no per-user rate limit, global transform queue, malware scanner or production storage quota is implemented in this local phase. Human review and the Phase 6 audit must address those resource/abuse controls and dependency/native-decoder maintenance. Never use real children's photos or private content for public demonstration fixtures.
+
+## Generation boundary (Phase 4)
+
+The app and Edge Function use public API keys with the caller's JWT. Edge verifies the bearer token through Auth `getUser` even with gateway verification enabled, then reads the story under RLS. Missing and other-owner story IDs get the same unavailable response. Request bodies accept only a story UUID; callers cannot select the provider, supply an owner ID, publish arbitrary pages, or write job states directly.
+
+Only owner enqueue is freely callable by an authenticated user. Claim/finish additionally verify an Edge-only random capability against a hash in `private.generation_worker_key`. Edge sets this header itself only on claim/finish RPCs, ignoring any incoming worker header; Auth and ordinary read requests never receive it. Public RPC wrappers are invokers; private definer functions use an empty search path, fixed SQL and explicit `auth.uid()`/story checks. Private schema USAGE allows the wrappers to execute named helpers but does not expose the schema through PostgREST or grant table access. Worker-key SELECT and mutation are denied to client roles; no client policy exists. A leaked capability alone does not authorize another owner's story, but capability leakage still requires rotation. Never log headers, provider keys, raw errors or story prompts.
+
+The local startup script writes a fresh 256-bit capability to ignored `supabase/functions/.env` with mode 0600 if absent. The fixed local reset/setup operation uses only the exact reference database container to write its validated hexadecimal hash. It cannot accept a hosted URL or alternate container. Hosted provisioning and key rotation need separate reviewed deployment work.
+
+Input locks and story row locks prevent editing races from changing an active provider request. Partial uniqueness prevents two active jobs. The two-minute lease plus job ID prevents stale writes; page insertion and job/story completion are transactional. Explicit retries stop after three attempts per story. Deletion cascades jobs, preventing late output from resurrecting deleted content; already-dispatched provider work may still consume resources. This is a bounded request/response workflow with manual recovery, not a durable delivery queue or account-wide abuse limit.
+
+Mock mode makes no external AI request. Optional Gemini sends only title, fictional hero name and idea to Google's fixed HTTPS endpoint. Its API key is in a header, redirects are rejected, output byte size and time are bounded, and JSON/page order/text size are revalidated before persistence. Provider instructions cannot change permissions or call tools. Rendering remains escaped plain text. Structural validation and prompting are not moderation or a guarantee of suitable content. Global quotas, provider safety evaluation, consent/privacy review for real data and a human security audit are still required before a public deployment.

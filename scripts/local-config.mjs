@@ -7,7 +7,7 @@ export const root = fileURLToPath(new URL("../", import.meta.url));
 export const projectId = "supabase-ai-story-reference";
 // CLI 2.118.0 uses this name even when --network-id specifies another network.
 export const networkId = `supabase_network_${projectId}`;
-export const excludedServices = "realtime,imgproxy,edge-runtime,logflare,vector,supavisor";
+export const excludedServices = "realtime,imgproxy,logflare,vector,supavisor";
 
 export function validateConfig(config, linked = false) {
   if (linked) throw new Error("Local scripts refuse a linked hosted project. Remove the link before local development.");
@@ -19,6 +19,7 @@ export function validateConfig(config, linked = false) {
   if (config.api?.auto_expose_new_tables !== false) throw new Error("Automatic Data API grants must be disabled.");
   if (config.db?.major_version !== 17) throw new Error("This migration baseline targets Postgres 17.");
   if (config.storage?.enabled !== true || config.storage?.file_size_limit !== "2MiB") throw new Error("Private image Storage requires the bounded 2 MiB local upload limit.");
+  if (config.edge_runtime?.enabled !== true || config.edge_runtime?.inspector_port !== 55328 || config.functions?.["generate-story"]?.verify_jwt !== true) throw new Error("Keep the local Edge runtime and JWT gateway verification enabled.");
   if (config.auth?.site_url !== "http://127.0.0.1:3100" || JSON.stringify(config.auth?.additional_redirect_urls) !== '["http://127.0.0.1:3100/auth/callback"]') throw new Error("Auth redirects must target this reference app only.");
   if (config.auth?.enable_anonymous_sign_ins !== false || config.auth?.enable_refresh_token_rotation !== true || config.auth?.email?.enable_confirmations !== true || !Number.isInteger(config.auth?.minimum_password_length) || config.auth?.minimum_password_length < 10) throw new Error("Keep email confirmation, password strength and session rotation enabled; anonymous sign-in disabled.");
   return config;
@@ -40,6 +41,7 @@ export function commandFor(action, extras = []) {
     types: ["gen", "types", "--local", "--lang", "typescript", "--schema", "public"],
     "types-check": ["gen", "types", "--local", "--lang", "typescript", "--schema", "public"],
     check: [],
+    "generation-setup": [],
     env: ["status", "--output", "json"],
     advisors: ["db", "advisors", "--local", "--type", "all", "--level", "info", "--fail-on", "error"],
   };

@@ -6,7 +6,9 @@
       "source": "botstories-web/tsconfig.json",
       "target": "tsconfig.json",
       "sha256": "5c51df4c59f4510d8c7dadf07a5c32132228826a3b331da5e286207b4df7ef9c",
-      "treatment": "Copied unchanged after review"
+      "treatment": "Copied unchanged in Phase 1; Phase 4 adds allowImportingTsExtensions for shared Deno/Node type checking. Original source hash retained.",
+      "adaptedSha256": "ee6c7d998c5df3678ef51394af1df3cf58dc274cde8b34c33788da61359b96f2",
+      "adaptedIn": "Phase 4"
     },
     {
       "source": "botstories-web/eslint.config.mjs",

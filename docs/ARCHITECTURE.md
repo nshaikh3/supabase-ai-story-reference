@@ -36,4 +36,12 @@ Storage and Postgres are separate services. Upload failure retains a removable r
 
 ## Planned workflow
 
-Phase 4 adds generation jobs, validated provider output and an authenticated Edge Function. Phase 5 adds private authorized Broadcast channels and reconnect reconciliation without repeated polling. Worker privileges, lifecycle transitions and concurrent editing require explicit Phase 4 decisions. No privileged application client, AI API or Realtime channel is introduced in Phase 3.
+Phase 4 generation is described below. Phase 5 adds private authorized Broadcast channels and reconnect reconciliation without repeated polling. No Realtime channel is active yet.
+
+## Phase 4 generation flow
+
+A Server Action authenticates the user and calls the owner enqueue RPC before invoking `generate-story`. The Edge Function independently verifies the JWT, loads the story under caller RLS and idempotently reuses/enqueues the job. It adds its private worker header only to lifecycle RPC requests on the same user-scoped client, claims the job, re-reads frozen input, generates/validates five pages and invokes atomic completion. The browser receives refreshed owner data; manual refresh/resume covers interruptions until private Broadcast arrives in Phase 5.
+
+The worker capability is not a Supabase service-role credential. It unlocks only narrow lifecycle SQL paths, each still requiring the story owner's authenticated identity. Elevated code lives in the unexposed private schema. Local provisioning persists only the secret hash in Postgres and keeps the raw secret in the Edge environment. No Next.js process or browser needs it.
+
+Provider selection is deployment configuration. Mock is deterministic and has no network access. The optional Gemini adapter uses a fixed endpoint and explicit model, sends only story text fields, bounds time/bytes and validates output. Provider text is always data. A two-minute lease and three-attempt cap make interrupted work recoverable without automatic expensive retries. This phase has no durable background consumer, automatic polling, realtime connection or hosted deployment.

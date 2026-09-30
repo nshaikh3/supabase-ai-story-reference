@@ -8,7 +8,9 @@ const action = process.argv[2];
 const starting = action === "start" || action === "start-core";
 
 function docker(args) {
-  const result = spawnSync("docker", args, { encoding: "utf8", timeout: 20000 });
+  // `docker info` took 25 seconds on the memory-constrained development host.
+  // Keep a finite readiness deadline without changing container health checks.
+  const result = spawnSync("docker", args, { encoding: "utf8", timeout: args[0] === "info" ? 60000 : 20000 });
   if (result.error) throw new Error(`Docker ${args[0]} did not respond: ${result.error.message}`);
   return result;
 }
@@ -37,6 +39,9 @@ try {
     process.exit(0);
   }
   requireLocalDocker();
+  const { ensureGenerationEnvironment, provisionGenerationWorker } = await import("./generation-local.mjs");
+  if (action === "generation-setup") { provisionGenerationWorker(); process.exit(0); }
+  if (starting) ensureGenerationEnvironment();
   if (starting) {
     // A running reference stack is handled idempotently by the CLI.
     const running = docker(["ps", "--filter", "name=^supabase_db_supabase-ai-story-reference$", "--format", "{{.Names}}"]);
@@ -76,6 +81,7 @@ try {
     if (environment) console.error("Cannot read local status. Start the reference stack and retry.");
     process.exit(result.status ?? 1);
   }
+  if (action === "reset") provisionGenerationWorker();
   if (environment) {
     const { publicEnvironmentFromStatus } = await import("./local-env.mjs");
     const output = publicEnvironmentFromStatus(JSON.parse(result.stdout));
