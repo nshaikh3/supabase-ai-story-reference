@@ -46,3 +46,8 @@ Image validation, object authorization, cross-account denial and failure recover
 AI assistance produced the generation migration, worker-capability boundary, mock/Gemini adapters, Edge handler, UI and tests. The implementation uses existing generic primitives and Auth/Storage foundations; no further commercial files were copied. Current official Supabase skills, Auth/Edge secrets/header docs, CLI help, PostgreSQL RLS guidance, Gemini generateContent/structured-output docs and installed Next.js Server Actions documentation were consulted.
 
 Verification status and observed failures are recorded in PHASE-4.md. No live Gemini request, public deployment or human security sign-off should be inferred from mocked provider tests. The custom capability/RPC boundary, concurrency guarantees, real-data privacy and production abuse controls particularly need human review before deployment.
+## Phase 5 work
+
+AI assistance added the private status trigger and receive policy, cookie-compatible browser client, subscription lifecycle, cross-tab sign-out handling, and database/unit/browser coverage. No additional commercial files or dependencies were introduced. Official Supabase skills, Broadcast/authorization/SSR guidance, the installed Realtime helper definition and SDK source, and installed Next.js `useRouter` documentation informed the implementation. The four-field message shape includes the ID added by the pinned `realtime.send` function.
+
+Automated verification status and resolved failures are recorded in PHASE-5.md. Human review is not claimed. Phase 6 remains the dedicated security and Postgres/RLS performance review.

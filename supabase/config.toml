@@ -53,9 +53,9 @@ enabled = true
 port = 55323
 api_url = "http://127.0.0.1"
 
-# Enable with their corresponding implementation phases.
+# Realtime delivers private story status notifications.
 [realtime]
-enabled = false
+enabled = true
 [storage]
 enabled = true
 file_size_limit = "2MiB"
@@ -63,6 +63,9 @@ file_size_limit = "2MiB"
 enabled = false
 [edge_runtime]
 enabled = true
+# Per-request workers avoid cumulative CPU retirement during local development.
+# Resource limits and gateway JWT verification remain enabled.
+policy = "oneshot"
 inspector_port = 55328
 [analytics]
 enabled = false

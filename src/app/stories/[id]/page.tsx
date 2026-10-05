@@ -4,6 +4,7 @@ import { requireUser } from "@/lib/auth/session";
 import { validId } from "@/lib/stories/validation";
 import { StoryForm, HeroForm, DeleteStoryForm } from "@/components/story-forms";
 import { GenerationForm } from "@/components/generation-form";
+import { StoryLiveStatus } from "@/components/story-live-status";
 import { WorkspaceNav } from "@/components/workspace-nav";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -23,7 +24,8 @@ export default async function StoryDetail({ params }: { params: Promise<{ id: st
   if (assets.error || pages.error || jobs.error) throw new Error("Story content unavailable");
   return <main className="mx-auto max-w-6xl px-6 py-8 sm:px-10"><WorkspaceNav />
     <Link href="/dashboard" className="text-sm text-primary" prefetch={false}>← My stories</Link>
-    <p className="mt-8 text-xs font-semibold uppercase tracking-widest text-primary">{story.status}</p><h1 className="mb-8 mt-3 break-words text-4xl font-semibold tracking-tight">{story.title}</h1>
+    <p className="mt-8 text-xs font-semibold uppercase tracking-widest text-primary">{story.status}</p><h1 className="mb-4 mt-3 break-words text-4xl font-semibold tracking-tight">{story.title}</h1>
+    <div className="mb-8"><StoryLiveStatus key={`${user.id}:${id}`} id={id} userId={user.id} status={story.status} /></div>
     <div className="grid items-start gap-6 lg:grid-cols-[3fr_2fr]"><Card><CardHeader><CardTitle>Story details</CardTitle></CardHeader><CardContent>{["draft", "failed"].includes(story.status) ? <StoryForm id={id} initial={story} /> : <div className="space-y-4"><p className="font-medium">{story.child_name}</p><p className="whitespace-pre-wrap break-words text-sm">{story.prompt}</p><p className="text-xs text-muted-foreground">Story details are locked once generation starts. Create a new story for another adventure.</p></div>}</CardContent></Card>
       <div className="space-y-6"><Card><CardHeader><CardTitle>Hero illustration</CardTitle></CardHeader><CardContent><HeroForm id={id} assetId={assets.data?.id} /></CardContent></Card><Card><CardHeader><CardTitle>Generate your story</CardTitle></CardHeader><CardContent><GenerationForm id={id} status={story.status} attempts={jobs.data?.length ?? 0} /></CardContent></Card></div>
     </div>

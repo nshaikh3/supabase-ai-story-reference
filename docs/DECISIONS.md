@@ -38,6 +38,8 @@ Actual bindings are checked after startup and failures stop the reference contai
 
 Phase 4 local readiness follow-up: a measured `docker info` call completed in 25 seconds while the host was using about 11.3 GiB of swap. Its bounded readiness deadline is now 60 seconds (other short Docker operations remain at 20 seconds); no health probe or target guard is bypassed.
 
+Phase 5 extends the same bounded probe wait to exact reference Storage/Realtime `start` and `restart` calls, including full IDs only after exact name inspection. The pinned CLI's reset [restarts satellite services](https://github.com/supabase/cli/blob/v2.118.0/apps/cli/src/command-internal/db-bootstrap/restart-services.ts) before its final Storage readiness check. The earlier adapter covered only `start`, leaving reset exposed to the observed cold-start failure. No other projects, database restart, multi-target commands or health probes are altered. Tests retain cancellation, deadline and failure checks.
+
 ## ADR-009: Server-rendered Auth with fixed local redirects
 
 Use pinned Supabase SSR and JavaScript SDKs with a per-request server client and Next.js Server Actions. PKCE email confirmation and recovery return to one fixed callback and require the initiating browser. Proxy refreshes cookies and verifies claims; the protected data boundary independently calls Auth getUser. Auth responses are dynamic and never shared-cacheable. Current-session sign-out avoids invalidating sessions on other devices. Deployment configuration, Secure cookies, SMTP and CAPTCHA require a later explicit review. No commercial environment or hosted key is reused.
@@ -81,3 +83,23 @@ Use request/response Edge execution with a 30-second provider deadline rather th
 ## ADR-016: Mock first; optional Gemini behind explicit configuration
 
 Default to deterministic mock prose with no network or paid credentials. Gemini uses the documented generateContent REST endpoint and JSON schema, with an explicit model environment variable rather than an assumed permanent model name. Only title, fictional hero name and story idea leave the app in this optional mode; images are excluded. A fixed HTTPS host, rejected redirects, header key, deadline, byte cap and repeated structural validation constrain the provider boundary. Treat output as untrusted text, keep the user's title and store only allowlisted failure metadata. Structural validation is not content moderation; this remains a reference demo requiring a safety/usage review before public use.
+
+## ADR-017: Private status notifications with authoritative reconciliation
+
+Use a database trigger and `realtime.send` with an explicit private flag for new generation jobs and actual status changes. Prefer a three-field application payload (story ID, job ID, status) over broadcasting full rows with `broadcast_changes`; Realtime adds its generated message ID. No prompts, pages, provider details or error text enter messages. The trigger is SECURITY INVOKER because lifecycle writes already execute in the existing narrow worker context. Its direct client EXECUTE privilege is revoked.
+
+Authorize only authenticated reception on an owned story's exact canonical topic. Manage policies on the existing Realtime table without altering its managed schema, grants or RLS setting. No client send or Presence policy is added. Application tables do not need a Postgres Changes publication. Public channels cannot receive private messages even with the same topic; hosted preparation should disable public access globally as additional restriction.
+
+The receive policy must also admit Realtime's temporary authorization probe, which inserts topic/extension without a private flag. The managed table defaults that column to false. Filtering `private=true` in this policy would deny valid owner joins; privacy is instead explicitly selected at the producer and channel. A real-probe-shaped database test guards this distinction while retaining owner/role/topic/extension checks.
+
+Treat messages as invalidation hints and refresh verified, RLS-protected server state after each coalesced event burst and successful join/rejoin. This avoids trusting delivery order and covers events missed before subscription or while offline. Visibility/online and token changes reconcile without periodic polling. The SDK handles socket reconnects; a manual fallback remains for outages. The managed send helper is best-effort, so notification failure does not promise generation rollback or reliable delivery.
+
+## ADR-018: Session-aware browser subscriptions
+
+Reuse the cookie-compatible Supabase SSR browser client with the same local public configuration. Set the current JWT before subscribing, update authorization on token refresh, and remove channels on identity change, route teardown or offline transitions. Auth callbacks defer asynchronous work to avoid SDK lock re-entry. Browser sign-out uses local scope and the SDK's cross-tab notification; open story tabs leave the private screen with a fixed full navigation. Retain the Server Action as the no-JavaScript fallback and recheck cookie identity when tabs return.
+
+Realtime caches authorization until a new JWT, rejoin or token expiry. UI cleanup is not immediate server token revocation. Immutable ownership, narrow content-free messages, deletion preventing future job mutations, and verified database reads bound the current design. Mutable membership/ownership would require an explicit revocation design before use.
+
+## ADR-019: Explicit local Edge worker lifecycle
+
+Use `edge_runtime.policy = "oneshot"` for this local reference. CLI 2.118.0 defaults to `per_worker`; repeated mock browser invocations exposed CPU-limit shutdowns under worker reuse. The official CLI guide recommends `oneshot` for development. Explicit configuration avoids relying on the differing documented/default value and keeps each request's CPU budget independent. It does not raise resource limits, disable JWT checks, retry failed generation invisibly or validate hosted capacity. Production worker reuse and load testing remain separate deployment decisions.

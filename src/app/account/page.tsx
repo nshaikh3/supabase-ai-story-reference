@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { requireUser } from "@/lib/auth/session";
-import { signOut } from "@/app/auth/actions";
+import { SignOutForm } from "@/components/sign-out-form";
 import { AuthForm } from "@/components/auth-form";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,7 +15,7 @@ export default async function Account({ searchParams }: { searchParams: Promise<
   return <main className="mx-auto max-w-4xl px-6 py-10 sm:py-16">
     <nav className="mb-12 flex flex-wrap items-center justify-between gap-4" aria-label="Account">
       <Link href="/" className="font-semibold text-primary" prefetch={false}>Supabase AI Story Reference</Link>
-      <form action={signOut}><Button type="submit" variant="outline">Sign out</Button></form>
+      <SignOutForm />
     </nav>
     <h1 className="text-4xl font-semibold tracking-tight">Your account</h1>
     <p className="mt-4 text-muted-foreground">Signed in as <span className="font-medium text-foreground">{user.email}</span></p>

@@ -48,7 +48,7 @@ test("story CRUD, private byte access, cross-owner denial and recoverable upload
   await expect(page.getByRole("heading", { name: "The moonlight map", exact: true })).toBeVisible();
   await page.getByLabel("Story title").fill("The moonlight map, revised");
   await page.getByRole("button", { name: "Save story details" }).click();
-  await expect(page.getByRole("status")).toContainText("Story details saved");
+  await expect(page.getByRole("status").filter({ hasText: "Story details saved" })).toBeVisible();
   await page.reload();
   await expect(page.getByLabel("Story title")).toHaveValue("The moonlight map, revised");
   await page.getByLabel("Hero image", { exact: true }).setInputFiles({ name: "spoof.png", mimeType: "image/png", buffer: Buffer.from("<svg>not raster pixels</svg>") });
@@ -57,7 +57,7 @@ test("story CRUD, private byte access, cross-owner denial and recoverable upload
   await page.getByLabel("Hero image", { exact: true }).setInputFiles({ name: "synthetic.png", mimeType: "image/png", buffer: png });
   await page.getByRole("button", { name: "Upload hero image" }).click();
   await expect(page.getByRole("img", { name: "Your story’s hero illustration" })).toBeVisible();
-  await expect(page.getByRole("status")).toContainText("Hero image uploaded");
+  await expect(page.getByRole("status").filter({ hasText: "Hero image uploaded" })).toBeVisible();
   const { data: asset, error: assetError } = await a.from("assets").select("id,storage_path").eq("story_id", id).single();
   expect(assetError).toBeNull(); if (!asset) throw new Error("Missing owned asset");
   await expect(page.getByRole("img", { name: "Your story’s hero illustration" })).toHaveJSProperty("complete", true);

@@ -13,7 +13,7 @@ export default function Home() {
     <main className="mx-auto max-w-6xl px-6 py-8 sm:px-10">
       <nav aria-label="Main" className="flex flex-wrap items-center justify-between gap-4 border-b pb-6">
         <a className="font-semibold tracking-tight" href="#">Supabase AI Story Reference</a>
-        <span className="rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground">Phase 4 · Story generation</span>
+        <span className="rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground">Phase 5 · Private live updates</span>
       </nav>
       <section className="max-w-3xl py-20 sm:py-28">
         <p className="mb-5 text-sm font-semibold uppercase tracking-widest text-primary">Small stories. Thoughtful architecture.</p>

@@ -40,6 +40,12 @@ describe("local development boundary", () => {
     const args = commandFor("start-core");
     expect(args[args.indexOf("--exclude") + 1].split(",")).not.toContain("storage-api");
   });
+  it("requires Realtime and includes it in core startup", () => {
+    const config = loadConfig();
+    expect(() => validateConfig({ ...config, realtime: { enabled: false } })).toThrow("Realtime");
+    const args = commandFor("start-core");
+    expect(args[args.indexOf("--exclude") + 1].split(",")).not.toContain("realtime");
+  });
   it("requires the isolated Edge runtime and gateway JWT checks", () => {
     const config = loadConfig();
     expect(() => validateConfig({ ...config, edge_runtime: { ...config.edge_runtime, enabled: false } })).toThrow("Edge");
@@ -50,6 +56,10 @@ describe("local development boundary", () => {
   });
   it("strips hosted credentials without losing Docker or PATH", () => {
     expect(localEnvironment({ SUPABASE_ACCESS_TOKEN: "private", SUPABASE_PROJECT_ID: "private", DATABASE_URL: "private", PGPASSWORD: "private", PATH: "/bin", DOCKER_HOST: "unix:///socket" })).toEqual({ PATH: "/bin", DOCKER_HOST: "unix:///socket" });
+  });
+  it.each([undefined, "per_worker"])("requires an explicit per-request local Edge policy (%s)", policy => {
+    const config = loadConfig();
+    expect(() => validateConfig({ ...config, edge_runtime: { ...config.edge_runtime, policy } })).toThrow("oneshot");
   });
   it("rejects arbitrary operations", () => expect(() => commandFor("push")).toThrow("Unknown"));
   const container = (ip: string) => ({ Name: "/supabase_db_supabase-ai-story-reference", NetworkSettings: { Networks: { [networkId]: {} }, Ports: { "5432/tcp": [{ HostIp: ip, HostPort: "55322" }] } } });

@@ -1,6 +1,6 @@
 # Supabase AI Story Reference
 
-Work in reviewed phases. Phase 1 is the local foundation; Phase 2 implements Auth and owner access; story UI and private Storage are Phase 3; generation jobs and authenticated Edge execution are Phase 4.
+Work in reviewed phases. Phase 1 is the local foundation; Phase 2 implements Auth and owner access; story UI and private Storage are Phase 3; generation jobs and authenticated Edge execution are Phase 4; private Realtime Broadcast is Phase 5.
 Keep implementation and verification status explicit. Never claim a planned feature is complete.
 
 - Read current official Supabase Agent Skills (`supabase/agent-skills`, skills `supabase` and `supabase-postgres-best-practices`) and relevant official documentation before Supabase or SQL changes.

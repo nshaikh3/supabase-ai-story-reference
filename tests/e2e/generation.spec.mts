@@ -39,6 +39,7 @@ test("Edge authentication, owner isolation, duplicate generation and five-page U
     await page.goto(`/stories/${story.id}`);
     const stalePage = await page.context().newPage();
     await stalePage.goto(`/stories/${story.id}`);
+    await expect(stalePage.getByTestId("live-connection")).toHaveText("Live updates connected");
     await page.getByRole("button", { name: "Generate story", exact: true }).click();
     await expect(page.getByRole("region", { name: "Story pages" })).toBeVisible({ timeout: 60_000 });
     await expect(page.getByRole("region", { name: "Story pages" }).getByRole("heading", { name: /^Page / })).toHaveCount(5);
@@ -46,7 +47,7 @@ test("Edge authentication, owner isolation, duplicate generation and five-page U
     await expect(page.getByRole("button", { name: "Save story details" })).toHaveCount(0);
     await page.reload();
     await expect(page.getByRole("region", { name: "Story pages" })).toBeVisible();
-    await stalePage.getByRole("button", { name: "Generate story", exact: true }).click();
+    // Phase 5 updates a second tab without pressing Generate or refreshing.
     await expect(stalePage.getByRole("region", { name: "Story pages" })).toBeVisible();
     await expect(stalePage.getByRole("button", { name: "Generate story", exact: true })).toHaveCount(0);
     await stalePage.close();

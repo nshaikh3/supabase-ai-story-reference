@@ -22,8 +22,8 @@ All application tables have RLS enabled. Anonymous clients have no grants. Authe
 | Pages | Owner SELECT through parent story | All direct client writes denied; owned parent deletion cascades |
 | Asset metadata | Owner SELECT/DELETE; restricted hero INSERT | Immutable paths, identity and timestamps; current-owner namespace and parent checked; one hero per story; committed object blocks deletion |
 | Storage objects | Owner SELECT/INSERT/DELETE at a reserved path | Private bucket; owner namespace and RLS-visible metadata; no upsert/move or anonymous policy |
-| Realtime topics | None yet | Phase 5 must authorize private channels |
-| Generation jobs | None yet | Phase 4 must enforce a controlled lifecycle |
+| Realtime topics | Owner SELECT authorization for private Broadcast | Exact story topic and parent ownership; no client sending or Presence |
+| Generation jobs | Owner SELECT; narrow lifecycle RPCs | Owner enqueue; worker capability additionally required for claim/completion |
 
 An owner default is convenience, not authorization. RLS and column privileges are independent controls. A future broad table grant would weaken managed-field protection and must fail review and tests. Phase 4 constrains transitions and concurrent editing as described below.
 
@@ -45,7 +45,7 @@ Never log access tokens, keys, passwords, emails, child names, full prompts or g
 
 ## Verification boundaries
 
-Actual results are recorded in PHASE-2.md, PHASE-3.md and PHASE-4.md. Human security review and the Phase 6 audit remain pending. Hosted CI, production deployment and private channel authorization remain unverified. Phase 3 verifies private object access locally.
+Actual results are recorded in PHASE-2.md through PHASE-5.md. Human security review and the Phase 6 audit remain pending. Hosted CI and production deployment remain unverified. Private object and channel authorization are covered by local tests.
 
 ## Private images and cleanup
 
@@ -70,3 +70,13 @@ The local startup script writes a fresh 256-bit capability to ignored `supabase/
 Input locks and story row locks prevent editing races from changing an active provider request. Partial uniqueness prevents two active jobs. The two-minute lease plus job ID prevents stale writes; page insertion and job/story completion are transactional. Explicit retries stop after three attempts per story. Deletion cascades jobs, preventing late output from resurrecting deleted content; already-dispatched provider work may still consume resources. This is a bounded request/response workflow with manual recovery, not a durable delivery queue or account-wide abuse limit.
 
 Mock mode makes no external AI request. Optional Gemini sends only title, fictional hero name and idea to Google's fixed HTTPS endpoint. Its API key is in a header, redirects are rejected, output byte size and time are bounded, and JSON/page order/text size are revalidated before persistence. Provider instructions cannot change permissions or call tools. Rendering remains escaped plain text. Structural validation and prompting are not moderation or a guarantee of suitable content. Global quotas, provider safety evaluation, consent/privacy review for real data and a human security audit are still required before a public deployment.
+
+## Realtime boundary (Phase 5)
+
+The database emits private `generation_status` messages only for new jobs or real status transitions. An invoker-only trigger inherits the existing lifecycle's authorized execution context; there is no new SECURITY DEFINER helper. Its direct EXECUTE is revoked from client roles. Realtime owns its message table and RLS setting; the migration adds only the owner SELECT policy. Existing managed grants do not grant row access without that policy. No INSERT policy means even an owner cannot forge private status notifications. Presence is excluded. The policy deliberately accepts the managed authorization probe, which inserts only topic/extension and defaults private=false. Message/channel privacy is a separate transport boundary enforced by the explicit private flags.
+
+Payloads contain only four fields: generated message ID, job ID, story ID and status. They are invalidation hints. The browser validates the envelope, then requests fresh server-rendered state through verified Auth and RLS. It never renders arbitrary Broadcast text or applies event status directly. Initial subscribe, reconnect, token refresh and returning online/visible reconcile state; bursts are coalesced and no polling timer is used. Disconnects show a manual-refresh fallback.
+
+The browser uses only the existing publishable key and cookie session. JWTs are never logged. Auth identity changes, logout, route teardown and offline transitions remove the channel and cancel pending refreshes. Browser sign-out broadcasts the SDK's session event across tabs; story tabs perform a fixed full navigation to clear private cached content. The no-JavaScript Server Action fallback cannot broadcast browser events, but a returning story tab rereads its cookie session before resuming.
+
+Realtime caches authorization until rejoin/new JWT or expiry. Local UI cleanup is not token revocation: a modified client holding an unexpired JWT can still exercise the owner's permissions. Story owner IDs cannot transfer, deletion prevents future job mutations, and every content refresh checks authorization again. Before hosting, disable public access globally, review connection/event limits and JWT lifetime, and design explicit revocation if mutable membership is introduced. Local tests distinguish rejected private joins from public topics, which may be joined but never receive private database events. Broadcast is not guaranteed delivery; missed notifications are recovered on reconnect/visibility or manual refresh, and do not change persisted generation results.
