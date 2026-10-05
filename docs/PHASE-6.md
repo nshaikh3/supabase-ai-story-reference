@@ -32,6 +32,8 @@ Status: implementation and local behavioral verification complete on 2026-10-05,
 
 The first focused unit run passed, but TypeScript rejected the new CLI test doubles because the injected function inferred every `spawnSync` overload. A narrow documented process-result interface corrected the typing; the full check then passed.
 
+The final preview smoke check initially expected an absolute `Location` header; Next returned the valid relative `/sign-in`. The check was corrected to resolve the URL and still require the exact local sign-in destination, HTTP 307 and private/no-store. It passed, as did the homepage HTTP 200 check; no application change was needed.
+
 The exploratory Realtime performance query filtered all messages by topic, producing a partition scan. Inspection of the installed service's official source showed that actual authorization reads generated probe IDs. The workload was corrected and rerun; the final evidence uses the actual query shape without changing managed indexes.
 
 Full dependency audit remains nonzero as described above. The PostgreSQL 17.6 runtime baseline is another open security finding. Neither was concealed by an automatic downgrade, unreviewed image override or relaxed checks. Browser execution emitted non-failing Next closed-stream and terminal-color diagnostics; assertions still passed and no retries were enabled.
