@@ -1,6 +1,6 @@
 # Phase 5 execution record
 
-Status: implementation and acceptance checks passed on 2026-10-01. On 2026-10-04, final fixture cleanup is blocked by an unresponsive Docker daemon. Phase 6 has not started.
+Status: complete on 2026-10-05. Implementation and browser acceptance passed on October 1; Docker recovery, final fixture cleanup and database verification passed on October 5.
 
 ## Scope
 
@@ -34,7 +34,7 @@ A first post-recovery browser run failed at the offline-generation invocation. I
 
 A later full browser run identified the recurring generation failure as HTTP 546, with a CPU hard-limit shutdown in the reference Edge logs. The local runtime was reusing workers under the pinned CLI default `per_worker`. The configuration now explicitly selects the documented development policy `oneshot` without raising resource limits or disabling security checks. Runtime inspection verified Edge v1.76.2 running `--policy=oneshot`; startup verified loopback bindings. All six browser scenarios then passed without generation retries. The pinned per-request supervisor still enforces CPU, memory and wall-clock limits. This establishes local acceptance, not hosted load capacity.
 
-Remaining closeout: remove synthetic Auth fixtures with a reference reset and rerun database checks after Docker recovery. Story/Storage browser cleanup completed in the successful suite. On October 4, a bounded Docker container-list call timed out. The guarded reset subsequently passed readiness but failed with `ContainerRemoveError`: Docker could not kill the reference database container and received no exit event. No schema reset or subsequent database checks completed in that attempt. Docker Desktop recovery is required. No other project was stopped or reset. The verified implementation is saved in a local commit; Phase 6 remains gated until the remaining local closeout succeeds.
+Final closeout passed on October 5 after the user's Docker restart. An initial restart attempt found port 55321 occupied by the reference gateway in a partial stack. A reference-only stop (retaining volumes), core start and reset then succeeded. All 299 database assertions passed again; lint was clean, types matched, and advisors returned only the intentional deny-all worker-key INFO. All eight reference services were running, all available health probes were healthy, and actual network/port bindings passed the loopback validator. Edge still used `oneshot`. The database contained only the two synthetic seed users and three seed stories, with zero Storage objects. Private recovery logs were removed. Other projects were untouched. This resolves the October 4 `ContainerRemoveError` closeout blocker and opens Phase 6.
 
 ## Security boundaries and next phase
 
