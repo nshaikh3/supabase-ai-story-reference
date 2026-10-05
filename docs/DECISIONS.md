@@ -103,3 +103,9 @@ Realtime caches authorization until a new JWT, rejoin or token expiry. UI cleanu
 ## ADR-019: Explicit local Edge worker lifecycle
 
 Use `edge_runtime.policy = "oneshot"` for this local reference. CLI 2.118.0 defaults to `per_worker`; repeated mock browser invocations exposed CPU-limit shutdowns under worker reuse. The official CLI guide recommends `oneshot` for development. Explicit configuration avoids relying on the differing documented/default value and keeps each request's CPU budget independent. It does not raise resource limits, disable JWT checks, retry failed generation invisibly or validate hosted capacity. Production worker reuse and load testing remain separate deployment decisions.
+
+## ADR-020: Measured RLS review and explicit audit findings
+
+Measure the checked-in SELECT shapes with actual authenticated RLS and normal planner settings on a bounded synthetic dataset. Roll back all fixtures and verify cleanup. Preserve plans and context; avoid brittle elapsed-time assertions or forcing index usage. Existing indexes serve selective queries; deep offset pagination motivates a later cursor change rather than another index. Do not alter managed Realtime structures to improve an incorrectly broad benchmark.
+
+Treat startup stdout and stderr as credential-bearing. Capture/discard both and emit only fixed status information; token-shaped redaction alone cannot cover signing or S3 secrets. Keep known unpatched development dependencies and the database patch baseline visible in the audit, and avoid an incompatible automatic major downgrade. Local verification can establish behavior while deployment approval remains gated on these open findings and human review.

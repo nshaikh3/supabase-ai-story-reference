@@ -62,6 +62,10 @@ describe("local development boundary", () => {
     expect(() => validateConfig({ ...config, edge_runtime: { ...config.edge_runtime, policy } })).toThrow("oneshot");
   });
   it("rejects arbitrary operations", () => expect(() => commandFor("push")).toThrow("Unknown"));
+  it.each(["--linked", "--db-url=postgres://remote", "--file=arbitrary.sql", "--workdir=/other"])("rejects performance overrides %s", flag => {
+    expect(commandFor("performance").slice(0, 1)).toEqual(["--workdir"]);
+    expect(() => commandFor("performance", [flag])).toThrow("Extra arguments");
+  });
   const container = (ip: string) => ({ Name: "/supabase_db_supabase-ai-story-reference", NetworkSettings: { Networks: { [networkId]: {} }, Ports: { "5432/tcp": [{ HostIp: ip, HostPort: "55322" }] } } });
   it("accepts actual loopback bindings", () => expect(() => validateBindings([container("127.0.0.1")])).not.toThrow());
   it.each(["0.0.0.0", "::", ""])("rejects all-interface binding %s", ip => expect(() => validateBindings([container(ip)])).toThrow("loopback"));

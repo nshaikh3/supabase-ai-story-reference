@@ -52,3 +52,9 @@ Storage SELECT/INSERT/DELETE require the private bucket, the current user's firs
 `enqueue_generation(story_id)` serializes on the owned story, returns an existing active job, marks expired work interrupted, and allows at most three attempts. Completed stories cannot regenerate. `claim_generation(job_id,provider)` changes an owned unexpired queued job once. `finish_generation(job_id,pages,error_code)` validates and atomically publishes five sequential pages or records an allowlisted failure. Claim/finish require both owner identity and the Edge worker capability. Public wrappers are invokers; private helpers have reviewed definer elevation, empty search paths and explicit grants. See ADR-014 for the private capability table and local provisioning.
 
 Direct status/page/job writes remain prohibited. Input changes are rejected while queued/generating and after completion; failed inputs may be edited. Deleting a story cascades its jobs and pages. A deleted, completed or expired job cannot accept a late result. This transaction boundary covers Postgres writes, not provider delivery or Storage operations.
+
+## Phase 6 measurement
+
+`npm run db:performance` runs a fixed local-only workload with 10,000 fictional stories and related rows, normal planner settings and the actual authenticated RLS role, then verifies fixture rollback. [Full results and limits](PERFORMANCE.md) show selective queries using existing indexes, with deep offset pagination doing more scan/sort work than the cursor comparison. No schema, policy, index or generated-type change was warranted. A temporary invoker-only EXPLAIN helper exists only inside the rolled-back measurement transaction.
+
+The measured runtime is PostgreSQL 17.6. A supported Supabase CLI/image patch upgrade is an open [security audit finding](SECURITY-AUDIT.md), requiring a fresh complete regression run before hosting.

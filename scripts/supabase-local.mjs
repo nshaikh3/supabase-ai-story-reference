@@ -3,6 +3,7 @@ import { createServer } from "node:net";
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { delimiter, isAbsolute, join } from "node:path";
 import { commandFor, loadConfig, localEnvironment, networkId, root, validateBindings } from "./local-config.mjs";
+import { runPrivateCli } from "./private-cli.mjs";
 
 const action = process.argv[2];
 const starting = action === "start" || action === "start-core";
@@ -39,6 +40,11 @@ try {
     process.exit(0);
   }
   requireLocalDocker();
+  if (action === "performance") {
+    const { reviewPerformance } = await import("./performance-local.mjs");
+    reviewPerformance();
+    process.exit(0);
+  }
   const { ensureGenerationEnvironment, provisionGenerationWorker } = await import("./generation-local.mjs");
   if (action === "generation-setup") { provisionGenerationWorker(); process.exit(0); }
   if (starting) ensureGenerationEnvironment();
@@ -62,7 +68,9 @@ try {
   const resolvedDocker = spawnSync("which", ["docker"], { encoding: "utf8", timeout: 5000 });
   const dockerBinary = resolvedDocker.stdout?.trim();
   if (resolvedDocker.status !== 0 || !isAbsolute(dockerBinary ?? "")) throw new Error("Cannot resolve the local Docker CLI.");
-  const result = spawnSync(join(root, "node_modules/.bin/supabase"), args, {
+  if (starting) console.log("Starting reference services; credential-bearing CLI output is withheld. First startup may take several minutes.");
+  const run = starting ? runPrivateCli : spawnSync;
+  const result = run(join(root, "node_modules/.bin/supabase"), args, {
     cwd: root,
     env: {
       ...localEnvironment(process.env),

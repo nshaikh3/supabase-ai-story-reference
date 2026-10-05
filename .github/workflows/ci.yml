@@ -15,6 +15,7 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+      - run: npm audit --omit=dev --audit-level=high
       - run: npm run supabase:start:core
       - run: npm run local:env
       - run: npm run db:reset
@@ -25,6 +26,7 @@ jobs:
       - run: npm run check
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
+      - run: npm run db:performance
       - run: npm run db:reset && npm run db:test
       - if: always()
         run: npm run supabase:stop

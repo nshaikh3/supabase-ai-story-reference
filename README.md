@@ -2,13 +2,15 @@
 
 A small reference application exploring secure story workflows with Supabase and Next.js.
 
-[Architecture](docs/ARCHITECTURE.md) · [Security](docs/SECURITY.md) · [Database](docs/DATABASE.md) · [Phase status](docs/PHASE-5.md)
+[Architecture](docs/ARCHITECTURE.md) · [Security](docs/SECURITY.md) · [Database](docs/DATABASE.md) · [Phase status](docs/PHASE-6.md)
 
 ## Current scope
 
 Phases 1–5 provide an isolated local database, migrations, synthetic fixtures, generated types, automated tests, email/password authentication and private live story updates. Selected generic components and tooling were reused from an existing application with the owner's authorization; see the [reuse manifest](docs/REUSE-MANIFEST.json).
 
 Sign-up, email confirmation, sign-in/out, password recovery and a protected account page are implemented. The owner dashboard, story editor, deletion and private hero-image uploads are implemented. Protected generation jobs run through an authenticated Edge Function with mock generation and optional Gemini. Private Realtime Broadcast updates open story tabs and reconciles missed events after reconnecting; see the phase record for verification status. There is no deployed public demo yet.
+
+Phase 6 adds security regression coverage and a repeatable authenticated query-plan review. See the [audit findings](docs/SECURITY-AUDIT.md) and [performance evidence](docs/PERFORMANCE.md). The database patch baseline, an unpatched development dependency advisory and deployment controls remain open; passing local tests is not production approval.
 
 ## Requirements
 
@@ -42,6 +44,8 @@ On a memory-constrained machine, `npm run supabase:start:core` starts the databa
 
 Local Edge Functions explicitly use the `oneshot` worker policy recommended for development. Each request gets its own worker; CPU and memory limits remain enforced. This avoids relying on the pinned CLI's different `per_worker` default, which produced cumulative CPU-limit shutdowns during local browser verification. Hosted worker reuse and capacity still require separate validation.
 
+Startup captures and discards CLI output because it contains privileged local credentials. It prints fixed progress/status messages instead. On failure, inspect only reference-container health; do not publish raw startup/status output or enable unreviewed debug logging.
+
 ## Verify
 
 ```bash
@@ -50,9 +54,13 @@ npm run db:lint
 npm run db:advisors
 npm run db:types:check
 npm run check
+npm run db:performance
+npm audit --omit=dev --audit-level=high
 ```
 
 Database tests run against Supabase Postgres using pgTAP. Role tests exercise actual grants and the separate RLS barrier: owner CRUD, cross-user denial, protected columns, parent-derived child reads, anonymous denial and forbidden child writes. Pages remain read-only. Owners can reserve and remove hero-image metadata, with matching private Storage policies and deletion guards. Real Storage API checks are part of the browser suite.
+
+`db:performance` uses fixed synthetic fixtures inside a rolled-back transaction and checks actual non-bypass `authenticated` visibility. It writes full plans to ignored `test-results/database-performance.json`; do not run it concurrently with browser tests or user work. See [measurement limits and results](docs/PERFORMANCE.md). Full `npm audit` currently reports the unpatched development glob advisory documented in the audit; the production-only check does not cover that development dependency.
 
 After editing SQL, reset the local database, run the database suite, regenerate types, and review the resulting diff. Create new migration filenames with `npx supabase migration new <name>`; do not rename existing applied migrations. Migrations are the source of truth.
 
@@ -117,7 +125,7 @@ This targets only `supabase-ai-story-reference` and retains local data. If Docke
 
 ## Development record
 
-- [Phase 1 results](docs/PHASE-1.md), [Phase 2 results](docs/PHASE-2.md), [Phase 3 results](docs/PHASE-3.md), [Phase 4 results](docs/PHASE-4.md), and [Phase 5 results](docs/PHASE-5.md)
+- [Phase 1 results](docs/PHASE-1.md), [Phase 2 results](docs/PHASE-2.md), [Phase 3 results](docs/PHASE-3.md), [Phase 4 results](docs/PHASE-4.md), [Phase 5 results](docs/PHASE-5.md), and [Phase 6 results](docs/PHASE-6.md)
 - [Decisions](docs/DECISIONS.md)
 - [AI-assisted development](docs/AI-DEVELOPMENT.md)
 - [Contribution notes](docs/CONTRIBUTION-NOTES.md)

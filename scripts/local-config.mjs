@@ -44,6 +44,7 @@ export function commandFor(action, extras = []) {
     "types-check": ["gen", "types", "--local", "--lang", "typescript", "--schema", "public"],
     check: [],
     "generation-setup": [],
+    performance: [],
     env: ["status", "--output", "json"],
     advisors: ["db", "advisors", "--local", "--type", "all", "--level", "info", "--fail-on", "error"],
   };

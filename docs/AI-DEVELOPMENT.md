@@ -50,4 +50,12 @@ Verification status and observed failures are recorded in PHASE-4.md. No live Ge
 
 AI assistance added the private status trigger and receive policy, cookie-compatible browser client, subscription lifecycle, cross-tab sign-out handling, and database/unit/browser coverage. No additional commercial files or dependencies were introduced. Official Supabase skills, Broadcast/authorization/SSR guidance, the installed Realtime helper definition and SDK source, and installed Next.js `useRouter` documentation informed the implementation. The four-field message shape includes the ID added by the pinned `realtime.send` function.
 
-Automated verification status and resolved failures are recorded in PHASE-5.md. Human review is not claimed. Phase 6 remains the dedicated security and Postgres/RLS performance review.
+Automated verification status and resolved failures are recorded in PHASE-5.md. Human review is not claimed. Phase 5's final cleanup and database checks passed on October 5 after the user's Docker restart.
+
+## Phase 6 work
+
+The user authorized the next phase after Phase 5 closeout. Codex reviewed application, SQL, local tooling and dependency boundaries; recorded findings before fixes; contained credential-bearing startup output and private-image dependency exceptions; and added regression tests plus a fixed local-only RLS performance workload. No additional commercial source, application feature, schema migration or dependency was introduced.
+
+Current official Supabase skills/changelog, RLS and EXPLAIN guidance, PostgreSQL security release notes, the braces advisory, installed Next.js route/error documentation and the exact Realtime v2.135.3 authorization source informed the review. The Realtime source corrected an exploratory topic-based benchmark to use actual generated probe IDs. Performance evidence uses synthetic rollback-only fixtures and explicitly distinguishes owner-role execution from administrator fixture setup.
+
+[PHASE-6.md](PHASE-6.md), [SECURITY-AUDIT.md](SECURITY-AUDIT.md) and [PERFORMANCE.md](PERFORMANCE.md) record results and limitations. The audit does not claim human approval, complete vulnerability coverage, production readiness or clean development dependencies. No hosted deployment or upstream issue was submitted.
