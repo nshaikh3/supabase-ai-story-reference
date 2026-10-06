@@ -35,7 +35,7 @@ Realtime authorization can remain cached until rejoin/new JWT/expiry, and local 
 
 ## Follow-up order
 
-Before hosting, resolve the database patch baseline; recheck the development advisory; select a deployment target and define Auth/abuse/privacy controls; implement storage reconciliation; then perform independent human review and hosted regression/load verification. Do not claim this audit grants production approval. Phase 7 should prepare that reviewed deployment plan; it has not started.
+Before hosting, resolve the database patch baseline; recheck the development advisory; select a deployment target and define Auth/abuse/privacy controls; implement storage reconciliation; then perform independent human review and hosted regression/load verification. Do not claim this audit grants production approval. Phase 7's [deployment preparation](DEPLOYMENT.md) maps these findings to explicit release criteria without closing them. Its [execution record](PHASE-7.md) reports fresh local verification separately from this audit baseline.
 
 ## Primary references
 

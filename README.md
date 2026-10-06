@@ -1,8 +1,18 @@
 # Supabase AI Story Reference
 
-A small reference application exploring secure story workflows with Supabase and Next.js.
+A small multi-tenant story application demonstrating Supabase Auth, Postgres/RLS, private Storage, authenticated Edge generation and private Realtime Broadcast with Next.js.
 
-[Architecture](docs/ARCHITECTURE.md) · [Security](docs/SECURITY.md) · [Database](docs/DATABASE.md) · [Phase status](docs/PHASE-6.md)
+**Demo:** [run locally](#local-setup); no public deployment yet. **Source:** this repository; a public remote has not been configured.
+
+[Reviewer tour](docs/REVIEWER-GUIDE.md) · [Architecture](docs/ARCHITECTURE.md) · [Security model](docs/SECURITY.md) · [Database](docs/DATABASE.md) · [Deployment preparation](docs/DEPLOYMENT.md) · [Phase status](docs/PHASE-7.md)
+
+![A synthetic Nova story with private live updates, generation history and five completed pages](docs/images/story-workspace.png)
+
+*Actual local browser-test capture using fictional text and the deterministic mock provider. No customer content, credentials or commercial assets.*
+
+## Why this exists
+
+This reference makes Noor Shaikh's hands-on software/product work inspectable alongside his consulting and technical program background. The emphasis is on decisions, ownership boundaries, failure handling and reproducible evidence. It is deliberately smaller than a commercial story product and is not a copy of its proprietary features.
 
 ## Current scope
 
@@ -11,6 +21,17 @@ Phases 1–5 provide an isolated local database, migrations, synthetic fixtures,
 Sign-up, email confirmation, sign-in/out, password recovery and a protected account page are implemented. The owner dashboard, story editor, deletion and private hero-image uploads are implemented. Protected generation jobs run through an authenticated Edge Function with mock generation and optional Gemini. Private Realtime Broadcast updates open story tabs and reconciles missed events after reconnecting; see the phase record for verification status. There is no deployed public demo yet.
 
 Phase 6 adds security regression coverage and a repeatable authenticated query-plan review. See the [audit findings](docs/SECURITY-AUDIT.md) and [performance evidence](docs/PERFORMANCE.md). The database patch baseline, an unpatched development dependency advisory and deployment controls remain open; passing local tests is not production approval.
+
+Phase 7 supplies the reviewer walkthrough, architecture/security handoff and a staged deployment runbook. Hosted configuration and launch controls are explicitly pending. The app and tooling still reject hosted targets; the runbook does not authorize publication. See [Phase 7's execution record](docs/PHASE-7.md) for its actual checks.
+
+| Capability | Inspectable implementation / evidence |
+| --- | --- |
+| Auth and sessions | [SSR client](src/lib/supabase/server.ts), fixed PKCE callback, recovery and [browser flows](tests/e2e/auth.spec.mts) |
+| Postgres and tenancy | [Versioned migrations](supabase/migrations), explicit column grants, parent-derived RLS and [actual-role tests](supabase/tests/database/authorization.test.sql) |
+| Private images | [Storage policies](supabase/migrations/20260929041425_add_private_story_storage.sql), bounded decoding and [authenticated byte route](src/app/assets/[id]/route.ts) |
+| Controlled generation | [Edge handler](supabase/functions/generate-story/handler.ts), caller JWT plus worker capability, leases and atomic five-page completion |
+| Live progress | [Private receive policy](supabase/migrations/20260930142245_add_private_generation_broadcast.sql), [reconnect/session lifecycle](src/lib/stories/realtime.ts), no interval polling |
+| Engineering evidence | [Security audit](docs/SECURITY-AUDIT.md), [query plans](docs/PERFORMANCE.md), [decisions](docs/DECISIONS.md), [AI/reuse provenance](docs/AI-DEVELOPMENT.md) |
 
 ## Requirements
 
@@ -61,6 +82,8 @@ npm audit --omit=dev --audit-level=high
 Database tests run against Supabase Postgres using pgTAP. Role tests exercise actual grants and the separate RLS barrier: owner CRUD, cross-user denial, protected columns, parent-derived child reads, anonymous denial and forbidden child writes. Pages remain read-only. Owners can reserve and remove hero-image metadata, with matching private Storage policies and deletion guards. Real Storage API checks are part of the browser suite.
 
 `db:performance` uses fixed synthetic fixtures inside a rolled-back transaction and checks actual non-bypass `authenticated` visibility. It writes full plans to ignored `test-results/database-performance.json`; do not run it concurrently with browser tests or user work. See [measurement limits and results](docs/PERFORMANCE.md). Full `npm audit` currently reports the unpatched development glob advisory documented in the audit; the production-only check does not cover that development dependency.
+
+`npm run check` includes `npm run docs:check`, unit tests, TypeScript, lint and production build. The documentation check validates repository Markdown links/anchors and documented npm commands offline; it does not validate external sites or prove deployment readiness. CI runs the same local workflow in [.github/workflows/ci.yml](.github/workflows/ci.yml); no hosted CI success is claimed until an actual run is recorded.
 
 After editing SQL, reset the local database, run the database suite, regenerate types, and review the resulting diff. Create new migration filenames with `npx supabase migration new <name>`; do not rename existing applied migrations. Migrations are the source of truth.
 
@@ -123,9 +146,15 @@ npm run supabase:stop
 
 This targets only `supabase-ai-story-reference` and retains local data. If Docker is unresponsive, inspect Docker Desktop before retrying; do not use a global prune/reset as a recovery shortcut.
 
+## Deployment and next work
+
+The proposed target is Vercel plus a new, dedicated hosted Supabase project. [DEPLOYMENT.md](docs/DEPLOYMENT.md) specifies environment ownership, the exact code gaps, staging acceptance, secrets provisioning, release order, rollback and recovery. No project reference/domain or public deployment is configured. The current local guard is intentional; do not replace it with arbitrary hosted URL acceptance.
+
+The next implementation priorities are the runtime patch baseline, hosted configuration and test harness, account/global abuse controls, Storage reconciliation, and independent review. Cursor pagination is a measured improvement for larger libraries. User-facing MCP remains an optional later evaluation, separate from privileged local development tooling. Real Gemini and real child-data use are not validated by the mock demo.
+
 ## Development record
 
-- [Phase 1 results](docs/PHASE-1.md), [Phase 2 results](docs/PHASE-2.md), [Phase 3 results](docs/PHASE-3.md), [Phase 4 results](docs/PHASE-4.md), [Phase 5 results](docs/PHASE-5.md), and [Phase 6 results](docs/PHASE-6.md)
+- [Phase 1 results](docs/PHASE-1.md), [Phase 2 results](docs/PHASE-2.md), [Phase 3 results](docs/PHASE-3.md), [Phase 4 results](docs/PHASE-4.md), [Phase 5 results](docs/PHASE-5.md), [Phase 6 results](docs/PHASE-6.md), and [Phase 7 results](docs/PHASE-7.md)
 - [Decisions](docs/DECISIONS.md)
 - [AI-assisted development](docs/AI-DEVELOPMENT.md)
 - [Contribution notes](docs/CONTRIBUTION-NOTES.md)

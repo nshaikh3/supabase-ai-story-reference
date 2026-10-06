@@ -13,7 +13,7 @@ export default function Home() {
     <main className="mx-auto max-w-6xl px-6 py-8 sm:px-10">
       <nav aria-label="Main" className="flex flex-wrap items-center justify-between gap-4 border-b pb-6">
         <a className="font-semibold tracking-tight" href="#">Supabase AI Story Reference</a>
-        <span className="rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground">Phase 5 · Private live updates</span>
+        <span className="rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground">Local reference · Mock AI</span>
       </nav>
       <section className="max-w-3xl py-20 sm:py-28">
         <p className="mb-5 text-sm font-semibold uppercase tracking-widest text-primary">Small stories. Thoughtful architecture.</p>
@@ -33,8 +33,8 @@ export default function Home() {
         ))}
       </section>
       <section id="next" className="my-16 grid gap-5 border-y py-10 sm:grid-cols-2">
-        <h2 className="text-2xl font-semibold tracking-tight">A foundation, ready to grow.</h2>
-        <p className="leading-relaxed text-muted-foreground">Create your account, draft stories, upload private hero illustrations, and generate a five-page story with the free mock provider. Live progress is next.</p>
+        <h2 className="text-2xl font-semibold tracking-tight">From an idea to a five-page adventure.</h2>
+        <p className="leading-relaxed text-muted-foreground">Create your account, draft stories, upload private hero illustrations, and generate a five-page story with the free mock provider. Private live updates keep your open story tabs in sync. Use fictional names and synthetic illustrations for this local demo.</p>
       </section>
       <footer className="pb-6 text-sm text-muted-foreground">Next.js · PostgreSQL · Supabase · TypeScript</footer>
     </main>

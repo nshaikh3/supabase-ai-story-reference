@@ -66,7 +66,7 @@ Storage preflight authorization and completion span separate transactions (verif
 
 ## Future decisions
 
-Production object reconciliation/quotas and private Broadcast authorization require explicit decisions in their implementation phases. No paid AI API is needed for mock generation.
+Production object reconciliation and quotas remain open. Private Broadcast authorization is now recorded in ADR-017 and ADR-018. No paid AI API is needed for mock generation.
 
 ## ADR-014: Caller authorization plus a narrow worker capability
 
@@ -109,3 +109,11 @@ Use `edge_runtime.policy = "oneshot"` for this local reference. CLI 2.118.0 defa
 Measure the checked-in SELECT shapes with actual authenticated RLS and normal planner settings on a bounded synthetic dataset. Roll back all fixtures and verify cleanup. Preserve plans and context; avoid brittle elapsed-time assertions or forcing index usage. Existing indexes serve selective queries; deep offset pagination motivates a later cursor change rather than another index. Do not alter managed Realtime structures to improve an incorrectly broad benchmark.
 
 Treat startup stdout and stderr as credential-bearing. Capture/discard both and emit only fixed status information; token-shaped redaction alone cannot cover signing or S3 secrets. Keep known unpatched development dependencies and the database patch baseline visible in the audit, and avoid an incompatible automatic major downgrade. Local verification can establish behavior while deployment approval remains gated on these open findings and human review.
+
+## ADR-021: Separate deployment preparation from release
+
+Phase 7 completes the reviewer documentation and prepares a Vercel/Next.js plus dedicated Supabase handoff, following the brief's proposed target. It does not provision resources, publish the source or claim a hosted demo. The selected organization, project, domain, budget, license and release owner are still unknown. Keep exact local application/tooling guards until an explicitly approved hosted configuration path is implemented with negative tests. Never repurpose the commercial project.
+
+Treat Next.js builds, database migrations and Edge deployment as three independently verified release operations. Public Next.js configuration is fixed at build time; worker and provider secrets belong only to Edge, with a worker hash provisioned through a protected operator identity. Local fixtures and tests must not be redirected at hosted data. A separate scoped staging harness and synthetic identities are required.
+
+Open patch, dependency, abuse, cleanup and operational findings remain launch gates in [DEPLOYMENT.md](DEPLOYMENT.md). An offline documentation check verifies this repository's Markdown links, anchors and npm script names; it cannot validate external guidance, security or production readiness. Phase 8's optional user-facing MCP is a separate product decision after core readiness, not a consequence of enabling privileged local development tooling.

@@ -1,6 +1,6 @@
 # Supabase AI Story Reference
 
-Work in reviewed phases. Phase 1 is the local foundation; Phase 2 implements Auth and owner access; story UI and private Storage are Phase 3; generation jobs and authenticated Edge execution are Phase 4; private Realtime Broadcast is Phase 5; automated security regression tests and Postgres/RLS performance review are Phase 6.
+Work in reviewed phases. Phase 1 is the local foundation; Phase 2 implements Auth and owner access; story UI and private Storage are Phase 3; generation jobs and authenticated Edge execution are Phase 4; private Realtime Broadcast is Phase 5; automated security regression tests and Postgres/RLS performance review are Phase 6; documentation and deployment preparation are Phase 7. Phase 8 is only an optional user-facing MCP evaluation after the core is stable.
 Keep implementation and verification status explicit. Never claim a planned feature is complete.
 
 - Read current official Supabase Agent Skills (`supabase/agent-skills`, skills `supabase` and `supabase-postgres-best-practices`) and relevant official documentation before Supabase or SQL changes.
@@ -13,5 +13,6 @@ Keep implementation and verification status explicit. Never claim a planned feat
 - Record actual documentation friction in `docs/CONTRIBUTION-NOTES.md`, with reproducible evidence before proposing an upstream issue.
 - Review the installed Next.js documentation in `node_modules/next/dist/docs/` when changing framework-specific behavior.
 - Do not advance phases with failing or unexecuted required checks.
+- Keep deployment preparation distinct from launch. Follow `docs/DEPLOYMENT.md`; preserve local guards and never interpret a documented hosted command as authorization to publish or provision resources.
 
 Run only this project's local Docker stack. Do not stop, prune, reset, or remove other projects' containers or volumes.

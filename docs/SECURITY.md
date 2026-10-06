@@ -1,5 +1,13 @@
 # Security model
 
+## Threat model and release boundary
+
+Protect account sessions, private story inputs/outputs, illustration bytes, worker/provider credentials and bounded service resources. Relevant actors are an unauthenticated caller, a malicious authenticated owner guessing another owner's IDs, untrusted provider output, and a compromised developer/deployment identity. The last actor has control-plane privileges beyond application RLS; local tooling and future release credentials require their own protection.
+
+The browser, submitted IDs/MIME types, request headers and AI output are untrusted. Verified identity and database authorization decide access, including direct API calls that bypass Next.js. Storage and Realtime have separate authorization paths. A UI restriction, private staging website or provider prompt cannot substitute for those policies. An authorized user can still exhaust shared resources until account-wide and global controls exist.
+
+The implemented controls below support a local reference using fictional content. They do not establish public release readiness. [Deployment gates G7-01–08](DEPLOYMENT.md#required-work-and-acceptance-criteria) cover hosted configuration, patching, abuse controls, Storage reconciliation, Auth/privacy, worker provisioning and operational/human review. None is waived by completing documentation. Do not use real children's information or commercial data to demonstrate these boundaries.
+
 ## Identity and session boundary
 
 Phase 2 uses Supabase email/password Auth with email confirmation and PKCE. Sign-up and reset emails return to a fixed local callback, which exchanges the one-time code using the browser's verifier cookie. Links must be opened in the same browser. Invalid, expired, missing and reused codes produce a generic error. Request headers, form fields and `next` parameters cannot choose the redirect origin or destination.
@@ -41,13 +49,13 @@ Startup also captures both CLI output streams and discards them on success or fa
 
 MCP is privileged local development tooling, not end-user authentication. Core mode omits Studio, postgres-meta and MCP to reduce memory use. No hosted project is connected. Other projects' containers and data must not be stopped, pruned or reset by reference tooling.
 
-Fixtures use synthetic identities and fictional text. Browser tests generate random local credentials for `phase2-…@example.test` / `phase3-…@example.test` users and read only their own local test mailboxes; Auth traces, videos and screenshots are disabled. The story test writes explicit screenshots of fictional story content only, to ignored test-results/. A fresh reference DB reset removes generated test users. Mail is captured locally, not sent through production SMTP. No commercial environment files, customer data, prompts, payment code or assets were copied.
+Fixtures use synthetic identities and fictional text. Browser tests generate random local credentials for `phase2-…@example.test` / `phase3-…@example.test` users and read only their own local test mailboxes; Auth traces, videos and screenshots are disabled. The story test writes explicit screenshots of fictional story content only, to ignored test-results/. Phase 7 retains one individually reviewed fictional story screenshot in [docs/images](images/story-workspace.png) for the README; it contains no account details or credentials. A fresh reference DB reset removes generated test users. Mail is captured locally, not sent through production SMTP. No commercial environment files, customer data, prompts, payment code or assets were copied.
 
 Never log access tokens, keys, passwords, emails, child names, full prompts or generated outputs. Keep operational logs to identifiers, operation, duration and safe error codes. CLI status includes local privileged credentials, so do not paste its raw output into issues or public documentation.
 
 ## Verification boundaries
 
-Actual results are recorded in PHASE-2.md through PHASE-6.md. The [Phase 6 agent audit](SECURITY-AUDIT.md) records fixed findings and open dependency/runtime/deployment requirements. Human security review, hosted CI and production deployment remain unverified. Private object and channel authorization are covered by local tests. The full dependency audit is not clean: the unpatched development-only glob advisory remains documented separately from the passing production audit.
+Actual results are recorded in PHASE-2.md through [PHASE-7.md](PHASE-7.md). The [Phase 6 agent audit](SECURITY-AUDIT.md) records fixed findings and open dependency/runtime/deployment requirements. Human security review, hosted CI and production deployment remain unverified. Private object and channel authorization are covered by local tests. The full dependency audit is not clean: the unpatched development-only glob advisory remains documented separately from the passing production audit.
 
 ## Private images and cleanup
 

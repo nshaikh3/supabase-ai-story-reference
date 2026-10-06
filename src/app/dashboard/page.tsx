@@ -23,6 +23,6 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
       <CardContent><p className="break-words text-sm text-muted-foreground">Starring {story.child_name}</p><p className="mt-4 text-xs text-muted-foreground">Created {new Intl.DateTimeFormat("en", { dateStyle: "medium", timeZone: "UTC" }).format(new Date(story.created_at))}</p></CardContent>
     </Card>)}</div> : <Card><CardContent className="py-12 text-center"><h2 className="text-xl font-semibold">{page > 1 ? "No stories on this page" : "Your first adventure awaits"}</h2><p className="mt-3 text-muted-foreground">{page > 1 ? "Return to an earlier page to see your stories." : "Create a story, introduce your hero, and add an illustration."}</p></CardContent></Card>}
     {!error && (page > 1 || (data?.length ?? 0) > pageSize) && <nav aria-label="Story pages" className="mt-8 flex items-center gap-6 text-sm">{page > 1 && <Link href={`/dashboard?page=${page - 1}`} prefetch={false}>Previous page</Link>}<span>Page {page}</span>{(data?.length ?? 0) > pageSize && <Link href={`/dashboard?page=${page + 1}`} prefetch={false}>Next page</Link>}</nav>}
-    <p className="mt-10 text-sm leading-relaxed text-muted-foreground">Story drafts and private images are ready. AI story generation will arrive in the next phase.</p>
+    <p className="mt-10 text-sm leading-relaxed text-muted-foreground">Open a story to edit your draft, add a private illustration, or generate five pages. Open story tabs receive live progress updates.</p>
   </main>;
 }
