@@ -14,6 +14,11 @@ describe("image bytes and metadata", () => {
     const png = await sharp({ create: { width: 10, height: 10, channels: 3, background: "red" } }).png().toBuffer();
     for (const [bytes, type] of [[png, "image/jpeg"], [Buffer.from('<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"></svg>'), "image/png"], [Buffer.from("not an image"), "image/png"], [png.subarray(0, 40), "image/png"]] as const) await expect(normalizeImage(bytes, type)).rejects.toThrow();
   });
+  it("blocks the SVG decoder before metadata inspection", async () => {
+    const svg = Buffer.from('<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><rect width="10" height="10"/></svg>');
+    await expect(sharp(svg).metadata()).rejects.toThrow();
+    await expect(normalizeImage(svg, "image/png")).rejects.toThrow();
+  });
   it("bounds decompression dimensions", async () => {
     const huge = await sharp({ create: { width: 4001, height: 4001, channels: 3, background: "white" } }).png().toBuffer();
     await expect(normalizeImage(huge, "image/png")).rejects.toThrow();

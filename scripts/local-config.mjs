@@ -5,7 +5,7 @@ import { parse } from "smol-toml";
 
 export const root = fileURLToPath(new URL("../", import.meta.url));
 export const projectId = "supabase-ai-story-reference";
-// CLI 2.118.0 uses this name even when --network-id specifies another network.
+// Verified against CLI 2.119.0: it uses this name even when --network-id specifies another network.
 export const networkId = `supabase_network_${projectId}`;
 export const excludedServices = "imgproxy,logflare,vector,supavisor";
 

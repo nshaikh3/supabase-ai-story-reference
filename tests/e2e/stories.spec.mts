@@ -5,7 +5,7 @@ import { parseEnv } from "node:util";
 import { randomUUID } from "node:crypto";
 import sharp from "sharp";
 import { loadConfig } from "../../scripts/local-config.mjs";
-import { createSyntheticAccount } from "./helpers.mjs";
+import { createSyntheticAccount, seedHistoricalPaginationStories } from "./helpers.mjs";
 import type { Database } from "../../types/database";
 
 const api = "http://127.0.0.1:55321";
@@ -104,8 +104,11 @@ test("story CRUD, private byte access, cross-owner denial and recoverable upload
   await expect(page.getByLabel("Hero image", { exact: true })).toBeVisible();
   expect((await a.storage.from("story-assets").download(path)).error).not.toBeNull();
   expect((await a.from("assets").select("id").eq("id", reservation.id)).data).toEqual([]);
-  // An empty reservation (process stopped before upload) is removable too.
-  const { error: emptyError } = await a.from("assets").insert({ story_id: second.id, kind: "hero", storage_path: path, mime_type: "image/png" });
+  // Retired paths cannot be reused, including after successful byte cleanup.
+  expect((await a.from("assets").insert({ story_id: second.id, kind: "hero", storage_path: path, mime_type: "image/png" })).error?.code).toBe("23505");
+  // A fresh empty reservation (process stopped before upload) is removable too.
+  const emptyPath = `${alice.user.id}/${second.id}/${randomUUID()}.png`;
+  const { error: emptyError } = await a.from("assets").insert({ story_id: second.id, kind: "hero", storage_path: emptyPath, mime_type: "image/png" });
   expect(emptyError).toBeNull(); await page.reload();
   await page.getByRole("button", { name: "Remove hero image" }).click();
   await expect(page.getByLabel("Hero image", { exact: true })).toBeVisible();
@@ -123,14 +126,16 @@ test("story CRUD, private byte access, cross-owner denial and recoverable upload
   expect((await a.storage.from("story-assets").download(asset.storage_path)).error).not.toBeNull();
   expect((await page.request.get(`/assets/${asset.id}`)).status()).toBe(404);
 
-  // Pagination remains reachable beyond the Data API's default response limits.
-  const { data: fixtures, error: fixtureError } = await a.from("stories").insert(Array.from({ length: 21 }, (_, i) => ({ title: `Pagination fixture ${i}`, child_name: "Nova", prompt: "Fictional pagination test" }))).select("id");
-  expect(fixtureError).toBeNull(); await page.goto("/dashboard");
+  // A library accumulated across multiple days can exceed one 20-row page.
+  // Seed only this fresh synthetic identity through the guarded local operator;
+  // the 20/day Data API budget remains enforced and covered by database tests.
+  seedHistoricalPaginationStories(alice.user.id);
+  await page.goto("/dashboard");
   await expect(page.getByRole("link", { name: /^Pagination fixture/ })).toHaveCount(20);
   await page.getByRole("link", { name: "Next page" }).click();
   await expect(page.getByRole("link", { name: /^Pagination fixture/ })).toHaveCount(1);
   await expect(page.getByRole("link", { name: "Previous page" })).toBeVisible();
-  expect((await a.from("stories").delete().in("id", (fixtures ?? []).map(item => item.id))).error).toBeNull();
+  expect((await a.from("stories").delete().eq("owner_id", alice.user.id)).error).toBeNull();
   } finally {
     // Clean up bytes even when an assertion fails; DB reset alone is insufficient.
     const { data: leftovers, error } = await a.from("assets").select("storage_path");

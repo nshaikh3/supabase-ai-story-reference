@@ -6,6 +6,7 @@ import { requireUser } from "@/lib/auth/session";
 import { imageInputError, readStory, validId, type StoryState } from "@/lib/stories/validation";
 import { normalizeImage } from "@/lib/stories/image";
 import { removeStoryObjects, uploadReservedImage } from "@/lib/stories/storage";
+import { ImageAdmissionError, resourceError, withImageLease } from "@/lib/stories/resources";
 
 function refresh(id?: string) {
   revalidatePath("/dashboard");
@@ -19,7 +20,7 @@ export async function createStory(_state: StoryState, form: FormData): Promise<S
   if (input.error) return input;
   const { supabase } = await requireUser();
   const { data, error } = await supabase.from("stories").insert(input.values).select("id").single();
-  if (error || !data) return { ...input, error: "We couldn’t create your story. Please try again." };
+  if (error || !data) return { ...input, error: resourceError(error) ?? "We couldn’t create your story. Please try again." };
   refresh();
   redirect(`/stories/${data.id}`);
 }
@@ -30,7 +31,7 @@ export async function updateStory(id: string, _state: StoryState, form: FormData
   if (input.error) return input;
   const { supabase, user } = await requireUser();
   const { data, error } = await supabase.from("stories").update(input.values).eq("id", id).eq("owner_id", user.id).select("id").maybeSingle();
-  if (error || !data) return { ...input, error: unavailable };
+  if (error || !data) return { ...input, error: resourceError(error) ?? unavailable };
   refresh(id);
   return { values: input.values, message: "Story details saved." };
 }
@@ -44,8 +45,8 @@ export async function uploadHero(id: string, _state: StoryState, form: FormData)
   const fileError = imageInputError(file);
   if (fileError) return { error: fileError };
   let bytes: Buffer;
-  try { bytes = await normalizeImage(Buffer.from(await (file as File).arrayBuffer()), (file as File).type); }
-  catch { return { error: "We couldn’t read that image. Use a still PNG, JPEG, or WebP under 2 MiB and 16 megapixels." }; }
+  try { bytes = await withImageLease(supabase, id, async () => normalizeImage(Buffer.from(await (file as File).arrayBuffer()), (file as File).type)); }
+  catch (error) { return { error: error instanceof ImageAdmissionError ? error.message : "We couldn’t read that image. Use a still PNG, JPEG, or WebP under 2 MiB and 16 megapixels." }; }
   const result = await uploadReservedImage(supabase, id, user.id, bytes);
   refresh(id);
   return result;

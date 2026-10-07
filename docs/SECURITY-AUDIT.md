@@ -45,3 +45,13 @@ Before hosting, resolve the database patch baseline; recheck the development adv
 - [Supabase product security](https://supabase.com/docs/guides/platform/going-into-prod)
 - [RLS guidance](https://supabase.com/docs/guides/database/postgres/row-level-security)
 - [Realtime authorization](https://supabase.com/docs/guides/realtime/authorization)
+
+## October 6–7 local-hardening follow-up
+
+The table above is the historical Phase 6 assessment. Current changes are recorded in [LOCAL-HARDENING.md](LOCAL-HARDENING.md): S6-03 now has the supported CLI 2.119.0 / Postgres 17.11 local baseline; S6-05 has database account/service issuance and work limits; S6-06 has operator reconciliation with immutable path claims; S6-07 has nonce CSP, secure hosted configuration and invitation-only app signup. Provider-owned traffic/spend, SMTP, hosted verification and human review remain release requirements. Local rotation and separately guarded staging tools are described in [OPERATIONS.md](OPERATIONS.md).
+
+The source-map-js advisory discovered October 5 was fixed by the compatible 1.2.2 patch. October 6 production dependency audit reports zero findings. The full audit still reports five high package entries from the single unpatched braces 3.0.3 advisory; registry latest remains 3.0.3. No exception was granted and no incompatible downgrade applied.
+
+The October 7 audit newly reported [GHSA-wq5f-xc86-pv6w](https://github.com/advisories/GHSA-wq5f-xc86-pv6w) in Sharp's librsvg dependency. Applied the compatible Sharp 0.35.5 patch and blocked the SVG loader before metadata parsing. Rejecting SVG only after metadata inspection was insufficient to keep untrusted bytes out of that parser. A real decoder regression covers the earlier boundary; accepted PNG/JPEG/WebP normalization remains tested. This is a local mitigation and patch, not evidence that hosted binaries have been updated.
+
+The post-patch October 7 audit returned zero production advisories and the same five development package entries for braces. The registry still lists braces 3.0.3 as latest; the upstream finding remains open.

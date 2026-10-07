@@ -1,5 +1,6 @@
 import { expect, type Page, type APIRequestContext } from "@playwright/test";
 import { randomUUID } from "node:crypto";
+import { localOperator } from "../../scripts/operator-local.mjs";
 const api = "http://127.0.0.1:55321";
 const mail = "http://127.0.0.1:55324";
 export async function submitCredentials(page: Page, email: string, password: string, label: string) {
@@ -38,4 +39,28 @@ export async function createSyntheticAccount(page: Page, request: APIRequestCont
   const encoded = cookies.map(cookie => cookie.value).join("");
   if (!encoded.startsWith("base64-")) throw new Error("Unexpected local SSR session encoding");
   return JSON.parse(Buffer.from(encoded.slice(7), "base64url").toString()) as { access_token: string; user: { id: string } };
+}
+
+export function seedHistoricalPaginationStories(owner: string) {
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(owner)) throw new Error("Invalid synthetic fixture identity");
+  const operator = localOperator();
+  // Fixed local Docker target, fresh synthetic mailbox and empty library only.
+  // Historical fixture insertion does not change admission settings or counters.
+  operator.sql(`do $$ begin
+    if not exists(select 1 from auth.users where id='${owner}' and email ~ '^phase3-[0-9a-f-]{36}@example[.]test$' and created_at > now()-interval '10 minutes')
+      or exists(select 1 from public.stories where owner_id='${owner}') then
+      raise exception 'Refusing nonempty or non-synthetic pagination fixture';
+    end if;
+    insert into public.stories(owner_id,title,child_name,prompt,created_at)
+      select '${owner}', 'Pagination fixture '||n, 'Nova', 'Fictional pagination test', now()-interval '2 days'+n*interval '1 hour' from generate_series(0,20)n;
+  end $$;`);
+}
+
+export async function sessionDiagnostics(page: Page, request: APIRequestContext, key: string, token: string) {
+  // Values only: never return cookies, tokens, raw provider errors or query strings.
+  const cookies = await page.context().cookies();
+  let authStatus: number | string;
+  try { authStatus = (await request.get(`${api}/auth/v1/user`, { headers: { apikey: key, Authorization: `Bearer ${token}` }, timeout: 10_000 })).status(); }
+  catch { authStatus = "transport-failed"; }
+  return JSON.stringify({ path: new URL(page.url()).pathname, sessionChanged: new URL(page.url()).searchParams.get("message") === "session-changed", sessionCookieChunks: cookies.filter(cookie => /^sb-.*-auth-token(?:\.\d+)?$/.test(cookie.name)).length, authStatus });
 }

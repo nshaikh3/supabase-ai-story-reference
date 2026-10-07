@@ -2,6 +2,7 @@
 import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/auth/session";
 import { validId, type StoryState } from "@/lib/stories/validation";
+import { resourceError } from "@/lib/stories/resources";
 
 export async function generateStory(id: string): Promise<StoryState> {
   if (!validId(id)) return { error: "This story is unavailable." };
@@ -12,7 +13,7 @@ export async function generateStory(id: string): Promise<StoryState> {
     // third attempt. Refresh those committed states even without an Edge call.
     revalidatePath(`/stories/${id}`);
     revalidatePath("/dashboard");
-    return { error: "Generation is unavailable. A completed story cannot be regenerated, and each story allows three attempts." };
+    return { error: resourceError(error) ?? "Generation is unavailable. A completed story cannot be regenerated, and each story allows three attempts." };
   }
   let state: StoryState;
   try {

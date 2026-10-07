@@ -14,3 +14,6 @@ insert into public.story_pages(id, story_id, page_number, content, created_at) v
   ('cccccccc-cccc-4ccc-8ccc-ccccccccccc3', 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1', 3, 'When a green leaf appeared, Maya smiled. Even the smallest garden could begin with a little patience and a friend.', '2026-01-01T12:00:00Z');
 
 -- No asset metadata until actual private objects exist.
+
+-- Disposable local reference only; deployment never applies this seed.
+update private.resource_controls set initialized=true,writes_enabled=true,generation_enabled=true,uploads_enabled=true,images_enabled=true where singleton;

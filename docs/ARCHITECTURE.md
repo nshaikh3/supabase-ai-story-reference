@@ -22,7 +22,7 @@ flowchart LR
   Operator[Privileged local operator and CI] -.->|Migrations and fixture setup| DB
 ```
 
-The landing page remains static. Auth screens, account, dashboard, story pages and image responses render dynamically. Server Actions handle validated credentials; request-scoped SSR clients persist cookie sessions. Proxy verifies claims, refreshes cookies and prevents shared caching. Protected pages, mutation actions and the image route independently verify the current user with Auth before accessing data. No privileged credential is part of the application data path.
+All HTML, including the landing page, renders dynamically to receive a fresh CSP nonce and private/no-store policy. Image responses are dynamic too. Server Actions handle validated credentials; request-scoped SSR clients persist cookie sessions. Proxy verifies claims, refreshes cookies and prevents shared caching. Protected pages, mutation actions and the image route independently verify the current user with Auth before accessing data. No privileged credential is part of the application data path.
 
 RLS derives ownership through `auth.users -> stories -> story_pages/assets/generation_jobs`. Stories allow owner CRUD on their editable details; column grants reserve ownership and generated fields for server workflows. Pages are readable by the owner, with direct writes denied. Owners can reserve/delete immutable hero-image metadata. Story deletion removes Storage objects before cascading relational rows; a trigger blocks metadata deletion if a committed object still exists.
 
@@ -91,6 +91,14 @@ Authorization is checked on join/token refresh and cached by Realtime, not re-ev
 
 ## Deployment boundary and observability
 
-The proposed Vercel/Supabase topology has three independent lifecycles: Next.js build/deployment, versioned database migrations, and Edge code/secrets. No one rollback undoes all three. Browser public environment variables are build-time values; operator credentials and worker/provider secrets never enter that build. Staging and production must have separate approved targets and secrets. Current configuration and test scripts remain local-only; [DEPLOYMENT.md](DEPLOYMENT.md) lists the missing code, operations and evidence before hosting.
+The proposed Vercel/Supabase topology has three independent lifecycles: Next.js build/deployment, versioned database migrations, and Edge code/secrets. No one rollback undoes all three. Browser public environment variables are build-time values; operator credentials and worker/provider secrets never enter that build. Staging and production must have separate approved targets and secrets. Application configuration now validates explicit targets in the reviewed manifest, whose hosted entries remain null. Local scripts stay loopback-only; staging has a separate guarded harness. [DEPLOYMENT.md](DEPLOYMENT.md) lists the external operations and evidence still required before hosting.
 
 Use identifiers, durations, state transitions and safe error codes for operational evidence. Do not log credentials, headers, emails, prompts, names or generated pages. Reference tests and [query-plan evidence](PERFORMANCE.md) measure local behavior; hosted monitoring, restore testing and load/cost alerts remain planned.
+
+## Resource admission and recovery
+
+Private controls serialize short admission transactions. Trigger enforcement covers direct story/asset/job writes; invoker image RPCs enter owner-checked private helpers. UTC-window counters survive resource deletion, and execution leases survive story cascades so deleted work cannot immediately replenish concurrency. Expired counters/leases are removed by a protected maintenance command. A fixed operator can pause new work while reads/deletion/in-flight completion remain available.
+
+Each asset INSERT claims a once-only path registry entry; deletion retires it. Cleanup races through the same unique registry before rechecking old orphan identity and deleting bytes through Storage APIs. Managed metadata remains read-only to cleanup. App image decoding also acquires a bounded lease and network deadline. See [OPERATIONS.md](OPERATIONS.md) for concrete limits and failure recovery.
+
+Nonce CSP requires dynamic rendering of every document, including the landing page. All document responses are private/no-store; the nonce is passed through request headers for Next SSR and independently returned in the response policy. The tradeoff is no static HTML/CDN cache for this small reference. Static scripts/styles can still be cached.

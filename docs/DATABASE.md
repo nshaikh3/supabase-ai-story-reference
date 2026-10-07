@@ -57,7 +57,7 @@ Direct status/page/job writes remain prohibited. Input changes are rejected whil
 
 `npm run db:performance` runs a fixed local-only workload with 10,000 fictional stories and related rows, normal planner settings and the actual authenticated RLS role, then verifies fixture rollback. [Full results and limits](PERFORMANCE.md) show selective queries using existing indexes, with deep offset pagination doing more scan/sort work than the cursor comparison. No schema, policy, index or generated-type change was warranted. A temporary invoker-only EXPLAIN helper exists only inside the rolled-back measurement transaction.
 
-The measured runtime is PostgreSQL 17.6. A supported Supabase CLI/image patch upgrade is an open [security audit finding](SECURITY-AUDIT.md), requiring a fresh complete regression run before hosting.
+The original Phase 6 measurement used PostgreSQL 17.6. The supported local runtime is now PostgreSQL 17.11 via CLI 2.119.0; updated evidence is recorded in [LOCAL-HARDENING.md](LOCAL-HARDENING.md).
 
 ## Migration handoff and recovery
 
@@ -74,6 +74,12 @@ Phase 7 adds no migration or schema change. A future deployment must review and 
 
 Keep applied migrations immutable; author later changes through the CLI and review grants/RLS with each exposed change. Compare remote migration history and a dry run before applying anything. Do not send the local seed, browser fixtures, reset operation or synthetic performance workload to a hosted database. Generated types must reflect the reviewed migrations, not an unrelated project's schema.
 
-The worker-key table intentionally has no client policy. Migrations create its structure; a separately authorized operator provisions the environment-specific SHA-256 hash. The raw capability belongs only in the Edge secret store. The current setup script is local-only, so [hosted provisioning](DEPLOYMENT.md#required-work-and-acceptance-criteria) still needs implementation and tests.
+The worker-key table intentionally has no client policy. Migrations create its structure; a separately authorized operator provisions the environment-specific SHA-256 hash. The raw capability belongs only in the Edge secret store. The local setup/rotation tools and protected hosted material preparation are described in [OPERATIONS.md](OPERATIONS.md); applying and verifying that material on hosted resources remains a separate release operation.
 
 Database rollback and object-byte recovery are separate concerns. SQL cascades cannot remove or restore Storage bytes; use Storage APIs and a tested object backup process. Follow the [deployment recovery plan](DEPLOYMENT.md#rollback-recovery-and-incident-response), preserve backward compatibility where possible, and never use a reset as hosted rollback.
+
+## Local hardening migration
+
+The seventh CLI-created migration, [20261006133227_add_resource_admission_and_reconciliation.sql](../supabase/migrations/20261006133227_add_resource_admission_and_reconciliation.sql), adds private controls, fixed-window counters, independent image/provider leases and immutable path retirement. It installs trigger admission and two owner-scoped invoker image RPCs, preserving explicit grants and all existing owner RLS. Fresh migrations leave admission disabled. Only the disposable local seed enables it automatically; hosted operators must review/enable explicitly.
+
+The generated public types include `admit_image_processing` and `release_image_processing`. Private operators never write managed Storage object metadata. [Resource tests](../supabase/tests/database/resources.test.sql) cover quotas, pauses, direct authorization and path retirement; `npm run db:concurrency` checks four simultaneous authenticated transactions at an account boundary. See [OPERATIONS.md](OPERATIONS.md) for maintenance and deployment limits.

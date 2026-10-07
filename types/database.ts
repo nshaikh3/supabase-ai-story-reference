@@ -172,6 +172,12 @@ export type Database = {
             [_ in never]: never;
         };
         Functions: {
+            "admit_image_processing": {
+                Args: {
+                    "p_story_id": string;
+                };
+                Returns: string;
+            };
             "claim_generation": {
                 Args: {
                     "p_job_id": string;
@@ -192,6 +198,12 @@ export type Database = {
                     "p_pages"?: Json;
                 };
                 Returns: boolean;
+            };
+            "release_image_processing": {
+                Args: {
+                    "p_lease_id": string;
+                };
+                Returns: undefined;
             };
         };
         Enums: {

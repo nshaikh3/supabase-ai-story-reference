@@ -39,3 +39,9 @@ This does not measure network/SSR/Storage transform cost, provider latency, cold
 - [Official Supabase Postgres skills](https://github.com/supabase/agent-skills/tree/main/skills/supabase-postgres-best-practices): RLS InitPlans, composite indexes and EXPLAIN guidance.
 - [PostgreSQL EXPLAIN](https://www.postgresql.org/docs/17/using-explain.html)
 - [Pinned Realtime authorization source](https://github.com/supabase/realtime/blob/v2.135.3/lib/realtime/tenants/authorization.ex)
+
+## October 6 runtime and hardening follow-up
+
+The [Postgres 17.11 snapshot](evidence/hardening-performance.json) reruns the same 11 authenticated query shapes after the supported CLI upgrade and resource migration. Row visibility and rollback checks passed. The laptop was also compiling the application during this sample; do not compare its elapsed timings to the isolated Phase 6 sample as a latency regression benchmark. Existing indexed selective queries remain bounded; deep offset still performs more work.
+
+The application now limits each owner to 50 stored stories. The privileged synthetic workload intentionally exceeds that capacity to review query plans; every measured SELECT still runs as `authenticated` under RLS. Cursor pagination remains an optional change if the product later raises its library limit, rather than a missing feature for the current bounded reference.

@@ -27,6 +27,7 @@ export async function signUp(_previous: AuthState, form: FormData): Promise<Auth
   const password = readPassword(form);
   if (!email || !password) return { error: "Enter a valid email and a password with 10–128 characters." };
   try {
+    if (!getSupabaseConfig().signupAllowed) return { error: "This reference workspace is invitation-only. Contact the project maintainer for access." };
     const supabase = await createClient();
     const { appUrl } = getSupabaseConfig();
     const { error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: `${appUrl}/auth/callback` } });

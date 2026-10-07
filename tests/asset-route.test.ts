@@ -1,5 +1,6 @@
+vi.mock("server-only", () => ({}));
 import { beforeEach, describe, expect, it, vi } from "vitest";
-const mocks = vi.hoisted(() => ({ client: vi.fn(), user: vi.fn(), from: vi.fn(), select: vi.fn(), eq: vi.fn(), asset: vi.fn(), bucket: vi.fn(), download: vi.fn(), normalize: vi.fn() }));
+const mocks = vi.hoisted(() => ({ client: vi.fn(), user: vi.fn(), from: vi.fn(), select: vi.fn(), eq: vi.fn(), asset: vi.fn(), bucket: vi.fn(), download: vi.fn(), normalize: vi.fn(), rpc: vi.fn() }));
 vi.mock("@/lib/supabase/server", () => ({ createClient: mocks.client }));
 vi.mock("@/lib/stories/image", () => ({ normalizeImage: mocks.normalize }));
 import { GET } from "@/app/assets/[id]/route";
@@ -16,14 +17,15 @@ function privateHeaders(response: Response) {
 }
 beforeEach(() => {
   vi.resetAllMocks();
-  mocks.client.mockResolvedValue({ auth: { getUser: mocks.user }, from: mocks.from, storage: { from: mocks.bucket } });
+  mocks.client.mockResolvedValue({ auth: { getUser: mocks.user }, from: mocks.from, rpc: mocks.rpc, storage: { from: mocks.bucket } });
   mocks.user.mockResolvedValue({ data: { user: { id } }, error: null });
   mocks.from.mockReturnValue({ select: mocks.select });
   mocks.select.mockReturnValue({ eq: mocks.eq });
   mocks.eq.mockReturnValue({ maybeSingle: mocks.asset });
-  mocks.asset.mockResolvedValue({ data: { storage_path: path, mime_type: "image/webp" }, error: null });
+  mocks.asset.mockResolvedValue({ data: { story_id: id, storage_path: path, mime_type: "image/webp" }, error: null });
   mocks.bucket.mockReturnValue({ download: mocks.download });
   mocks.download.mockResolvedValue({ data: new Blob(["raw-upload"]), error: null });
+  mocks.rpc.mockReturnValue({ abortSignal: () => Promise.resolve({ data: "lease-id", error: null }) });
   mocks.normalize.mockResolvedValue(Buffer.from("normalized-pixels"));
 });
 describe("private image response boundary", () => {

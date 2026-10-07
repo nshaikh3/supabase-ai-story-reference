@@ -66,7 +66,7 @@ Storage preflight authorization and completion span separate transactions (verif
 
 ## Future decisions
 
-Production object reconciliation and quotas remain open. Private Broadcast authorization is now recorded in ADR-017 and ADR-018. No paid AI API is needed for mock generation.
+Local reconciliation and resource admission are now recorded in ADR-022; hosted execution and provider traffic/spend controls remain open. Private Broadcast authorization is now recorded in ADR-017 and ADR-018. No paid AI API is needed for mock generation.
 
 ## ADR-014: Caller authorization plus a narrow worker capability
 
@@ -117,3 +117,11 @@ Phase 7 completes the reviewer documentation and prepares a Vercel/Next.js plus 
 Treat Next.js builds, database migrations and Edge deployment as three independently verified release operations. Public Next.js configuration is fixed at build time; worker and provider secrets belong only to Edge, with a worker hash provisioned through a protected operator identity. Local fixtures and tests must not be redirected at hosted data. A separate scoped staging harness and synthetic identities are required.
 
 Open patch, dependency, abuse, cleanup and operational findings remain launch gates in [DEPLOYMENT.md](DEPLOYMENT.md). An offline documentation check verifies this repository's Markdown links, anchors and npm script names; it cannot validate external guidance, security or production readiness. Phase 8's optional user-facing MCP is a separate product decision after core readiness, not a consequence of enabling privileged local development tooling.
+
+## ADR-022: Finish local safeguards while keeping deployment separate
+
+The user explicitly authorized all remaining local implementation after Phase 7. Use an allowlisted target manifest, secure hosted cookies, invitation-only hosted signup and dynamic nonce CSP while retaining local CLI isolation. Keep deployment entries unconfigured until selected and reviewed. Upgrade the supported CLI/image baseline instead of overriding managed images.
+
+Enforce resource budgets in Postgres triggers/private helpers, with fixed UTC windows and account/service concurrency leases. The global admission row trades throughput for a simple auditable bound appropriate to a small reference; no network I/O happens under that lock. Retain issuance charges and active execution leases after story deletion. Use an immutable path registry to arbitrate cleanup/reservation races. Reconciliation stays a separate privileged operator, defaults to dry run and requires a reviewed report digest. Do not place a privileged key in the app.
+
+Provide local worker rotation, protected hosted handoff preparation and a separate read-only preflight/PKCE staging harness. Local fixtures validate these contracts without inventing hosted evidence. Defer user-facing MCP after the documented [Phase 8 evaluation](MCP-EVALUATION.md); no concrete user need currently justifies its additional OAuth/content exposure.

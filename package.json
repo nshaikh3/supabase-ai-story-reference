@@ -27,7 +27,18 @@
     "local:env": "node scripts/supabase-local.mjs env",
     "db:advisors": "node scripts/supabase-local.mjs advisors",
     "generation:setup": "node scripts/supabase-local.mjs generation-setup",
-    "db:performance": "node scripts/supabase-local.mjs performance"
+    "db:performance": "node scripts/supabase-local.mjs performance",
+    "ops:status": "node scripts/operations-local.mjs status",
+    "ops:pause": "node scripts/operations-local.mjs pause",
+    "ops:resume": "node scripts/operations-local.mjs resume",
+    "ops:maintenance": "node scripts/operations-local.mjs maintenance",
+    "ops:cleanup": "node scripts/operations-local.mjs cleanup-plan",
+    "ops:cleanup:apply": "node scripts/operations-local.mjs cleanup-apply",
+    "ops:worker:rotate": "node scripts/operations-local.mjs worker-rotate",
+    "db:concurrency": "node scripts/resource-concurrency-local.mjs",
+    "staging:preflight": "node scripts/staging-preflight.mjs",
+    "test:staging": "playwright test --config playwright.staging.config.mts",
+    "release:worker:prepare": "node scripts/worker-handoff.mjs"
   },
   "dependencies": {
     "@radix-ui/react-label": "2.1.15",
@@ -40,7 +51,7 @@
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "server-only": "0.0.1",
-    "sharp": "0.35.4",
+    "sharp": "0.35.5",
     "tailwind-merge": "3.7.0"
   },
   "devDependencies": {
@@ -52,7 +63,7 @@
     "eslint": "9.39.2",
     "eslint-config-next": "16.3.6",
     "smol-toml": "1.9.0",
-    "supabase": "2.118.0",
+    "supabase": "2.119.0",
     "tailwindcss": "4.3.3",
     "typescript": "5.9.3",
     "vitest": "4.1.11"

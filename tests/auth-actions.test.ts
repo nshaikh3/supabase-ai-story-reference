@@ -2,23 +2,30 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   signIn: vi.fn(), signUp: vi.fn(), signOut: vi.fn(), resetPassword: vi.fn(), updateUser: vi.fn(),
   requireUser: vi.fn(), revalidatePath: vi.fn(), createClient: vi.fn(),
+  config: vi.fn(),
 }));
 vi.mock("server-only", () => ({}));
 vi.mock("next/navigation", () => ({ redirect: (path: string) => { throw new Error(`REDIRECT:${path}`); } }));
 vi.mock("next/cache", () => ({ revalidatePath: mocks.revalidatePath }));
 vi.mock("@/lib/supabase/server", () => ({ createClient: mocks.createClient }));
-vi.mock("@/lib/supabase/config", () => ({ getSupabaseConfig: () => ({ appUrl: "http://127.0.0.1:3100" }) }));
+vi.mock("@/lib/supabase/config", () => ({ getSupabaseConfig: mocks.config }));
 vi.mock("@/lib/auth/session", () => ({ requireUser: mocks.requireUser }));
 import { signIn, signUp, signOut, requestPasswordReset, updatePassword } from "@/app/auth/actions";
 function form() { const f = new FormData(); f.set("email", "alice@example.test"); f.set("password", "fictional-long-password"); return f; }
 beforeEach(() => {
   vi.resetAllMocks();
+  mocks.config.mockReturnValue({ appUrl: "http://127.0.0.1:3100", signupAllowed: true });
   const client = { auth: { signInWithPassword: mocks.signIn, signUp: mocks.signUp, signOut: mocks.signOut, resetPasswordForEmail: mocks.resetPassword, updateUser: mocks.updateUser } };
   mocks.createClient.mockResolvedValue(client);
   mocks.requireUser.mockResolvedValue({ supabase: client, user: { id: "alice" } });
   for (const fn of [mocks.signIn, mocks.signUp, mocks.signOut, mocks.resetPassword, mocks.updateUser]) fn.mockResolvedValue({ error: null });
 });
 describe("server Auth actions", () => {
+  it("denies hosted signup before any Auth request", async () => {
+    mocks.config.mockReturnValue({ signupAllowed: false });
+    expect((await signUp({}, form())).error).toContain("invitation-only");
+    expect(mocks.createClient).not.toHaveBeenCalled();
+  });
   it("rejects invalid input before calling Auth", async () => {
     expect((await signIn({}, new FormData())).error).toBeTruthy();
     expect((await signUp({}, new FormData())).error).toBeTruthy();

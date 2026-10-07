@@ -2,6 +2,7 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "../../../types/database";
 import { ASSET_BUCKET } from "./validation";
+import { resourceError } from "./resources";
 
 type Client = SupabaseClient<Database>;
 
@@ -18,7 +19,7 @@ export async function removeStoryObjects(supabase: Client, paths: string[]) {
 export async function uploadReservedImage(supabase: Client, storyId: string, ownerId: string, bytes: Buffer) {
   const path = `${ownerId}/${storyId}/${crypto.randomUUID()}.webp`;
   const { data: asset, error } = await supabase.from("assets").insert({ story_id: storyId, kind: "hero", storage_path: path, mime_type: "image/webp" }).select("id").single();
-  if (error || !asset) return { error: "An image is already attached, or this story is unavailable. Remove the current image before uploading another." };
+  if (error || !asset) return { error: resourceError(error) ?? "An image is already attached, or this story is unavailable. Remove the current image before uploading another." };
   try {
     const { error: uploadError } = await supabase.storage.from(ASSET_BUCKET).upload(path, bytes, { contentType: "image/webp", cacheControl: "0", upsert: false });
     if (!uploadError) return { message: "Hero image uploaded." };

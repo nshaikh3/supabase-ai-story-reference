@@ -4,11 +4,12 @@ import { cookies } from "next/headers";
 import type { Database } from "../../../types/database";
 import { getSupabaseConfig } from "./config";
 
-export async function createClient() {
-  const { url, key } = getSupabaseConfig();
+export async function createClient(options?: { timeoutMs: number }) {
+  const { url, key, secureCookies } = getSupabaseConfig();
   const cookieStore = await cookies();
   return createServerClient<Database>(url, key, {
-    cookieOptions: { sameSite: "lax", path: "/" },
+    ...(options ? { global: { fetch: (input: RequestInfo | URL, init?: RequestInit) => fetch(input, { ...init, signal: init?.signal ? AbortSignal.any([init.signal, AbortSignal.timeout(options.timeoutMs)]) : AbortSignal.timeout(options.timeoutMs) }) } } : {}),
+    cookieOptions: { sameSite: "lax", path: "/", secure: secureCookies },
     cookies: {
       getAll: () => cookieStore.getAll(),
       setAll(cookiesToSet) {

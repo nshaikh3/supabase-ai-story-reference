@@ -23,6 +23,8 @@ jobs:
       - run: npm run db:lint
       - run: npm run db:advisors
       - run: npm run db:types:check
+      - run: npm run db:concurrency
+      - run: npm run ops:cleanup
       - run: npm run check
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e

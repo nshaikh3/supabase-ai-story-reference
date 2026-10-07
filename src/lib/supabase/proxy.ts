@@ -4,10 +4,10 @@ import type { Database } from "../../../types/database";
 import { getSupabaseConfig } from "./config";
 
 export async function updateSession(request: NextRequest) {
-  const { url, key, appUrl } = getSupabaseConfig();
+  const { url, key, appUrl, secureCookies } = getSupabaseConfig();
   let response = NextResponse.next({ request });
   const supabase = createServerClient<Database>(url, key, {
-    cookieOptions: { sameSite: "lax", path: "/" },
+    cookieOptions: { sameSite: "lax", path: "/", secure: secureCookies },
     cookies: {
       getAll: () => request.cookies.getAll(),
       setAll(cookiesToSet, headers) {

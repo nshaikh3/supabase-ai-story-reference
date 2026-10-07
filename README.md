@@ -4,7 +4,7 @@ A small multi-tenant story application demonstrating Supabase Auth, Postgres/RLS
 
 **Demo:** [run locally](#local-setup); no public deployment yet. **Source:** this repository; a public remote has not been configured.
 
-[Reviewer tour](docs/REVIEWER-GUIDE.md) · [Architecture](docs/ARCHITECTURE.md) · [Security model](docs/SECURITY.md) · [Database](docs/DATABASE.md) · [Deployment preparation](docs/DEPLOYMENT.md) · [Phase status](docs/PHASE-7.md)
+[Reviewer tour](docs/REVIEWER-GUIDE.md) · [Architecture](docs/ARCHITECTURE.md) · [Security model](docs/SECURITY.md) · [Database](docs/DATABASE.md) · [Deployment preparation](docs/DEPLOYMENT.md) · [Current status](docs/LOCAL-HARDENING.md)
 
 ![A synthetic Nova story with private live updates, generation history and five completed pages](docs/images/story-workspace.png)
 
@@ -20,9 +20,9 @@ Phases 1–5 provide an isolated local database, migrations, synthetic fixtures,
 
 Sign-up, email confirmation, sign-in/out, password recovery and a protected account page are implemented. The owner dashboard, story editor, deletion and private hero-image uploads are implemented. Protected generation jobs run through an authenticated Edge Function with mock generation and optional Gemini. Private Realtime Broadcast updates open story tabs and reconciles missed events after reconnecting; see the phase record for verification status. There is no deployed public demo yet.
 
-Phase 6 adds security regression coverage and a repeatable authenticated query-plan review. See the [audit findings](docs/SECURITY-AUDIT.md) and [performance evidence](docs/PERFORMANCE.md). The database patch baseline, an unpatched development dependency advisory and deployment controls remain open; passing local tests is not production approval.
+Phase 6 adds security regression coverage and a repeatable authenticated query-plan review. See the [audit findings](docs/SECURITY-AUDIT.md) and [performance evidence](docs/PERFORMANCE.md). The runtime patch and local safeguards have since been implemented; an unpatched development dependency advisory and external deployment controls remain open. Passing local tests is not production approval.
 
-Phase 7 supplies the reviewer walkthrough, architecture/security handoff and a staged deployment runbook. Hosted configuration and launch controls are explicitly pending. The app and tooling still reject hosted targets; the runbook does not authorize publication. See [Phase 7's execution record](docs/PHASE-7.md) for its actual checks.
+Phase 7 supplies the reviewer walkthrough, architecture/security handoff and a staged deployment runbook. The later local hardening implements guarded hosted configuration and a separate staging harness; actual targets remain unconfigured and hosted checks remain unexecuted. The runbook does not authorize publication. See [Phase 7's execution record](docs/PHASE-7.md) and the [hardening record](docs/LOCAL-HARDENING.md) for their actual checks.
 
 | Capability | Inspectable implementation / evidence |
 | --- | --- |
@@ -148,9 +148,9 @@ This targets only `supabase-ai-story-reference` and retains local data. If Docke
 
 ## Deployment and next work
 
-The proposed target is Vercel plus a new, dedicated hosted Supabase project. [DEPLOYMENT.md](docs/DEPLOYMENT.md) specifies environment ownership, the exact code gaps, staging acceptance, secrets provisioning, release order, rollback and recovery. No project reference/domain or public deployment is configured. The current local guard is intentional; do not replace it with arbitrary hosted URL acceptance.
+The proposed target is Vercel plus a new, dedicated hosted Supabase project. [DEPLOYMENT.md](docs/DEPLOYMENT.md) specifies environment ownership, outstanding release gates, staging acceptance, secrets provisioning, release order, rollback and recovery. No hosted project reference/domain or public deployment is configured. Local guards remain in place; hosted paths require separately reviewed exact targets.
 
-The next implementation priorities are the runtime patch baseline, hosted configuration and test harness, account/global abuse controls, Storage reconciliation, and independent review. Cursor pagination is a measured improvement for larger libraries. User-facing MCP remains an optional later evaluation, separate from privileged local development tooling. Real Gemini and real child-data use are not validated by the mock demo.
+The runtime patch baseline, configuration/harness, account/global issuance controls and Storage reconciliation are locally implemented. The next phase is separately approved staging configuration, provider traffic/spending controls, actual hosted verification and independent review. Cursor pagination remains optional for larger libraries; this reference caps each library at 50 stories. The [user-facing MCP evaluation](docs/MCP-EVALUATION.md) recommends deferral. Real Gemini and real child-data use are not validated by the mock demo.
 
 ## Development record
 
@@ -160,3 +160,7 @@ The next implementation priorities are the runtime patch baseline, hosted config
 - [Contribution notes](docs/CONTRIBUTION-NOTES.md)
 
 This project supports an honest account of an experienced technical consultant and program leader developing hands-on software and product expertise. Validation claims are backed by the phase record.
+
+## Local hardening and deployment handoff
+
+The local implementation includes approved-target configuration, nonce CSP, database resource limits, private image-processing leases, reviewed orphan cleanup and worker rotation. Hosted targets remain unconfigured and no deployment has occurred. See [current execution evidence](docs/LOCAL-HARDENING.md), the [operator runbook](docs/OPERATIONS.md), [deployment criteria](docs/DEPLOYMENT.md) and the [optional MCP evaluation](docs/MCP-EVALUATION.md).

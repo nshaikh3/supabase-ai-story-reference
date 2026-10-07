@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { readFileSync } from "node:fs";
 import { parseEnv } from "node:util";
-import { createSyntheticAccount } from "./helpers.mjs";
+import { createSyntheticAccount, sessionDiagnostics } from "./helpers.mjs";
 import { loadConfig } from "../../scripts/local-config.mjs";
 import type { Database } from "../../types/database";
 
@@ -69,7 +69,8 @@ test("private Broadcast authorization, live progress, reconnect and cross-tab si
     expect(await own.channel.send({ type: "broadcast", event: "generation_status", payload: forged })).not.toBe("ok");
 
     await page.goto(`/stories/${id}`);
-    await expect(page.getByTestId("live-connection")).toHaveText("Live updates connected");
+    try { await expect(page.getByTestId("live-connection")).toHaveText("Live updates connected"); }
+    catch { throw new Error(`Private story navigation failed: ${await sessionDiagnostics(page, request, key, alice.access_token)}`); }
     const queued = await a.rpc("enqueue_generation", { p_story_id: id }); expect(queued.error).toBeNull();
     await expect(page.getByRole("status", { exact: false }).filter({ hasText: "Story request received" })).toBeVisible();
     await invoke(id);
