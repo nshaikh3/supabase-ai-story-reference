@@ -6,15 +6,17 @@
       "source": "botstories-web/tsconfig.json",
       "target": "tsconfig.json",
       "sha256": "5c51df4c59f4510d8c7dadf07a5c32132228826a3b331da5e286207b4df7ef9c",
-      "treatment": "Copied unchanged in Phase 1; Phase 4 adds allowImportingTsExtensions for shared Deno/Node type checking. Original source hash retained.",
-      "adaptedSha256": "ee6c7d998c5df3678ef51394af1df3cf58dc274cde8b34c33788da61359b96f2",
-      "adaptedIn": "Phase 4"
+      "treatment": "Copied unchanged in Phase 1; Phase 4 adds allowImportingTsExtensions for shared Deno/Node type checking. Original source hash retained. Showcase preparation excludes generated showcase output from root checking; original source hash retained.",
+      "adaptedSha256": "6580d25c58745fbe6b38c5d13d919762756e3d1bb358361ea25fcb24b1795651",
+      "adaptedIn": "Read-only showcase, 2026-10-08"
     },
     {
       "source": "botstories-web/eslint.config.mjs",
       "target": "eslint.config.mjs",
       "sha256": "870f1adccecf3051cbcd9fd307cef51d7633cf510979c181a81f4b1797273493",
-      "treatment": "Copied unchanged after review"
+      "treatment": "Copied unchanged after review Showcase preparation excludes generated showcase output from root checking; original source hash retained.",
+      "adaptedSha256": "43d5cf03bc8aa9a50951f2768a2483fe6dd308c6420d4fe888abf779110d619c",
+      "adaptedIn": "Read-only showcase, 2026-10-08"
     },
     {
       "source": "botstories-web/postcss.config.mjs",

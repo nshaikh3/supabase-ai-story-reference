@@ -1,0 +1,17 @@
+.git
+.codex
+.agents
+.next
+showcase/.next
+showcase/out
+test-results-showcase
+node_modules
+test-results
+playwright-report
+coverage
+**/.env*
+supabase/.temp
+supabase/.branches
+*.log
+*.tsbuildinfo
+Supabase_Job_Application_Reference_Project_Codex_Plan.md

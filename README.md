@@ -2,9 +2,15 @@
 
 A small multi-tenant story application demonstrating Supabase Auth, Postgres/RLS, private Storage, authenticated Edge generation and private Realtime Broadcast with Next.js.
 
-**Demo:** [run locally](#local-setup); no public deployment yet. **Source:** this repository; a public remote has not been configured.
+**Demo:** [run locally](#local-setup), then open [the account-free sample](http://127.0.0.1:3100/demo) and [architecture tour](http://127.0.0.1:3100/architecture). No public deployment yet. **Source:** this repository, licensed under [MIT](LICENSE); public publication is in progress.
 
-[Reviewer tour](docs/REVIEWER-GUIDE.md) · [Architecture](docs/ARCHITECTURE.md) · [Security model](docs/SECURITY.md) · [Database](docs/DATABASE.md) · [Deployment preparation](docs/DEPLOYMENT.md) · [Current status](docs/LOCAL-HARDENING.md)
+[Reviewer tour](docs/REVIEWER-GUIDE.md) · [Architecture](docs/ARCHITECTURE.md) · [Security model](docs/SECURITY.md) · [Database](docs/DATABASE.md) · [Deployment preparation](docs/DEPLOYMENT.md) · [Current status](docs/LOCAL-HARDENING.md) · [Original plan review](docs/PLAN-REVIEW.md)
+
+[Case study](docs/CASE-STUDY.md) · [Publication progress](docs/PUBLICATION.md) · [Third-party notices](THIRD_PARTY_NOTICES.md)
+
+![The account-free fictional story reader](docs/images/recruiter-demo.png)
+
+The bundled sample is read-only: no account, stored story or AI request is created. The private application below demonstrates the actual service workflow.
 
 ![A synthetic Nova story with private live updates, generation history and five completed pages](docs/images/story-workspace.png)
 
@@ -23,6 +29,8 @@ Sign-up, email confirmation, sign-in/out, password recovery and a protected acco
 Phase 6 adds security regression coverage and a repeatable authenticated query-plan review. See the [audit findings](docs/SECURITY-AUDIT.md) and [performance evidence](docs/PERFORMANCE.md). The runtime patch and local safeguards have since been implemented; an unpatched development dependency advisory and external deployment controls remain open. Passing local tests is not production approval.
 
 Phase 7 supplies the reviewer walkthrough, architecture/security handoff and a staged deployment runbook. The later local hardening implements guarded hosted configuration and a separate staging harness; actual targets remain unconfigured and hosted checks remain unexecuted. The runbook does not authorize publication. See [Phase 7's execution record](docs/PHASE-7.md) and the [hardening record](docs/LOCAL-HARDENING.md) for their actual checks.
+
+The [original-plan review](docs/PLAN-REVIEW.md) found one missing local presentation deliverable: the no-account `/demo` route and demo/source/architecture landing links. The core engineering is locally verified, but that omission and the deferred public repository/live deployment mean the original definition of done is not yet fully met.
 
 | Capability | Inspectable implementation / evidence |
 | --- | --- |
@@ -66,6 +74,16 @@ On a memory-constrained machine, `npm run supabase:start:core` starts the databa
 Local Edge Functions explicitly use the `oneshot` worker policy recommended for development. Each request gets its own worker; CPU and memory limits remain enforced. This avoids relying on the pinned CLI's different `per_worker` default, which produced cumulative CPU-limit shutdowns during local browser verification. Hosted worker reuse and capacity still require separate validation.
 
 Startup captures and discards CLI output because it contains privileged local credentials. It prints fixed progress/status messages instead. On failure, inspect only reference-container health; do not publish raw startup/status output or enable unreviewed debug logging.
+
+## Read-only showcase without Docker
+
+```bash
+npm run build:showcase
+npm run test:showcase
+npm run preview:showcase
+```
+
+Open `http://127.0.0.1:3101`. The separate public build reuses the sample and architecture pages, with no sign-in, database, Server Actions or backend credentials. The user selected this initial free-tier deployment while retaining the complete application locally. See [the showcase runbook](docs/SHOWCASE.md).
 
 ## Verify
 
@@ -150,7 +168,7 @@ This targets only `supabase-ai-story-reference` and retains local data. If Docke
 
 The proposed target is Vercel plus a new, dedicated hosted Supabase project. [DEPLOYMENT.md](docs/DEPLOYMENT.md) specifies environment ownership, outstanding release gates, staging acceptance, secrets provisioning, release order, rollback and recovery. No hosted project reference/domain or public deployment is configured. Local guards remain in place; hosted paths require separately reviewed exact targets.
 
-The runtime patch baseline, configuration/harness, account/global issuance controls and Storage reconciliation are locally implemented. The next phase is separately approved staging configuration, provider traffic/spending controls, actual hosted verification and independent review. Cursor pagination remains optional for larger libraries; this reference caps each library at 50 stories. The [user-facing MCP evaluation](docs/MCP-EVALUATION.md) recommends deferral. Real Gemini and real child-data use are not validated by the mock demo.
+The runtime patch baseline, configuration/harness, account/global issuance controls, Storage reconciliation and recruiter demo are locally implemented. The user has authorized public source and a free-tier deployment; [publication progress](docs/PUBLICATION.md) records account access, capacity and verification blockers. Provider traffic/spending controls, actual hosted verification and independent review remain open. Cursor pagination remains optional for larger libraries; this reference caps each library at 50 stories. The [user-facing MCP evaluation](docs/MCP-EVALUATION.md) recommends deferral. Real Gemini and real child-data use are not validated by the mock demo.
 
 ## Development record
 

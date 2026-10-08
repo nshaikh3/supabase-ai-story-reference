@@ -1,5 +1,6 @@
 node_modules/
 .next/
+.vercel/
 out/
 coverage/
 *.tsbuildinfo
@@ -10,3 +11,5 @@ Supabase_Job_Application_Reference_Project_Codex_Plan.md
 *.log
 test-results/
 playwright-report/
+test-results-showcase/
+showcase/next-env.d.ts

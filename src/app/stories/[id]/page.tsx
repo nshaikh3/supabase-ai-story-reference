@@ -9,6 +9,8 @@ import { WorkspaceNav } from "@/components/workspace-nav";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const dynamic = "force-dynamic";
+// The action has its own 55-second deadline; the host must allow its response.
+export const maxDuration = 60;
 export default async function StoryDetail({ params }: { params: Promise<{ id: string }> }) {
   const { supabase, user } = await requireUser();
   const { id } = await params;

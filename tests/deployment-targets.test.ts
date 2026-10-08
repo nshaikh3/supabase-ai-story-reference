@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isHostedOrigin, resolveAppConfiguration, validateTargetManifest } from "../src/lib/deployment-targets";
+import { isHostedOrigin, resolveAppConfiguration, resolveBuildConfiguration, validateTargetManifest } from "../src/lib/deployment-targets";
 
 const empty = { schemaVersion: 1, staging: null, production: null };
 const local = { supabaseUrl: "http://127.0.0.1:55321", appOrigin: "http://127.0.0.1:3100", publishableKey: "sb_publishable_synthetic_fixture" };
@@ -48,5 +48,18 @@ describe("reviewed reference targets", () => {
     for (const manifest of [{ ...empty, secret: "synthetic" }, { ...empty, staging: { ...staging, secret: "synthetic" } }, { ...empty, schemaVersion: 2 }, []]) {
       expect(() => validateTargetManifest(manifest)).toThrow("Invalid");
     }
+  });
+  it("refuses local or missing target selection in a Vercel build", () => {
+    const env = { VERCEL: "1", NEXT_PUBLIC_SUPABASE_URL: local.supabaseUrl, NEXT_PUBLIC_APP_URL: local.appOrigin, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: local.publishableKey };
+    expect(() => resolveBuildConfiguration(env, empty)).toThrow("hosted reference target");
+    expect(() => resolveBuildConfiguration({ ...env, NEXT_PUBLIC_REFERENCE_ENV: "local" }, empty)).toThrow("hosted reference target");
+    expect(() => resolveBuildConfiguration({ ...env, NEXT_PUBLIC_REFERENCE_ENV: "staging" }, empty)).toThrow("not configured");
+    expect(resolveBuildConfiguration({ ...env, VERCEL: undefined }, empty).environment).toBe("local");
+  });
+  it("requires exact approved public values before a hosted build", () => {
+    const env = { VERCEL: "1", NEXT_PUBLIC_REFERENCE_ENV: "staging", NEXT_PUBLIC_SUPABASE_URL: `https://${staging.projectRef}.supabase.co`, NEXT_PUBLIC_APP_URL: staging.appOrigin, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: local.publishableKey };
+    expect(resolveBuildConfiguration(env, { ...empty, staging }).environment).toBe("staging");
+    expect(() => resolveBuildConfiguration({ ...env, NEXT_PUBLIC_APP_URL: local.appOrigin }, { ...empty, staging })).toThrow("exactly");
+    expect(() => resolveBuildConfiguration({ ...env, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "sb_secret_fixture" }, { ...empty, staging })).toThrow("publishable");
   });
 });

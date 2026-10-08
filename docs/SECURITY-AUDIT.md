@@ -55,3 +55,7 @@ The source-map-js advisory discovered October 5 was fixed by the compatible 1.2.
 The October 7 audit newly reported [GHSA-wq5f-xc86-pv6w](https://github.com/advisories/GHSA-wq5f-xc86-pv6w) in Sharp's librsvg dependency. Applied the compatible Sharp 0.35.5 patch and blocked the SVG loader before metadata parsing. Rejecting SVG only after metadata inspection was insufficient to keep untrusted bytes out of that parser. A real decoder regression covers the earlier boundary; accepted PNG/JPEG/WebP normalization remains tested. This is a local mitigation and patch, not evidence that hosted binaries have been updated.
 
 The post-patch October 7 audit returned zero production advisories and the same five development package entries for braces. The registry still lists braces 3.0.3 as latest; the upstream finding remains open.
+
+## Publication follow-up, October 8
+
+The later clean-install audit reported Next.js advisories affecting the previously pinned 16.3.6. The verified same-minor 16.3.8 security release and matching lint configuration were selected; [PUBLICATION.md](PUBLICATION.md) records patch validation separately from the earlier checkpoint. The development glob advisory remains open. The user selected a static read-only showcase with no backend resources for the first public release; that scope does not close full-application hosting or human-review gates.

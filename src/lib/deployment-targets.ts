@@ -83,3 +83,15 @@ export function resolveAppConfiguration(input: {
     secureCookies: environment !== "local", signupAllowed: environment === "local",
   };
 }
+
+export function resolveBuildConfiguration(env: Record<string, string | undefined>, manifest: unknown) {
+  if (env.VERCEL === "1" && (!env.NEXT_PUBLIC_REFERENCE_ENV || env.NEXT_PUBLIC_REFERENCE_ENV === "local")) {
+    throw new Error("Vercel builds require a configured hosted reference target; local settings cannot be published.");
+  }
+  return resolveAppConfiguration({
+    environment: env.NEXT_PUBLIC_REFERENCE_ENV,
+    supabaseUrl: env.NEXT_PUBLIC_SUPABASE_URL,
+    publishableKey: env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+    appOrigin: env.NEXT_PUBLIC_APP_URL,
+  }, manifest);
+}

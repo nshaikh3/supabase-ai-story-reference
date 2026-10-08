@@ -7,6 +7,6 @@ const nextConfig: NextConfig = {
     return [{ source: "/:path*", headers: Object.entries(securityHeaders).map(([key, value]) => ({ key, value })) }];
   },
   // Two MiB image limit plus multipart overhead; application validation is stricter.
-  experimental: { serverActions: { bodySizeLimit: "3mb" } },
+  experimental: { cpus: 2, webpackMemoryOptimizations: true, serverActions: { bodySizeLimit: "3mb" } },
 };
 export default nextConfig;

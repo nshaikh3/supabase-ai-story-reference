@@ -1,6 +1,6 @@
 # Deployment preparation
 
-**Release state: local reference only; public launch blocked.** Phase 7 prepared the handoff; the subsequent [local hardening implementation](LOCAL-HARDENING.md) adds target guards, quotas, reconciliation, worker operations and a separate staging harness. No hosted project, repository, domain or deployment has been created. The target below is a proposal from the project brief: Vercel for Next.js and a new Supabase project dedicated to this reference. It never includes the commercial application's resources.
+**Full-application release state: local reference only; hosted launch deferred.** The user has authorized a separate read-only static demo first; follow [SHOWCASE.md](SHOWCASE.md) for that narrower deployment. Its release does not close the full-application gates below. Phase 7 prepared the handoff; the subsequent [local hardening implementation](LOCAL-HARDENING.md) adds target guards, quotas, reconciliation, worker operations and a separate staging harness. No hosted project, repository, domain or deployment has been created. The target below is a proposal from the project brief: Vercel for Next.js and a new Supabase project dedicated to this reference. It never includes the commercial application's resources.
 
 ## Decisions to make before provisioning
 
