@@ -2,7 +2,7 @@
 
 A small multi-tenant story application demonstrating Supabase Auth, Postgres/RLS, private Storage, authenticated Edge generation and private Realtime Broadcast with Next.js.
 
-**Demo:** [run locally](#local-setup), then open [the account-free sample](http://127.0.0.1:3100/demo) and [architecture tour](http://127.0.0.1:3100/architecture). No public deployment yet. **Source:** this repository, licensed under [MIT](LICENSE); public publication is in progress.
+**Demo:** [run locally](#local-setup), then open [the account-free sample](http://127.0.0.1:3100/demo) and [architecture tour](http://127.0.0.1:3100/architecture). No public deployment yet. **Source:** [public GitHub repository](https://github.com/nshaikh3/supabase-ai-story-reference), licensed under [MIT](LICENSE).
 
 [Reviewer tour](docs/REVIEWER-GUIDE.md) · [Architecture](docs/ARCHITECTURE.md) · [Security model](docs/SECURITY.md) · [Database](docs/DATABASE.md) · [Deployment preparation](docs/DEPLOYMENT.md) · [Current status](docs/LOCAL-HARDENING.md) · [Original plan review](docs/PLAN-REVIEW.md)
 
@@ -30,7 +30,7 @@ Phase 6 adds security regression coverage and a repeatable authenticated query-p
 
 Phase 7 supplies the reviewer walkthrough, architecture/security handoff and a staged deployment runbook. The later local hardening implements guarded hosted configuration and a separate staging harness; actual targets remain unconfigured and hosted checks remain unexecuted. The runbook does not authorize publication. See [Phase 7's execution record](docs/PHASE-7.md) and the [hardening record](docs/LOCAL-HARDENING.md) for their actual checks.
 
-The [original-plan review](docs/PLAN-REVIEW.md) found one missing local presentation deliverable: the no-account `/demo` route and demo/source/architecture landing links. The core engineering is locally verified, but that omission and the deferred public repository/live deployment mean the original definition of done is not yet fully met.
+The [original-plan review](docs/PLAN-REVIEW.md) identified a missing no-account demo, which is now implemented alongside the architecture tour and landing links. The source is published on GitHub. Live deployment and hosted CI acceptance remain pending; the original definition of done is not yet fully met.
 
 | Capability | Inspectable implementation / evidence |
 | --- | --- |

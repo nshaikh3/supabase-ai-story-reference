@@ -28,7 +28,8 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
-      - run: npm ci
+      - id: dependencies
+        run: npm ci
       - run: npm audit --omit=dev --audit-level=high
       - run: npm run supabase:start:core
       - run: npm run local:env
@@ -44,5 +45,5 @@ jobs:
       - run: npm run test:e2e
       - run: npm run db:performance
       - run: npm run db:reset && npm run db:test
-      - if: always()
+      - if: always() && steps.dependencies.outcome == 'success'
         run: npm run supabase:stop

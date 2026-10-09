@@ -2,7 +2,7 @@
 
 ## Scope and authorization
 
-On October 7, 2026, the user expanded the earlier local-only scope to include the missing demo page, a public GitHub repository, a live deployment and the remaining achievable portfolio deliverables. Publication and deployment are now authorized. The user selected `nshaikh3` as the intended owner, the MIT license and **free-tier resources only, with no paid upgrades**. GitHub authentication confirmed `nshaikh3`; Supabase organization EnKay was selected. The user subsequently chose to publish only the read-only showcase and retain the full app locally after free Supabase project creation was refused. Vercel team access remains unresolved; credentials are not requested in chat.
+On October 7, 2026, the user expanded the earlier local-only scope to include the missing demo page, a public GitHub repository, a live deployment and the remaining achievable portfolio deliverables. Publication and deployment are now authorized. The user selected `nshaikh3` as the intended owner, the MIT license and **free-tier resources only, with no paid upgrades**. GitHub authentication confirmed `nshaikh3`; Supabase organization EnKay was selected. The user subsequently chose to publish only the read-only showcase and retain the full app locally after free Supabase project creation was refused. Vercel plugin team access was restored on October 9. The team dashboard identifies its plan as Pro, so a hosting-scope decision is pending under the user's free-tier-only constraint; credentials are not requested in chat.
 
 The commercial application's services remain excluded. Local wrappers retain their local-only protections. Human review and personal interview understanding cannot be supplied or attested by an automated implementation run.
 
@@ -12,13 +12,13 @@ The commercial application's services remain excluded. Local wrappers retain the
 | --- | --- |
 | `/demo` and `/architecture` | Implemented. Final patched (Next.js 16.3.8) application check passed 308 unit tests, types, lint and production build. The initial full-app demo browser scenario passed desktop/mobile. |
 | Landing-page navigation | Demo/architecture links implemented. GitHub link appears when a real repository URL is configured. |
-| Public links | [Publication manifest](../deployment/publication.json) remains null until actual resources exist; no fabricated URLs. |
+| Public links | [Public repository](https://github.com/nshaikh3/supabase-ai-story-reference) verified and source uploaded. The [publication manifest](../deployment/publication.json) records that real URL; the live demo URL remains null. |
 | Case study | [Draft completed](CASE-STUDY.md); publication/verification claims remain scoped to actual evidence. |
 | Vercel configuration | A separate Next.js static showcase and Vercel Build Output package are implemented. No backend configuration, private routes or Server Actions enter that deployment. Packaging and the isolated browser scenario passed: all chapters, CSP, mobile, reload, no external requests, private-route 404s and POST denial. No hosted deployment executed. |
 | Full Git history secret scan | Gitleaks 8.30.1 scanned all 15 existing commits, approximately 1.27 MB; no findings. The final patched 197-file source-only snapshot (968.58 KB of scanned text) also passed. After release-preparation commit `6e9fc3a`, all 16 commits were rescanned (1.36 MB) with no findings. Subsequent publication edits still require scanning before upload. |
 | Dependency audit | A later clean install reported six high package entries: the existing development glob chain plus Next.js. Next.js and its lint configuration are now pinned to 16.3.8. The fresh production audit passed with zero findings; the patched application check passed and the environment-free static build passed. The unpatched `braces` chain remains open. |
-| GitHub / Vercel / Supabase access | All three integrations connected. GitHub owner and existing Git push credential verified without printing credentials; creation form prepared and left for the user to submit at their request. Vercel default-team access returns 403. Two CLI device flows ended without a usable saved login; the second exited zero but the subsequent authenticated team probe still reported no credentials. EnKay project creation quoted $0/month but was refused at the two-active-free-project limit. No hosted resources were created. |
-| Hosted release and CI | Not executed. [Static showcase](SHOWCASE.md) is the selected initial release. Full-app hosted verification is deferred and its [deployment gates](DEPLOYMENT.md) remain open. |
+| GitHub / Vercel / Supabase access | Public GitHub source uploaded with preserved history. Reconnected Vercel plugin can access the intended team; its verified Pro plan needs a scope decision under the free-tier-only request. Earlier CLI device flows did not establish a saved login. EnKay free project creation was refused at the two-active-free-project limit; no hosted Supabase project was created. |
+| Hosted release and CI | First GitHub CI run failed during dependency installation; lockfile repaired and rerun pending. No Vercel deployment executed. [Static showcase](SHOWCASE.md) is the selected initial release; full-app hosted verification remains deferred. |
 
 The official macOS ARM64 Gitleaks 8.30.1 archive was verified against the vendor release checksum: `b40ab0ae55c505963e365f271a8d3846efbc170aa17f2607f13df610a9aeb6a5`. The scanner ran locally with full secret redaction. A passing pattern-based scan is evidence, not proof that no sensitive information can exist.
 
@@ -58,7 +58,7 @@ No incompatible package downgrade, hidden audit exclusion, blanket exception or 
 
 ## Connection and release sequence
 
-1. Complete account access and the user-owned GitHub form submission; verify the actual public repository exists.
+1. Public source upload is complete and Vercel plugin access is restored. Resolve the verified Pro team versus the requested free-tier hosting scope before deployment.
 2. Complete static build/browser checks, a clean-source install and final secret scan; preserve the existing Git history when publishing source.
 3. Deploy only the reviewed read-only showcase to a verified free Vercel project. It requires no Supabase project, SMTP, AI key or environment file.
 4. Verify the real anonymous HTTPS URL, all chapters, CSP, mobile layout and absence of private routes. Record commit/deployment/CI URLs before adding portfolio links.
@@ -70,4 +70,14 @@ The user has authorized the work; these are missing decisions/access and verific
 
 Release-preparation commit: `6e9fc3a`. On the patched Next.js 16.3.8 build, 308 unit tests, 356 SQL assertions, eight full-app browser scenarios and the separate clean-copy static browser scenario passed. Documentation validation checked 26 Markdown files and 202 local links. The production audit is clear; the development glob advisory remains recorded above. The local static preview at `http://127.0.0.1:3101/demo` returned HTTP 200 with the expected content and CSP.
 
-The user still needs to submit the prepared GitHub creation form and complete Vercel device authorization. An existing Git credential was verified for `nshaikh3`, so source can be pushed with its history once that repository exists. No public repository, hosted deployment, live URL, hosted CI success or full-app cloud verification is claimed.
+This local checkpoint preceded source publication. See the October 9 record below for the actual GitHub release and restored Vercel access. No hosted deployment, live URL, passing hosted CI or full-app cloud verification is claimed yet.
+
+## October 9 source publication and CI
+
+The public repository is [nshaikh3/supabase-ai-story-reference](https://github.com/nshaikh3/supabase-ai-story-reference). GitHub metadata initially reported size zero, but a direct Git ref inspection found the user-created MIT license commit `ad3f123`. Its history and license were preserved by merging the independent local history; publication commit `c7f403e` was pushed successfully. The license names the GitHub owner `nshaikh3`. The pre-push Gitleaks scan reported no findings across the 17 local commits; the merged-history scan also reported no findings (18 scanned commits, about 1.36 MB).
+
+[The first GitHub Actions run](https://github.com/nshaikh3/supabase-ai-story-reference/actions/runs/37883310662) failed in both jobs at `npm ci`, before any application or database assertions ran. npm 11.19.0 on the Linux runner required missing `@emnapi/core` and `@emnapi/runtime` 1.11.3 lock entries. Regenerating only the lockfile in a dependency-free temporary directory restored optional/bundled dependency metadata without changing any previously locked package versions. Cleanup now runs only if dependency installation succeeded, avoiding a misleading secondary missing-CLI failure. Verification of the repair is tracked separately from the earlier local checkpoint.
+
+The reconnected Vercel plugin now lists and reads the intended team. A read-only dashboard inspection shows the team is on **Pro**, even though the user-profile API reports Hobby for the personal profile. No Vercel project has been created or deployed. The user was asked whether to retain a separate Hobby-only scope or explicitly authorize the existing Pro team's usage; no budget change is inferred.
+
+The repaired lockfile passed a clean npm 11.19.0 install in a fresh temporary directory. The source-only showcase build then passed with three public routes, zero Server Actions and 45 static files. Its browser scenario passed without retries (22.3 seconds), covering chapters, mobile layout, CSP, reload, private-route 404s and POST rejection. The production audit again found zero vulnerabilities. The full audit still reports the same five development-chain high entries. Documentation validation passed for 26 Markdown files and 203 local links. These are local repair checks, not a passing Linux CI result.

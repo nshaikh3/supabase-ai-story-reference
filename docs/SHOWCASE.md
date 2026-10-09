@@ -23,7 +23,7 @@ The separate [showcase app](../showcase/app) has only `/`, `/demo` and `/archite
 
 Deploy only to the verified account/team and a new reference-only project. Prefer linking the authorized public repository after the user creates it and source is uploaded. If the official CLI is used, explicitly verify the reference project/team before deployment. Keep preview protection until verified; the requested production showcase must be reachable by an anonymous reviewer.
 
-Record the actual deployment ID, source commit, production URL, date and acceptance result in [PUBLICATION.md](PUBLICATION.md). Only then populate [publication.json](../deployment/publication.json) and rebuild to show working source links. A deployment URL or a successful build alone is not acceptance evidence.
+Record the actual deployment ID, source commit, production URL, date and acceptance result in [PUBLICATION.md](PUBLICATION.md). Populate each URL in [publication.json](../deployment/publication.json) only after that resource exists and is verified, then rebuild to show working source links. The repository URL can be recorded before the live deployment URL. A deployment URL or a successful build alone is not acceptance evidence.
 
 ## Security and limitations
 
