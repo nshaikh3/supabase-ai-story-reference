@@ -63,7 +63,7 @@ Acceptance: an anonymous desktop/mobile visitor can understand the application a
 
 ### 3. Prepare source publication
 
-The user created `nshaikh3/supabase-ai-story-reference` with MIT. The implementation was pushed on October 9 after a final history scan, preserving the user-created initial license commit. GitHub CI exposed missing optional dependency metadata in the lockfile; its repair and hosted acceptance are tracked in [PUBLICATION.md](PUBLICATION.md). Review the complete Git history and tracked assets for secrets, personal information and unintended commercial material. Keep the local planning brief and environment files out of the public repository unless deliberately reviewed for publication.
+The user created `nshaikh3/supabase-ai-story-reference` with MIT. The implementation was pushed on October 9 after a final history scan, preserving the user-created initial license commit. GitHub CI exposed missing optional dependency metadata in the lockfile; the repair subsequently passed both Linux CI jobs. The exact run and commit are recorded in [PUBLICATION.md](PUBLICATION.md). Review the complete Git history and tracked assets for secrets, personal information and unintended commercial material. Keep the local planning brief and environment files out of the public repository unless deliberately reviewed for publication.
 
 Publication is authorized. Preserve the meaningful phase history, run the existing CI in a clean environment, verify the documented setup without this laptop's ignored state, and resolve failures before publicizing the link. Record the actual CI URL and commit. The selected visibility is public. No repository creation should be inferred from the prepared browser form.
 

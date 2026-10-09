@@ -1,5 +1,7 @@
 # Supabase AI Story Reference
 
+[![Reference checks](https://github.com/nshaikh3/supabase-ai-story-reference/actions/workflows/ci.yml/badge.svg)](https://github.com/nshaikh3/supabase-ai-story-reference/actions/workflows/ci.yml)
+
 A small multi-tenant story application demonstrating Supabase Auth, Postgres/RLS, private Storage, authenticated Edge generation and private Realtime Broadcast with Next.js.
 
 **Demo:** [run locally](#local-setup), then open [the account-free sample](http://127.0.0.1:3100/demo) and [architecture tour](http://127.0.0.1:3100/architecture). No public deployment yet. **Source:** [public GitHub repository](https://github.com/nshaikh3/supabase-ai-story-reference), licensed under [MIT](LICENSE).
@@ -30,7 +32,7 @@ Phase 6 adds security regression coverage and a repeatable authenticated query-p
 
 Phase 7 supplies the reviewer walkthrough, architecture/security handoff and a staged deployment runbook. The later local hardening implements guarded hosted configuration and a separate staging harness; actual targets remain unconfigured and hosted checks remain unexecuted. The runbook does not authorize publication. See [Phase 7's execution record](docs/PHASE-7.md) and the [hardening record](docs/LOCAL-HARDENING.md) for their actual checks.
 
-The [original-plan review](docs/PLAN-REVIEW.md) identified a missing no-account demo, which is now implemented alongside the architecture tour and landing links. The source is published on GitHub. Live deployment and hosted CI acceptance remain pending; the original definition of done is not yet fully met.
+The [original-plan review](docs/PLAN-REVIEW.md) identified a missing no-account demo, which is now implemented alongside the architecture tour and landing links. The source is published on GitHub. Both GitHub CI jobs passed on October 9. Live deployment remains pending; the original definition of done is not yet fully met.
 
 | Capability | Inspectable implementation / evidence |
 | --- | --- |
@@ -101,7 +103,7 @@ Database tests run against Supabase Postgres using pgTAP. Role tests exercise ac
 
 `db:performance` uses fixed synthetic fixtures inside a rolled-back transaction and checks actual non-bypass `authenticated` visibility. It writes full plans to ignored `test-results/database-performance.json`; do not run it concurrently with browser tests or user work. See [measurement limits and results](docs/PERFORMANCE.md). Full `npm audit` currently reports the unpatched development glob advisory documented in the audit; the production-only check does not cover that development dependency.
 
-`npm run check` includes `npm run docs:check`, unit tests, TypeScript, lint and production build. The documentation check validates repository Markdown links/anchors and documented npm commands offline; it does not validate external sites or prove deployment readiness. CI runs the same local workflow in [.github/workflows/ci.yml](.github/workflows/ci.yml); no hosted CI success is claimed until an actual run is recorded.
+`npm run check` includes `npm run docs:check`, unit tests, TypeScript, lint and production build. The documentation check validates repository Markdown links/anchors and documented npm commands offline; it does not validate external sites or prove deployment readiness. CI runs the same local workflow in [.github/workflows/ci.yml](.github/workflows/ci.yml). [The October 9 Linux run](https://github.com/nshaikh3/supabase-ai-story-reference/actions/runs/37883626288) passed both the reference and showcase jobs on commit `280eb1e`; see [publication evidence](docs/PUBLICATION.md).
 
 After editing SQL, reset the local database, run the database suite, regenerate types, and review the resulting diff. Create new migration filenames with `npx supabase migration new <name>`; do not rename existing applied migrations. Migrations are the source of truth.
 
