@@ -85,7 +85,7 @@ npm run test:showcase
 npm run preview:showcase
 ```
 
-Open `http://127.0.0.1:3101`. The separate public build reuses the sample and architecture pages, with no sign-in, database, Server Actions or backend credentials. The user selected this initial free-tier deployment while retaining the complete application locally. See [the showcase runbook](docs/SHOWCASE.md).
+Open `http://127.0.0.1:3101`. The separate public build reuses the sample and architecture pages, with no sign-in, database, Server Actions or backend credentials. The user selected this initial read-only deployment on the existing Vercel Pro team, while retaining the complete application locally. See [the showcase runbook](docs/SHOWCASE.md).
 
 ## Verify
 
@@ -170,7 +170,7 @@ This targets only `supabase-ai-story-reference` and retains local data. If Docke
 
 The proposed target is Vercel plus a new, dedicated hosted Supabase project. [DEPLOYMENT.md](docs/DEPLOYMENT.md) specifies environment ownership, outstanding release gates, staging acceptance, secrets provisioning, release order, rollback and recovery. No hosted project reference/domain or public deployment is configured. Local guards remain in place; hosted paths require separately reviewed exact targets.
 
-The runtime patch baseline, configuration/harness, account/global issuance controls, Storage reconciliation and recruiter demo are locally implemented. The user has authorized public source and a free-tier deployment; [publication progress](docs/PUBLICATION.md) records account access, capacity and verification blockers. Provider traffic/spending controls, actual hosted verification and independent review remain open. Cursor pagination remains optional for larger libraries; this reference caps each library at 50 stories. The [user-facing MCP evaluation](docs/MCP-EVALUATION.md) recommends deferral. Real Gemini and real child-data use are not validated by the mock demo.
+The runtime patch baseline, configuration/harness, account/global issuance controls, Storage reconciliation and recruiter demo are locally implemented. The user has authorized public source and a read-only deployment on the existing Vercel Pro plan, with no upgrades or add-ons; [publication progress](docs/PUBLICATION.md) records account access, capacity and verification blockers. Provider traffic/spending controls, actual hosted verification and independent review remain open. Cursor pagination remains optional for larger libraries; this reference caps each library at 50 stories. The [user-facing MCP evaluation](docs/MCP-EVALUATION.md) recommends deferral. Real Gemini and real child-data use are not validated by the mock demo.
 
 ## Development record
 

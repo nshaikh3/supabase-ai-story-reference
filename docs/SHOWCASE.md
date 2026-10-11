@@ -1,6 +1,6 @@
 # Read-only public showcase
 
-The user selected this release on October 8, 2026: publish an account-free demo using free-tier hosting, while keeping the complete private application local. Supabase refused a new free project because the account already has two active free projects. No existing project is reused or changed.
+The user selected this release on October 8, 2026: publish an account-free demo using free-tier hosting, while keeping the complete private application local. Supabase refused a new free project because the account already has two active free projects. No existing Supabase project is reused or changed. On October 11, the user explicitly authorized the existing Vercel Pro team for this separate showcase, superseding the frontend free-tier-only constraint. No plan upgrade or add-on is authorized.
 
 ## Build and preview
 
@@ -21,7 +21,7 @@ The separate [showcase app](../showcase/app) has only `/`, `/demo` and `/archite
 
 [vercel.json](../vercel.json) selects `npm ci` and `npm run build:showcase`, with no framework adapter or server functions. Use the repository root and Node 24. Do not add environment variables, a Supabase integration, paid AI, a paid domain or a paid hosting upgrade. The generated output has no Functions directory. A stable free `vercel.app` URL is sufficient.
 
-Deploy only to the verified account/team and a new reference-only project. Prefer linking the authorized public repository after the user creates it and source is uploaded. If the official CLI is used, explicitly verify the reference project/team before deployment. Keep preview protection until verified; the requested production showcase must be reachable by an anonymous reviewer.
+Deploy only to the verified existing Pro team and a new reference-only project. Normal deployment and traffic consume that plan's allowance; this is not a guarantee of zero usage charges. Do not change the team plan, spending controls or existing projects. Prefer linking the authorized public repository after the user creates it and source is uploaded. If the official CLI is used, explicitly verify the reference project/team before deployment. Keep preview protection until verified; the requested production showcase must be reachable by an anonymous reviewer.
 
 Record the actual deployment ID, source commit, production URL, date and acceptance result in [PUBLICATION.md](PUBLICATION.md). Populate each URL in [publication.json](../deployment/publication.json) only after that resource exists and is verified, then rebuild to show working source links. The repository URL can be recorded before the live deployment URL. A deployment URL or a successful build alone is not acceptance evidence.
 

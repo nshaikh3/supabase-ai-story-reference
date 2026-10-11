@@ -1,6 +1,6 @@
 # Original plan review and application readiness
 
-Reviewed October 7, 2026 against implementation commit `c0fe1ea`, the original 2,449-line `Supabase_Job_Application_Reference_Project_Codex_Plan.md`, and the pasted lead-engineer request. The original brief is retained locally, outside the public source inventory. The earlier local-only instruction was superseded by authorization to publish under `nshaikh3`, using MIT and free-tier resources. On October 8, after Supabase rejected creation at the account's free-project limit, the user selected a public read-only demo and retained the full application locally.
+Reviewed October 7, 2026 against implementation commit `c0fe1ea`, the original 2,449-line `Supabase_Job_Application_Reference_Project_Codex_Plan.md`, and the pasted lead-engineer request. The original brief is retained locally, outside the public source inventory. The earlier local-only instruction was superseded by authorization to publish under `nshaikh3`, using MIT and free-tier resources. On October 8, after Supabase rejected creation at the account's free-project limit, the user selected a public read-only demo and retained the full application locally. On October 11, the user approved hosting the showcase on the existing Vercel Pro plan without upgrades or add-ons.
 
 ## Verdict
 
