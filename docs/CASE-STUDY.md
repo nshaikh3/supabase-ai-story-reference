@@ -4,7 +4,7 @@
 
 A reviewer should be able to inspect how a small application protects its users' data, runs controlled server-side work and recovers from failures. This reference uses a fictional five-page story workflow to make those concerns concrete. It complements Noor Shaikh's consulting and technical program experience with hands-on, AI-assisted implementation evidence.
 
-The working application supports confirmed email accounts, private story drafts and images, authenticated generation, saved job history and private updates across open tabs. An account-free `/demo` presents a bundled fictional example; `/architecture` explains the implementation. The sample does not execute an AI call or impersonate a live private session.
+The working application supports confirmed email accounts, private story drafts and images, authenticated generation, saved job history and private updates across open tabs. The [live account-free demo](https://supabase-ai-story-reference.vercel.app/demo) presents a bundled fictional example; the [architecture tour](https://supabase-ai-story-reference.vercel.app/architecture) explains the implementation. The sample does not execute an AI call or impersonate a live private session.
 
 ## Decisions
 
@@ -23,9 +23,9 @@ An initial private Realtime receive policy checked a field that the authorizatio
 
 ## Verification and limits
 
-The October 7 core/hardening checkpoint passed 306 unit tests, 356 SQL assertions and seven browser scenarios. It also exercised eleven authenticated query plans and a concurrent quota boundary. See [the execution record](LOCAL-HARDENING.md) for commands, earlier failures and measurement limits, and [publication progress](PUBLICATION.md) for subsequent demo verification.
+The October 9 Linux CI checkpoint passed 308 unit tests, 356 SQL assertions and eight full-app browser scenarios. It also exercised eleven authenticated query plans and a concurrent quota boundary. The separate static showcase passed CI and anonymous production browser acceptance on October 11. See [the execution record](LOCAL-HARDENING.md) for commands, earlier failures and measurement limits, and [publication progress](PUBLICATION.md) for subsequent demo verification.
 
-These results establish tested local behavior. They do not establish hosted capacity, a clean full dependency audit, an independent security audit, human release approval or accepted upstream work. Generation uses bounded requests and manual lease recovery; there is no durable background worker. Publication and hosting must be verified separately.
+The full-application results establish tested behavior against isolated local Supabase services on the laptop and CI runner. They do not establish hosted capacity, a clean full dependency audit, an independent security audit, human release approval or accepted upstream work. Generation uses bounded requests and manual lease recovery; there is no durable background worker. Public source and static-demo hosting are verified separately in the publication record; full-app cloud hosting remains deferred.
 
 ## Ownership and development process
 
@@ -33,4 +33,4 @@ The project was developed with Codex assistance through reviewed phases, using o
 
 ## Reviewer path
 
-Read the public sample, inspect [the architecture](ARCHITECTURE.md), then follow [the 10–15 minute source tour](REVIEWER-GUIDE.md). For an interview, discuss one ownership policy, one failure/recovery path and one deliberately deferred feature. Current public URLs and execution status belong in [PUBLICATION.md](PUBLICATION.md); no unverified deployment or contribution is implied by this case study.
+Read the [public sample](https://supabase-ai-story-reference.vercel.app/demo), inspect [the architecture](ARCHITECTURE.md), then follow [the 10–15 minute source tour](REVIEWER-GUIDE.md). For an interview, discuss one ownership policy, one failure/recovery path and one deliberately deferred feature. Current public URLs and execution status belong in [PUBLICATION.md](PUBLICATION.md); no unverified deployment or contribution is implied by this case study.

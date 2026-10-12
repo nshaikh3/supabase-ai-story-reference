@@ -2,6 +2,12 @@
 
 The user selected this release on October 8, 2026: publish an account-free demo using free-tier hosting, while keeping the complete private application local. Supabase refused a new free project because the account already has two active free projects. No existing Supabase project is reused or changed. On October 11, the user explicitly authorized the existing Vercel Pro team for this separate showcase, superseding the frontend free-tier-only constraint. No plan upgrade or add-on is authorized.
 
+## Published demo
+
+The [production demo](https://supabase-ai-story-reference.vercel.app) is live on the authorized existing Pro team. [Release evidence](PUBLICATION.md#october-11-production-showcase-release) records the deployment, commit, remote build and anonymous acceptance. Source is [public on GitHub](https://github.com/nshaikh3/supabase-ai-story-reference) under MIT.
+
+Run `npm run test:showcase:live` to repeat anonymous acceptance against that exact reference origin. This separate configuration starts no server, loads no credentials and refuses a different publication origin. It checks public navigation/security and sends one deliberately rejected POST to the static demo. Screenshots are ignored under `test-results/showcase-live/`. The local command below still starts its own loopback preview.
+
 ## Build and preview
 
 ```bash
@@ -15,7 +21,7 @@ Open `http://127.0.0.1:3101`. This flow requires no Docker, Supabase key, enviro
 
 The separate [showcase app](../showcase/app) has only `/`, `/demo` and `/architecture`, plus a 404 page. It imports the same public components and fictional story used by the full app. Sign-in links are omitted. There are no Auth forms, private routes, middleware, Server Actions, database clients, uploads or generation endpoints in this build.
 
-[The build script](../scripts/showcase-build.mjs) runs Next.js with a restricted environment, refuses showcase environment files, checks the route and Action manifests, and scans output for backend configuration markers. It writes only static assets to `.vercel/output/static` and generates [Vercel Build Output API](https://vercel.com/docs/build-output-api) configuration. Inline hydration scripts receive exact SHA-256 CSP hashes from the built HTML; scripts do not require `unsafe-inline` or `unsafe-eval`. Browser checks exercise the packaged headers, all story pages, mobile layout, direct navigation, missing private routes and denied POST requests. The local preview does not prove Vercel routing; repeat these checks on the actual public URL.
+[The build script](../scripts/showcase-build.mjs) runs Next.js with a restricted environment, refuses showcase environment files, checks the route and Action manifests, and scans output for backend configuration markers. It writes only static assets to `.vercel/output/static` and generates [Vercel Build Output API](https://vercel.com/docs/build-output-api) configuration. Inline hydration scripts receive exact SHA-256 CSP hashes from the built HTML; scripts do not require `unsafe-inline` or `unsafe-eval`. Browser checks exercise the packaged headers, all story pages, mobile layout, direct navigation, missing private routes and denied POST requests. The local preview alone does not prove Vercel routing; the separate live command verifies the actual published URL.
 
 ## Deployment contract
 

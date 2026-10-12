@@ -42,7 +42,8 @@
     "release:worker:prepare": "node scripts/worker-handoff.mjs",
     "build:showcase": "node scripts/showcase-build.mjs",
     "preview:showcase": "node scripts/showcase-preview.mjs",
-    "test:showcase": "playwright test --config playwright.showcase.config.mts"
+    "test:showcase": "playwright test --config playwright.showcase.config.mts",
+    "test:showcase:live": "playwright test --config playwright.showcase-live.config.mts"
   },
   "dependencies": {
     "@radix-ui/react-label": "2.1.15",

@@ -4,7 +4,7 @@
 
 A small multi-tenant story application demonstrating Supabase Auth, Postgres/RLS, private Storage, authenticated Edge generation and private Realtime Broadcast with Next.js.
 
-**Demo:** [run locally](#local-setup), then open [the account-free sample](http://127.0.0.1:3100/demo) and [architecture tour](http://127.0.0.1:3100/architecture). No public deployment yet. **Source:** [public GitHub repository](https://github.com/nshaikh3/supabase-ai-story-reference), licensed under [MIT](LICENSE).
+**Live demo:** [read the sample](https://supabase-ai-story-reference.vercel.app/demo) · [architecture tour](https://supabase-ai-story-reference.vercel.app/architecture). The public site is a read-only showcase; [run the complete application locally](#local-setup). **Source:** [public GitHub repository](https://github.com/nshaikh3/supabase-ai-story-reference), licensed under [MIT](LICENSE).
 
 [Reviewer tour](docs/REVIEWER-GUIDE.md) · [Architecture](docs/ARCHITECTURE.md) · [Security model](docs/SECURITY.md) · [Database](docs/DATABASE.md) · [Deployment preparation](docs/DEPLOYMENT.md) · [Current status](docs/LOCAL-HARDENING.md) · [Original plan review](docs/PLAN-REVIEW.md)
 
@@ -26,13 +26,13 @@ This reference makes Noor Shaikh's hands-on software/product work inspectable al
 
 Phases 1–5 provide an isolated local database, migrations, synthetic fixtures, generated types, automated tests, email/password authentication and private live story updates. Selected generic components and tooling were reused from an existing application with the owner's authorization; see the [reuse manifest](docs/REUSE-MANIFEST.json).
 
-Sign-up, email confirmation, sign-in/out, password recovery and a protected account page are implemented. The owner dashboard, story editor, deletion and private hero-image uploads are implemented. Protected generation jobs run through an authenticated Edge Function with mock generation and optional Gemini. Private Realtime Broadcast updates open story tabs and reconciles missed events after reconnecting; see the phase record for verification status. There is no deployed public demo yet.
+Sign-up, email confirmation, sign-in/out, password recovery and a protected account page are implemented. The owner dashboard, story editor, deletion and private hero-image uploads are implemented. Protected generation jobs run through an authenticated Edge Function with mock generation and optional Gemini. Private Realtime Broadcast updates open story tabs and reconciles missed events after reconnecting; see the phase record for verification status. The public static demo is deployed; these authenticated capabilities run locally.
 
 Phase 6 adds security regression coverage and a repeatable authenticated query-plan review. See the [audit findings](docs/SECURITY-AUDIT.md) and [performance evidence](docs/PERFORMANCE.md). The runtime patch and local safeguards have since been implemented; an unpatched development dependency advisory and external deployment controls remain open. Passing local tests is not production approval.
 
-Phase 7 supplies the reviewer walkthrough, architecture/security handoff and a staged deployment runbook. The later local hardening implements guarded hosted configuration and a separate staging harness; actual targets remain unconfigured and hosted checks remain unexecuted. The runbook does not authorize publication. See [Phase 7's execution record](docs/PHASE-7.md) and the [hardening record](docs/LOCAL-HARDENING.md) for their actual checks.
+Phase 7 supplies the reviewer walkthrough, architecture/security handoff and a staged deployment runbook. The later local hardening implements guarded hosted configuration and a separate staging harness; full-application hosted targets remain unconfigured and their checks remain unexecuted. The runbook does not authorize publication. See [Phase 7's execution record](docs/PHASE-7.md) and the [hardening record](docs/LOCAL-HARDENING.md) for their actual checks.
 
-The [original-plan review](docs/PLAN-REVIEW.md) identified a missing no-account demo, which is now implemented alongside the architecture tour and landing links. The source is published on GitHub. Both GitHub CI jobs passed on October 9. Live deployment remains pending; the original definition of done is not yet fully met.
+The [original-plan review](docs/PLAN-REVIEW.md) identified a missing no-account demo, which is now implemented alongside the architecture tour and landing links. The source is published on GitHub. Both GitHub CI jobs passed on October 9. The read-only showcase passed anonymous HTTPS/browser acceptance on October 11. Full-app cloud hosting remains deferred by choice; human review and a narrated walkthrough remain outstanding.
 
 | Capability | Inspectable implementation / evidence |
 | --- | --- |
@@ -85,7 +85,7 @@ npm run test:showcase
 npm run preview:showcase
 ```
 
-Open `http://127.0.0.1:3101`. The separate public build reuses the sample and architecture pages, with no sign-in, database, Server Actions or backend credentials. The user selected this initial read-only deployment on the existing Vercel Pro team, while retaining the complete application locally. See [the showcase runbook](docs/SHOWCASE.md).
+Open `http://127.0.0.1:3101`. The separate public build reuses the sample and architecture pages, with no sign-in, database, Server Actions or backend credentials. The user selected this initial read-only deployment on the existing Vercel Pro team, while retaining the complete application locally. See [the showcase runbook](docs/SHOWCASE.md). Verify the published static site with `npm run test:showcase:live`; this separate command is pinned to the reference demo origin and does not start or modify the local backend.
 
 ## Verify
 
@@ -168,9 +168,9 @@ This targets only `supabase-ai-story-reference` and retains local data. If Docke
 
 ## Deployment and next work
 
-The proposed target is Vercel plus a new, dedicated hosted Supabase project. [DEPLOYMENT.md](docs/DEPLOYMENT.md) specifies environment ownership, outstanding release gates, staging acceptance, secrets provisioning, release order, rollback and recovery. No hosted project reference/domain or public deployment is configured. Local guards remain in place; hosted paths require separately reviewed exact targets.
+The proposed target is Vercel plus a new, dedicated hosted Supabase project. [DEPLOYMENT.md](docs/DEPLOYMENT.md) specifies environment ownership, outstanding release gates, staging acceptance, secrets provisioning, release order, rollback and recovery. The static showcase is live; no hosted Supabase project or full-application domain is configured. Local guards remain in place; hosted paths require separately reviewed exact targets.
 
-The runtime patch baseline, configuration/harness, account/global issuance controls, Storage reconciliation and recruiter demo are locally implemented. The user has authorized public source and a read-only deployment on the existing Vercel Pro plan, with no upgrades or add-ons; [publication progress](docs/PUBLICATION.md) records account access, capacity and verification blockers. Provider traffic/spending controls, actual hosted verification and independent review remain open. Cursor pagination remains optional for larger libraries; this reference caps each library at 50 stories. The [user-facing MCP evaluation](docs/MCP-EVALUATION.md) recommends deferral. Real Gemini and real child-data use are not validated by the mock demo.
+The runtime patch baseline, configuration/harness, account/global issuance controls, Storage reconciliation and recruiter demo are locally implemented. The user has authorized public source and a read-only deployment on the existing Vercel Pro plan, with no upgrades or add-ons; [publication evidence](docs/PUBLICATION.md) records the public deployment and acceptance checks. Full-app provider traffic/spending controls, hosted verification and independent review remain open. Cursor pagination remains optional for larger libraries; this reference caps each library at 50 stories. The [user-facing MCP evaluation](docs/MCP-EVALUATION.md) recommends deferral. Real Gemini and real child-data use are not validated by the mock demo.
 
 ## Development record
 
@@ -183,4 +183,4 @@ This project supports an honest account of an experienced technical consultant a
 
 ## Local hardening and deployment handoff
 
-The local implementation includes approved-target configuration, nonce CSP, database resource limits, private image-processing leases, reviewed orphan cleanup and worker rotation. Hosted targets remain unconfigured and no deployment has occurred. See [current execution evidence](docs/LOCAL-HARDENING.md), the [operator runbook](docs/OPERATIONS.md), [deployment criteria](docs/DEPLOYMENT.md) and the [optional MCP evaluation](docs/MCP-EVALUATION.md).
+The local implementation includes approved-target configuration, nonce CSP, database resource limits, private image-processing leases, reviewed orphan cleanup and worker rotation. Full-application hosted targets remain unconfigured. The separate static showcase is deployed and verified. See [current execution evidence](docs/LOCAL-HARDENING.md), the [operator runbook](docs/OPERATIONS.md), [deployment criteria](docs/DEPLOYMENT.md) and the [optional MCP evaluation](docs/MCP-EVALUATION.md).
