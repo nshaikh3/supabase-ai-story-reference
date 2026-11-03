@@ -137,3 +137,13 @@ Local verification on a fresh macOS ARM64 host (Node 24.13.0, Docker Desktop 29.
 - `npm audit --omit=dev` reports **zero** vulnerabilities. Full `npm audit` reports 16 moderate package entries from the single development-only `minimatch` advisory.
 
 The Supabase CLI announced v3.0.0 during these checks. That is a major-version change and is out of scope for this patch; the tested 2.119.0 pin is unchanged.
+
+### CI, release and live acceptance
+
+- Gitleaks 8.30.1 (archive checksum matching the October record above) found no leaks in the staged change or across the full history (22 commits, about 1.41 MB) before the push.
+- [Pull request #1](https://github.com/nshaikh3/supabase-ai-story-reference/pull/1) ran CI on commit `f531cb1`: [push run 41576484085](https://github.com/nshaikh3/supabase-ai-story-reference/actions/runs/41576484085) and [pull-request run 41576504510](https://github.com/nshaikh3/supabase-ai-story-reference/actions/runs/41576504510) both passed the `showcase` and `reference` jobs on Ubuntu with Node 24.22.1. The push run recorded a production audit of zero vulnerabilities, 356 pgTAP assertions (twice), clean database lint and matching types, the concurrency boundary, 308 unit tests, the production build, **eight browser scenarios in 53.8 seconds**, all 11 query plans and the showcase scenario. The Vercel preview build also passed.
+- `main` was fast-forwarded to the exact tested commit, so the CI evidence and the deployed source are the same SHA. Vercel production deployment `7510299805` (GitHub deployment ID) for `f531cb1` reported success at 04:18 UTC on November 3. The stable alias served the new build (`Last-Modified: 04:18:53 GMT`) with HTTP 200, hash-based CSP and HSTS.
+- `npm run test:showcase:live` then passed against the production origin: one scenario, no retries, 2.3 seconds total.
+- The post-merge [main-branch run 41577233650](https://github.com/nshaikh3/supabase-ai-story-reference/actions/runs/41577233650) on the same commit also passed both jobs.
+
+The app's account-based features still run only locally and in CI; this release changes the dependency baseline, not the hosting scope.

@@ -23,7 +23,7 @@ An initial private Realtime receive policy checked a field that the authorizatio
 
 ## Verification and limits
 
-The October 9 Linux CI checkpoint passed 308 unit tests, 356 SQL assertions and eight full-app browser scenarios. It also exercised eleven authenticated query plans and a concurrent quota boundary. The separate static showcase passed CI and anonymous production browser acceptance on October 11. See [the execution record](LOCAL-HARDENING.md) for commands, earlier failures and measurement limits, and [publication progress](PUBLICATION.md) for subsequent demo verification.
+The latest Linux CI checkpoint (November 3 UTC, Next.js 16.4.3) passed 308 unit tests, 356 SQL assertions and eight full-app browser scenarios. It also exercised eleven authenticated query plans and a concurrent quota boundary. The separate static showcase passed CI and anonymous production browser acceptance, most recently on November 3. See [the execution record](LOCAL-HARDENING.md) for commands, earlier failures and measurement limits, and [publication progress](PUBLICATION.md) for subsequent demo verification.
 
 The full-application results establish tested behavior against isolated local Supabase services on the laptop and CI runner. They do not establish hosted capacity, a clean full dependency audit, an independent security audit, human release approval or accepted upstream work. Generation uses bounded requests and manual lease recovery; there is no durable background worker. Public source and static-demo hosting are verified separately in the publication record; full-app cloud hosting remains deferred.
 
