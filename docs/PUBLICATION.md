@@ -16,7 +16,7 @@ The commercial application's services remain excluded. Local wrappers retain the
 | Case study | [Draft completed](CASE-STUDY.md); publication/verification claims remain scoped to actual evidence. |
 | Vercel configuration | A separate Next.js static showcase and Vercel Build Output package are implemented. No backend configuration, private routes or Server Actions enter that deployment. Packaging and the isolated browser scenario passed: all chapters, CSP, mobile, reload, no external requests, private-route 404s and POST denial. The static production deployment passed anonymous HTTPS/browser acceptance on October 11. |
 | Full Git history secret scan | Gitleaks 8.30.1 scanned all 15 existing commits, approximately 1.27 MB; no findings. The final patched 197-file source-only snapshot (968.58 KB of scanned text) also passed. After release-preparation commit `6e9fc3a`, all 16 commits were rescanned (1.36 MB) with no findings. Subsequent publication edits still require scanning before upload. |
-| Dependency audit | A later clean install reported six high package entries: the existing development glob chain plus Next.js. Next.js and its lint configuration are now pinned to 16.3.8. The fresh production audit passed with zero findings; the patched application check passed and the environment-free static build passed. The unpatched `braces` chain remains open. |
+| Dependency audit | A later clean install reported six high package entries: the existing development glob chain plus Next.js. Next.js and its lint configuration were pinned to 16.3.8 on October 8. On November 2 three newer Next.js advisories affected 16.3.8; Next.js is now pinned to 16.4.3 and the production audit again reports zero findings. The `braces` advisory was withdrawn upstream on October 23. One moderate development-only `minimatch` advisory remains; see [the November 2 security patch](#november-2-security-patch). |
 | GitHub / Vercel / Supabase access | Public GitHub source uploaded with preserved history. Reconnected Vercel plugin can access the intended team; use of its existing Pro plan was approved on October 11. The user granted repository access to Vercel's GitHub App; import and production deployment succeeded on October 11. Earlier CLI device flows did not establish a saved login. EnKay free project creation was refused at the two-active-free-project limit; no hosted Supabase project was created. |
 | Hosted release and CI | [Both Linux CI jobs passed](https://github.com/nshaikh3/supabase-ai-story-reference/actions/runs/37883626288) on commit `280eb1e` after the lockfile repair. The read-only Vercel production release and acceptance checks passed on October 11. [Static showcase](SHOWCASE.md) is the selected initial release; full-app hosted verification remains deferred. |
 
@@ -43,9 +43,9 @@ The static showcase has no server-side optimizer, Auth data or dynamic cache. Th
 
 ## Remaining dependency finding
 
-The dependency path is `eslint-config-next → @next/eslint-plugin-next → fast-glob → micromatch → braces`. This is development/build tooling; it is absent from the production dependency audit. The advisory concerns stack exhaustion from deeply nested patterns. The reference application's public input is not passed to this linting dependency. Run untrusted pull-request checks on disposable runners without deployment credentials; keep lint/build tools outside the public request path.
+The `braces` finding previously recorded here (`eslint-config-next → @next/eslint-plugin-next → fast-glob → micromatch → braces`) is resolved: GitHub withdrew [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm) on October 23, and npm no longer reports it. No exception was granted while it was open.
 
-No incompatible package downgrade, hidden audit exclusion, blanket exception or unreviewed vendored patch was applied. Recheck [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm) at release. An independent, time-bounded risk decision remains pending if no compatible fix is available.
+The current remaining finding is a moderate development-only `minimatch` advisory in the ESLint 9 toolchain; see the [November 2 audit follow-up](SECURITY-AUDIT.md#dependency-follow-up-november-2). Run untrusted pull-request checks on disposable runners without deployment credentials; keep lint/build tools outside the public request path.
 
 ## Current failures and recovery
 
@@ -118,3 +118,22 @@ The live URL is also set in the GitHub repository's About website field. The REA
 The Git integration follows `main` for production builds. GitHub Actions runs independent regression checks; a Vercel Deployment Check gate is not configured. Keep changes reviewed and inspect both CI and deployment results before announcing subsequent releases. No paid monitoring or integration was added.
 
 Final local release checks passed after the documentation/live-test changes: `npm run check` (308 tests, types, lint, production build), `npm run build:showcase` (three routes, zero Actions, 45 static files), `npm run test:showcase` (one scenario, 12.8 seconds, no retries), `npm run docs:check` (26 Markdown files, 205 local links), and `git diff --check`. Gitleaks found no leaks in the 198-file source-only snapshot (984.62 KB scanned). An earlier overly broad working-directory scan was stopped and is not counted as passing evidence; the replacement excluded ignored local environments, dependencies and generated files.
+
+## November 2 security patch
+
+A routine audit found the production dependency check failing: three Next.js advisories published October 22 (two critical, one high) affected the pinned 16.3.8. The fix shipped in 16.4.1 with no 16.3.x backport. This change pins Next.js and `eslint-config-next` to 16.4.3 and patches Vitest, Vite and Zod within their current majors. Details and exposure analysis are in the [November 2 audit follow-up](SECURITY-AUDIT.md#dependency-follow-up-november-2). No application source, migration, policy or test was changed.
+
+Dependencies were installed with npm 11.19.0 to match the CI runner's lockfile format; the optional `@emnapi` entries repaired on October 9 are retained. Lockfile changes are limited to Next.js/SWC, the Next ESLint packages, Vitest and its Vite toolchain (Rolldown, oxc types, PostCSS, nanoid, chai, tinyrainbow) and Zod.
+
+Local verification on a fresh macOS ARM64 host (Node 24.13.0, Docker Desktop 29.9.2 with about 8 GiB allocated, Supabase CLI 2.119.0, Postgres 17.11). This was the first image download on this host; no other Docker stack was running or touched.
+
+- Guarded core startup passed with all eight services healthy and loopback-only bindings verified.
+- `db:reset` applied all seven migrations; `db:test` passed **356 pgTAP assertions across eight files**; `db:lint` found no errors; `db:types:check` matched; advisors reported only the known informational notes (seven intentional deny-all private tables, one unused expiry index).
+- `db:concurrency` admitted one of four simultaneous authenticated requests at the account boundary with no overshoot; the cleanup dry run found zero candidates.
+- `npm run check` passed: 26 Markdown files and 205 local links, **308 unit tests across 25 files**, TypeScript, ESLint and the production build.
+- `npm run test:e2e` passed **all eight browser scenarios in 45.5 seconds** with no retries.
+- `db:performance` passed all 11 authenticated query plans as non-bypass `authenticated` with fixture rollback verified. A final reset and all 356 assertions passed again.
+- `build:showcase` produced three public routes, zero Server Actions and 45 static files; `test:showcase` passed.
+- `npm audit --omit=dev` reports **zero** vulnerabilities. Full `npm audit` reports 16 moderate package entries from the single development-only `minimatch` advisory.
+
+The Supabase CLI announced v3.0.0 during these checks. That is a major-version change and is out of scope for this patch; the tested 2.119.0 pin is unchanged.

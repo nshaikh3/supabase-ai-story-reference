@@ -55,7 +55,7 @@ Never log access tokens, keys, passwords, emails, child names, full prompts or g
 
 ## Verification boundaries
 
-Actual results are recorded in PHASE-2.md through [PHASE-7.md](PHASE-7.md). The [Phase 6 agent audit](SECURITY-AUDIT.md) records fixed findings and open dependency/runtime/deployment requirements. Human security review, hosted CI and production deployment remain unverified. Private object and channel authorization are covered by local tests. The full dependency audit is not clean: the unpatched development-only glob advisory remains documented separately from the passing production audit.
+Actual results are recorded in PHASE-2.md through [PHASE-7.md](PHASE-7.md). The [Phase 6 agent audit](SECURITY-AUDIT.md) records fixed findings and open dependency/runtime/deployment requirements. Human security review, hosted CI and production deployment remain unverified. Private object and channel authorization are covered by local tests. The full dependency audit is not clean: one moderate development-only `minimatch` advisory remains documented separately from the passing production audit.
 
 ## Private images and cleanup
 

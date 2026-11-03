@@ -59,3 +59,21 @@ The post-patch October 7 audit returned zero production advisories and the same 
 ## Publication follow-up, October 8
 
 The later clean-install audit reported Next.js advisories affecting the previously pinned 16.3.6. The verified same-minor 16.3.8 security release and matching lint configuration were selected; [PUBLICATION.md](PUBLICATION.md) records patch validation separately from the earlier checkpoint. The development glob advisory remains open. The user selected a static read-only showcase with no backend resources for the first public release; that scope does not close full-application hosting or human-review gates.
+
+## Dependency follow-up, November 2
+
+The production audit was no longer clean. Three Next.js advisories published October 22 affect every 16.x release through 16.4.0, including the pinned 16.3.8:
+
+- [GHSA-2464-fhr4-w9xw](https://github.com/advisories/GHSA-2464-fhr4-w9xw), critical: remote code execution in the Image Optimization API when SVG files are used.
+- [GHSA-673q-mjm6-r5xr](https://github.com/advisories/GHSA-673q-mjm6-r5xr), critical: remote code execution in `use cache` functions returning typed arrays.
+- [GHSA-p3m5-59mp-jv5r](https://github.com/advisories/GHSA-p3m5-59mp-jv5r), high: App Router denial of service through Server Actions.
+
+All three are fixed in [16.4.1](https://github.com/vercel/next.js/releases/tag/v16.4.1); there is no 16.3.x backport. Next.js and `eslint-config-next` are now pinned to 16.4.3 (released October 23), which carries those fixes plus later backported bug fixes. The 16.4.4 release published on the day of this review was not selected. The full application does not use `use cache` or `next/image`, but it does use Server Actions and keeps the default image-optimization endpoint, so the patch was applied rather than argued away. The public showcase is a static export with no server runtime, so none of the three applied to the live deployment.
+
+Development tooling was patched in the same change: Vitest 4.1.11 → 4.1.12 ([GHSA-qxg6-89mg-rqv8](https://github.com/advisories/GHSA-qxg6-89mg-rqv8), [GHSA-xp26-3454-mjgp](https://github.com/advisories/GHSA-xp26-3454-mjgp)), its Vite dependency 8.3.1 → 8.3.5 (five Vite/launch-editor advisories published October 20–21) and Zod 4.6.5 → 4.6.7 ([GHSA-mrhx-c7xc-m3w5](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5), via `eslint-plugin-react-hooks`). Every change stays within the existing major version.
+
+**S6-04 is closed.** GitHub withdrew [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm) (`braces`) on October 23, and npm no longer reports it. No exception was ever granted for it.
+
+**Remaining finding:** the full audit reports 16 moderate package entries from one development-only advisory, [GHSA-g3hv-75wg-m249](https://github.com/advisories/GHSA-g3hv-75wg-m249) (`minimatch` < 11.0.1, glob-pattern denial of service). It is reached only through the ESLint 9 toolchain (`eslint`, `typescript-eslint` and the plugins bundled by `eslint-config-next`), which depends on older `minimatch` majors with no patched release. Lint runs on repository-controlled patterns, never on request input. No override, downgrade or exception was applied; recheck when the ESLint toolchain moves to a patched `minimatch`.
+
+The Next.js 16.4.4 release notes announce a further Next.js security release for November 3. Recheck the audit and apply that release once it is published.
