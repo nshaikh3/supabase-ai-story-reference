@@ -147,3 +147,11 @@ The Supabase CLI announced v3.0.0 during these checks. That is a major-version c
 - The post-merge [main-branch run 41577233650](https://github.com/nshaikh3/supabase-ai-story-reference/actions/runs/41577233650) on the same commit also passed both jobs.
 
 The app's account-based features still run only locally and in CI; this release changes the dependency baseline, not the hosting scope.
+
+## November 3 release
+
+Next.js and `eslint-config-next` moved from 16.4.3 to 16.4.5, the announced November security release (seven moderate advisories; see the [audit follow-up](../SECURITY-AUDIT.md#dependency-follow-up-november-2)). The same change set rewrote the README, moved setup detail into [LOCAL-DEVELOPMENT.md](../LOCAL-DEVELOPMENT.md) and moved these execution logs into `docs/record/`. No application source, migration, policy or test changed.
+
+- Locally: `npm run check` (308 unit tests, types, lint, production build), `build:showcase` and `test:showcase` passed. Gitleaks found no leaks in the new commits.
+- [Pull request #3](https://github.com/nshaikh3/supabase-ai-story-reference/pull/3) on commit `ec55ff3`: [push run 41773095110](https://github.com/nshaikh3/supabase-ai-story-reference/actions/runs/41773095110) and [pull-request run 41773098522](https://github.com/nshaikh3/supabase-ai-story-reference/actions/runs/41773098522) passed both jobs on Node 24.22.1. The push run recorded a production audit of zero vulnerabilities, 356 pgTAP assertions (twice), 308 unit tests, documentation validation (28 files, 213 links), **eight browser scenarios in 56.9 seconds**, all 11 query plans and the showcase scenario.
+- `main` was fast-forwarded to `ec55ff3`. Vercel production deployment `7537993218` (GitHub deployment ID) reported success at 04:33 UTC on November 4 (November 3 local time). The stable alias returned HTTP 200 with the new build, and `npm run test:showcase:live` passed (one scenario, 2.5 seconds).
