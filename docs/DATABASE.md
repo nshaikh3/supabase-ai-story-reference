@@ -57,7 +57,7 @@ Direct status/page/job writes remain prohibited. Input changes are rejected whil
 
 `npm run db:performance` runs a fixed local-only workload with 10,000 fictional stories and related rows, normal planner settings and the actual authenticated RLS role, then verifies fixture rollback. [Full results and limits](PERFORMANCE.md) show selective queries using existing indexes, with deep offset pagination doing more scan/sort work than the cursor comparison. No schema, policy, index or generated-type change was warranted. A temporary invoker-only EXPLAIN helper exists only inside the rolled-back measurement transaction.
 
-The original Phase 6 measurement used PostgreSQL 17.6. The supported local runtime is now PostgreSQL 17.11 via CLI 2.119.0; updated evidence is recorded in [LOCAL-HARDENING.md](LOCAL-HARDENING.md).
+The original Phase 6 measurement used PostgreSQL 17.6. The supported local runtime is now PostgreSQL 17.11 via CLI 2.119.0; updated evidence is recorded in [LOCAL-HARDENING.md](record/LOCAL-HARDENING.md).
 
 ## Migration handoff and recovery
 

@@ -1,6 +1,6 @@
 # Phase 7 execution record
 
-Status: documentation and deployment preparation complete on 2026-10-05. Authorized after Phase 6's behavioral checks passed and its open security findings were reported. Open audit findings still block a public launch; this checkpoint does not treat them as resolved or deploy resources. The user subsequently authorized all remaining local hardening implementation, with deployment kept separate; that follow-on work is not claimed by this checkpoint.
+Status: documentation and deployment preparation complete on 2026-10-05. Authorized after Phase 6's behavioral checks passed and its open security findings were reported. Open audit findings still block a public launch; this checkpoint does not treat them as resolved or deploy resources. I subsequently authorized all remaining local hardening implementation, with deployment kept separate; that follow-on work is not claimed by this checkpoint.
 
 ## Plan and boundaries
 
@@ -18,7 +18,7 @@ Run the documentation check and `npm run check`, then the existing six-scenario 
 
 Documentation and required local checks are complete. Phase 8 has not started.
 
-- Added deployment ownership, open release criteria, staging acceptance, independent app/database/Edge rollout, secret rotation and recovery guidance in [DEPLOYMENT.md](DEPLOYMENT.md), plus a [reviewer walkthrough](REVIEWER-GUIDE.md).
+- Added deployment ownership, open release criteria, staging acceptance, independent app/database/Edge rollout, secret rotation and recovery guidance in [DEPLOYMENT.md](../DEPLOYMENT.md), plus a [reviewer walkthrough](../REVIEWER-GUIDE.md).
 - Expanded README, architecture diagrams, threat model, migration inventory, decisions, audit follow-up and AI/provenance documentation. Corrected stale landing/dashboard copy. Preserved one reviewed fictional browser screenshot.
 - Added `npm run docs:check` to `npm run check`; it also runs through the existing CI workflow. Offline documentation validation passed. Temporary negative probes correctly rejected missing targets, missing Markdown anchors and an unknown npm script; probe files were removed.
 - `npm run check` passed 219 unit tests in 19 files, TypeScript, ESLint and the production build. Local configuration and whitespace checks passed. All nine source/reuse hashes match. Both environment files remain ignored and mode 0600. Scans of 137 tracked/new files and 35 browser build assets found no actual Edge secrets; secret values were never printed.

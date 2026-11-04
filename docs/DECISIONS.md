@@ -2,7 +2,7 @@
 
 ## ADR-001: Selective reuse in a separate repository
 
-The user revised the original clean-room requirement to authorize reuse of generic existing code. We extracted reviewed UI primitives and configuration from current working files; hashes record provenance. The commercial repository and its uncommitted work remain unchanged. Product-specific behavior, assets, history, secrets, and prompts are excluded. This preserves useful work without publishing unrelated commercial code.
+I revised the original clean-room requirement to authorize reuse of generic existing code. We extracted reviewed UI primitives and configuration from current working files; hashes record provenance. The commercial repository and its uncommitted work remain unchanged. Product-specific behavior, assets, history, secrets, and prompts are excluded. This preserves useful work without publishing unrelated commercial code.
 
 ## ADR-002: RLS enabled before access
 
@@ -120,7 +120,7 @@ Open patch, dependency, abuse, cleanup and operational findings remain launch ga
 
 ## ADR-022: Finish local safeguards while keeping deployment separate
 
-The user explicitly authorized all remaining local implementation after Phase 7. Use an allowlisted target manifest, secure hosted cookies, invitation-only hosted signup and dynamic nonce CSP while retaining local CLI isolation. Keep deployment entries unconfigured until selected and reviewed. Upgrade the supported CLI/image baseline instead of overriding managed images.
+I authorized all remaining local implementation after Phase 7. Use an allowlisted target manifest, secure hosted cookies, invitation-only hosted signup and dynamic nonce CSP while retaining local CLI isolation. Keep deployment entries unconfigured until selected and reviewed. Upgrade the supported CLI/image baseline instead of overriding managed images.
 
 Enforce resource budgets in Postgres triggers/private helpers, with fixed UTC windows and account/service concurrency leases. The global admission row trades throughput for a simple auditable bound appropriate to a small reference; no network I/O happens under that lock. Retain issuance charges and active execution leases after story deletion. Use an immutable path registry to arbitrate cleanup/reservation races. Reconciliation stays a separate privileged operator, defaults to dry run and requires a reviewed report digest. Do not place a privileged key in the app.
 

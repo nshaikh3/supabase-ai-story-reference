@@ -1,6 +1,6 @@
 # Deployment preparation
 
-**Full-application release state: local reference only; hosted launch deferred.** The user has authorized a separate read-only static demo first; follow [SHOWCASE.md](SHOWCASE.md) for that narrower deployment. Its release does not close the full-application gates below. Phase 7 prepared the handoff; the subsequent [local hardening implementation](LOCAL-HARDENING.md) adds target guards, quotas, reconciliation, worker operations and a separate staging harness. No hosted project, repository, domain or deployment has been created. The target below is a proposal from the project brief: Vercel for Next.js and a new Supabase project dedicated to this reference. It never includes the commercial application's resources.
+**Full-application release state: local reference only; hosted launch deferred.** A separate read-only static demo is published first; follow [SHOWCASE.md](SHOWCASE.md) for that narrower deployment. Its release does not close the full-application gates below. Phase 7 prepared the handoff; the subsequent [local hardening implementation](record/LOCAL-HARDENING.md) adds target guards, quotas, reconciliation, worker operations and a separate staging harness. No hosted Supabase project or full-application deployment exists; the public repository and static showcase are separate. The target below is a proposal from the project brief: Vercel for Next.js and a new Supabase project dedicated to this reference. It never includes the commercial application's resources.
 
 ## Decisions to make before provisioning
 
@@ -97,4 +97,4 @@ Monitor safe operation/error codes, latency, job status/expired leases, Storage 
 
 ## Current release decision
 
-**Do not publish yet.** Local implementation is tracked in [LOCAL-HARDENING.md](LOCAL-HARDENING.md). The remaining release criteria concern selected hosting, real service configuration/evidence, the remaining development-only advisory and independent review. Follow [OPERATIONS.md](OPERATIONS.md) for prepared tooling. [Phase 8 evaluation](MCP-EVALUATION.md) defers a user-facing MCP interface until a concrete product need exists. No hosted result is inferred from local checks.
+**Do not publish yet.** Local implementation is tracked in [LOCAL-HARDENING.md](record/LOCAL-HARDENING.md). The remaining release criteria concern selected hosting, real service configuration/evidence, the remaining development-only advisory and independent review. Follow [OPERATIONS.md](OPERATIONS.md) for prepared tooling. [Phase 8 evaluation](MCP-EVALUATION.md) defers a user-facing MCP interface until a concrete product need exists. No hosted result is inferred from local checks.

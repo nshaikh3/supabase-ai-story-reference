@@ -1,8 +1,8 @@
 # AI-assisted development
 
-Codex inspected the supplied brief and existing app, researched official documentation, proposed the phase plan, and implemented the approved Phase 1 extraction and foundation. The user explicitly requested reuse and later authorized proceeding despite an unresponsive Docker UI.
+Codex inspected the supplied brief and existing app, researched official documentation, proposed the phase plan, and implemented the approved Phase 1 extraction and foundation. I asked for selective reuse of generic code and later authorized proceeding despite an unresponsive Docker UI.
 
-The user reviewed scope and reuse boundaries. A human review of the final security-sensitive implementation remains pending; this document does not claim such review has already occurred.
+I reviewed scope and reuse boundaries. A human review of the final security-sensitive implementation remains pending; this document does not claim such review has already occurred.
 
 Agent contributions include selective extraction, dependency pinning, migration authoring, local targeting safeguards, database tests, type generation workflow, and documentation. Actual command results are recorded in `PHASE-1.md`.
 
@@ -23,7 +23,7 @@ Skill sources were read directly from the official repository, not installed as 
 
 ## Phase 2
 
-On 2026-09-28 the user authorized Auth and ownership implementation. Codex added a request-scoped Supabase SSR integration, Auth screens/actions, a PKCE callback, owner policies and column grants, database role tests, unit tests, browser tests and public-only local environment setup. The original nine reused generic files were retained; no further commercial code or configuration was copied.
+On 2026-09-28 I authorized Auth and ownership implementation. Codex added a request-scoped Supabase SSR integration, Auth screens/actions, a PKCE callback, owner policies and column grants, database role tests, unit tests, browser tests and public-only local environment setup. The original nine reused generic files were retained; no further commercial code or configuration was copied.
 
 Current official Supabase skills and relevant RLS/privilege references were read again before SQL changes. The installed Next.js 16.3.6 documentation was consulted for Proxy, Server Actions and data-boundary authorization. Additional primary sources:
 
@@ -33,11 +33,11 @@ Current official Supabase skills and relevant RLS/privilege references were read
 - [Column privileges](https://supabase.com/docs/guides/database/postgres/column-level-security).
 - [Observability](https://supabase.com/docs/guides/observability), reached from the skill's monitoring/debugging URL.
 
-The agent inspected grants, policies, identity verification, caching, callback destinations and secret handling, and ran official local database advisors. This is an agent review, not a claim of human security approval or a completed Phase 6 audit. `PHASE-2.md` records actual results and remaining limits. Browser-test execution was briefly blocked by account usage limits in the automatic approval system; it resumed after the user's continue instruction.
+The agent inspected grants, policies, identity verification, caching, callback destinations and secret handling, and ran official local database advisors. This is an agent review, not a claim of human security approval or a completed Phase 6 audit. `PHASE-2.md` records actual results and remaining limits. Browser-test execution was briefly blocked by account usage limits in the automatic approval system; it resumed after I told the agent to continue.
 
 ## Phase 3 work
 
-The user authorized continuing to the next phase on 2026-09-29. The agent reused the existing foundation and generic components, read the current official Supabase skills and Storage documentation, inspected installed Next.js Server Action documentation, and added owner story UI plus private uploads. The commercial application and its Docker stack were not modified.
+I authorized the next phase on 2026-09-29. The agent reused the existing foundation and generic components, read the current official Supabase skills and Storage documentation, inspected installed Next.js Server Action documentation, and added owner story UI plus private uploads. The commercial application and its Docker stack were not modified.
 
 Image validation, object authorization, cross-account denial and failure recovery were developed with tests. A source review of the pinned Storage uploader changed the cleanup design: permission preflight does not hold a transaction through byte storage. The resulting implementation deliberately records that concurrency limitation instead of claiming atomic cleanup. Human review is still needed; automated passes are not a security certification. Executed results and any remaining failures are in PHASE-3.md.
 
@@ -50,32 +50,36 @@ Verification status and observed failures are recorded in PHASE-4.md. No live Ge
 
 AI assistance added the private status trigger and receive policy, cookie-compatible browser client, subscription lifecycle, cross-tab sign-out handling, and database/unit/browser coverage. No additional commercial files or dependencies were introduced. Official Supabase skills, Broadcast/authorization/SSR guidance, the installed Realtime helper definition and SDK source, and installed Next.js `useRouter` documentation informed the implementation. The four-field message shape includes the ID added by the pinned `realtime.send` function.
 
-Automated verification status and resolved failures are recorded in PHASE-5.md. Human review is not claimed. Phase 5's final cleanup and database checks passed on October 5 after the user's Docker restart.
+Automated verification status and resolved failures are recorded in PHASE-5.md. Human review is not claimed. Phase 5's final cleanup and database checks passed on October 5 after I restarted Docker.
 
 ## Phase 6 work
 
-The user authorized the next phase after Phase 5 closeout. Codex reviewed application, SQL, local tooling and dependency boundaries; recorded findings before fixes; contained credential-bearing startup output and private-image dependency exceptions; and added regression tests plus a fixed local-only RLS performance workload. No additional commercial source, application feature, schema migration or dependency was introduced.
+I authorized the next phase after Phase 5 closeout. Codex reviewed application, SQL, local tooling and dependency boundaries; recorded findings before fixes; contained credential-bearing startup output and private-image dependency exceptions; and added regression tests plus a fixed local-only RLS performance workload. No additional commercial source, application feature, schema migration or dependency was introduced.
 
 Current official Supabase skills/changelog, RLS and EXPLAIN guidance, PostgreSQL security release notes, the braces advisory, installed Next.js route/error documentation and the exact Realtime v2.135.3 authorization source informed the review. The Realtime source corrected an exploratory topic-based benchmark to use actual generated probe IDs. Performance evidence uses synthetic rollback-only fixtures and explicitly distinguishes owner-role execution from administrator fixture setup.
 
-[PHASE-6.md](PHASE-6.md), [SECURITY-AUDIT.md](SECURITY-AUDIT.md) and [PERFORMANCE.md](PERFORMANCE.md) record results and limitations. The audit does not claim human approval, complete vulnerability coverage, production readiness or clean development dependencies. No hosted deployment or upstream issue was submitted.
+[PHASE-6.md](record/PHASE-6.md), [SECURITY-AUDIT.md](SECURITY-AUDIT.md) and [PERFORMANCE.md](PERFORMANCE.md) record results and limitations. The audit does not claim human approval, complete vulnerability coverage, production readiness or clean development dependencies. No hosted deployment or upstream issue was submitted.
 
 ## Phase 7 work
 
-The user authorized the next phase on October 5. Codex expanded the README, architecture/trust diagrams, threat model, migration inventory, decisions and deployment handoff; added a reviewer walkthrough and offline documentation check; and corrected stale landing/dashboard copy. There is no new schema, dependency, commercial reuse, hosted configuration bypass or public deployment. Vercel with a new dedicated Supabase project is a proposed target, not an approved resource purchase.
+I authorized the next phase on October 5. Codex expanded the README, architecture/trust diagrams, threat model, migration inventory, decisions and deployment handoff; added a reviewer walkthrough and offline documentation check; and corrected stale landing/dashboard copy. There is no new schema, dependency, commercial reuse, hosted configuration bypass or public deployment. Vercel with a new dedicated Supabase project is a proposed target, not an approved resource purchase.
 
 The current official Supabase skills and changelog were read again. Official deployment, Auth redirects, Edge authentication/secrets, environment-management, backup and PostgreSQL upgrade guidance informed the runbook, together with Vercel's Next.js/Node documentation. The installed Next.js deployment/environment documentation and pinned CLI help were checked for build-time variables and release command behavior. Source links appear next to the resulting guidance in [DEPLOYMENT.md](DEPLOYMENT.md).
 
 The README image is an unchanged copy of the successful Phase 6 local Playwright artifact `test-results/phase4-generation-desktop.png`, reviewed visually for fictional content and absence of account details/credentials before retention as `docs/images/story-workspace.png` (SHA-256 `547923b91712bc29b0b97e5de7cdd114b1497e87041b8b5b889bde7f483c31a7`). It is generated by the reference application with mock prose, not copied from the commercial app. The nine commercial-source provenance entries in [REUSE-MANIFEST.json](REUSE-MANIFEST.json) remain unchanged.
 
-[PHASE-7.md](PHASE-7.md) records fresh verification and remaining launch gates. The documentation helper checks local links/anchors and npm script names only; it does not fetch external URLs or prove deployment safety. No human security approval, live provider test or accepted upstream contribution is claimed.
+[PHASE-7.md](record/PHASE-7.md) records fresh verification and remaining launch gates. The documentation helper checks local links/anchors and npm script names only; it does not fetch external URLs or prove deployment safety. No human security approval, live provider test or accepted upstream contribution is claimed.
 
 ## October 6–7: remaining local implementation
 
-The user explicitly expanded scope to all remaining local implementation while keeping deployment separate. Codex reviewed current official Supabase skills/changelog/Storage/API/PAT documentation and installed Next CSP/header documentation, then implemented a CLI-created resource/reconciliation migration, target validation and security headers, operator recovery tools and a separate staging harness. No new commercial source was copied and the existing reuse manifest remains unchanged. Worker-secret values stayed in ignored mode-0600 files; no hosted target, credential, message or deployment was created. [LOCAL-HARDENING.md](LOCAL-HARDENING.md) records actual verification and limitations, including the remaining upstream development advisory and the distinction between fixture tests and hosted execution.
+I expanded scope to all remaining local implementation while keeping deployment separate. Codex reviewed current official Supabase skills/changelog/Storage/API/PAT documentation and installed Next CSP/header documentation, then implemented a CLI-created resource/reconciliation migration, target validation and security headers, operator recovery tools and a separate staging harness. No new commercial source was copied and the existing reuse manifest remains unchanged. Worker-secret values stayed in ignored mode-0600 files; no hosted target, credential, message or deployment was created. [LOCAL-HARDENING.md](record/LOCAL-HARDENING.md) records actual verification and limitations, including the remaining upstream development advisory and the distinction between fixture tests and hosted execution.
 
 The fresh October 7 audit found the newly indexed Sharp/librsvg advisory. Its official patch guidance informed the Sharp 0.35.5 update and early SVG-loader block, verified with actual image bytes. Browser fixture repairs retained the new quotas and path-retirement rules; no RLS or admission rule was relaxed for a test. An intermittent earlier sign-in redirect was recorded without inventing a cause or claiming a fix.
 
-## Recruiter presentation and static publication
+## Public demo and static publication
 
-On October 7–8 the user authorized MIT public source and a free-tier live demo. Codex added the omitted account-free reader, architecture tour, case study, publication record and build guards. The user subsequently chose a static read-only deployment because the account's two active free Supabase project slots were occupied. A separate Next.js export reuses the public components and excludes all private routes, Server Actions, middleware and backend configuration. No new commercial code or hosted data was accessed. Full-application hosting remains deferred. Actual checks and access blockers are recorded in [PUBLICATION.md](PUBLICATION.md); no human review is implied by automated verification.
+On October 7–8 I authorized MIT public source and a free-tier live demo. Codex added the omitted account-free reader, architecture tour, case study, publication record and build guards. I then chose a static read-only deployment because the account's two active free Supabase project slots were occupied. A separate Next.js export reuses the public components and excludes all private routes, Server Actions, middleware and backend configuration. No new commercial code or hosted data was accessed. Full-application hosting remains deferred. Actual checks and access blockers are recorded in [PUBLICATION.md](record/PUBLICATION.md); no human review is implied by automated verification.
+
+## November 2–3: security patches and documentation cleanup
+
+Claude Code (Anthropic) did this maintenance under my direction. It applied the Next.js 16.4.3 and 16.4.5 security releases and patched development tooling within existing major versions; the [audit follow-up](SECURITY-AUDIT.md#dependency-follow-up-november-2) and [publication record](record/PUBLICATION.md#november-2-security-patch) hold the verification evidence. It also rewrote the README as a short front page, moved setup detail into [LOCAL-DEVELOPMENT.md](LOCAL-DEVELOPMENT.md), moved dated execution logs into [docs/record](record/README.md) and removed private planning notes and hosting account identifiers from the public documents. No application source, migration, policy or test changed.

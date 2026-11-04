@@ -55,7 +55,7 @@ Never log access tokens, keys, passwords, emails, child names, full prompts or g
 
 ## Verification boundaries
 
-Actual results are recorded in PHASE-2.md through [PHASE-7.md](PHASE-7.md). The [Phase 6 agent audit](SECURITY-AUDIT.md) records fixed findings and open dependency/runtime/deployment requirements. Human security review, hosted CI and production deployment remain unverified. Private object and channel authorization are covered by local tests. The full dependency audit is not clean: one moderate development-only `minimatch` advisory remains documented separately from the passing production audit.
+Actual results are recorded in PHASE-2.md through [PHASE-7.md](record/PHASE-7.md). The [Phase 6 agent audit](SECURITY-AUDIT.md) records fixed findings and open dependency/runtime/deployment requirements. Human security review, hosted CI and production deployment remain unverified. Private object and channel authorization are covered by local tests. The full dependency audit is not clean: one moderate development-only `minimatch` advisory remains documented separately from the passing production audit.
 
 ## Private images and cleanup
 
@@ -93,7 +93,7 @@ Realtime caches authorization until rejoin/new JWT or expiry. Local UI cleanup i
 
 ## Local hardening and hosted boundary
 
-[LOCAL-HARDENING.md](LOCAL-HARDENING.md) records current implementation and checks. New private control/counter/path/lease tables enable RLS with no client table grants. Narrow definer helpers use fixed empty search paths and explicit owner checks. Public image-admission wrappers are invokers. Only protected local migrations/operator SQL bypass admission; a caller cannot select that SQL role through the Data API. SQL tests and simultaneous authenticated sessions verify limits independently of UI behavior.
+[LOCAL-HARDENING.md](record/LOCAL-HARDENING.md) records current implementation and checks. New private control/counter/path/lease tables enable RLS with no client table grants. Narrow definer helpers use fixed empty search paths and explicit owner checks. Public image-admission wrappers are invokers. Only protected local migrations/operator SQL bypass admission; a caller cannot select that SQL role through the Data API. SQL tests and simultaneous authenticated sessions verify limits independently of UI behavior.
 
 Every HTML response uses a fresh nonce CSP and private/no-store caching, including the formerly static landing page. Caller-supplied nonce/policy headers are overwritten. Production scripts omit unsafe-eval and unsafe-inline; connections are limited to the configured Supabase HTTP/WebSocket endpoint. Images retain their restrictive sandbox CSP. Secure cookies and HSTS apply only to validated hosted HTTPS targets. Hosted signup is blocked in the UI and action; the separate preflight also requires Auth signup disabled, since UI alone does not protect Auth.
 

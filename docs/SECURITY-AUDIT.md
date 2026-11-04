@@ -35,7 +35,7 @@ Realtime authorization can remain cached until rejoin/new JWT/expiry, and local 
 
 ## Follow-up order
 
-Before hosting, resolve the database patch baseline; recheck the development advisory; select a deployment target and define Auth/abuse/privacy controls; implement storage reconciliation; then perform independent human review and hosted regression/load verification. Do not claim this audit grants production approval. Phase 7's [deployment preparation](DEPLOYMENT.md) maps these findings to explicit release criteria without closing them. Its [execution record](PHASE-7.md) reports fresh local verification separately from this audit baseline.
+Before hosting, resolve the database patch baseline; recheck the development advisory; select a deployment target and define Auth/abuse/privacy controls; implement storage reconciliation; then perform independent human review and hosted regression/load verification. Do not claim this audit grants production approval. Phase 7's [deployment preparation](DEPLOYMENT.md) maps these findings to explicit release criteria without closing them. Its [execution record](record/PHASE-7.md) reports fresh local verification separately from this audit baseline.
 
 ## Primary references
 
@@ -48,7 +48,7 @@ Before hosting, resolve the database patch baseline; recheck the development adv
 
 ## October 6–7 local-hardening follow-up
 
-The table above is the historical Phase 6 assessment. Current changes are recorded in [LOCAL-HARDENING.md](LOCAL-HARDENING.md): S6-03 now has the supported CLI 2.119.0 / Postgres 17.11 local baseline; S6-05 has database account/service issuance and work limits; S6-06 has operator reconciliation with immutable path claims; S6-07 has nonce CSP, secure hosted configuration and invitation-only app signup. Provider-owned traffic/spend, SMTP, hosted verification and human review remain release requirements. Local rotation and separately guarded staging tools are described in [OPERATIONS.md](OPERATIONS.md).
+The table above is the historical Phase 6 assessment. Current changes are recorded in [LOCAL-HARDENING.md](record/LOCAL-HARDENING.md): S6-03 now has the supported CLI 2.119.0 / Postgres 17.11 local baseline; S6-05 has database account/service issuance and work limits; S6-06 has operator reconciliation with immutable path claims; S6-07 has nonce CSP, secure hosted configuration and invitation-only app signup. Provider-owned traffic/spend, SMTP, hosted verification and human review remain release requirements. Local rotation and separately guarded staging tools are described in [OPERATIONS.md](OPERATIONS.md).
 
 The source-map-js advisory discovered October 5 was fixed by the compatible 1.2.2 patch. October 6 production dependency audit reports zero findings. The full audit still reports five high package entries from the single unpatched braces 3.0.3 advisory; registry latest remains 3.0.3. No exception was granted and no incompatible downgrade applied.
 
@@ -58,7 +58,7 @@ The post-patch October 7 audit returned zero production advisories and the same 
 
 ## Publication follow-up, October 8
 
-The later clean-install audit reported Next.js advisories affecting the previously pinned 16.3.6. The verified same-minor 16.3.8 security release and matching lint configuration were selected; [PUBLICATION.md](PUBLICATION.md) records patch validation separately from the earlier checkpoint. The development glob advisory remains open. The user selected a static read-only showcase with no backend resources for the first public release; that scope does not close full-application hosting or human-review gates.
+The later clean-install audit reported Next.js advisories affecting the previously pinned 16.3.6. The verified same-minor 16.3.8 security release and matching lint configuration were selected; [PUBLICATION.md](record/PUBLICATION.md) records patch validation separately from the earlier checkpoint. The development glob advisory remains open. I chose a static read-only showcase with no backend resources for the first public release; that scope does not close full-application hosting or human-review gates.
 
 ## Dependency follow-up, November 2
 

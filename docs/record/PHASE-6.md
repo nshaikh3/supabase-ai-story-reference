@@ -14,9 +14,9 @@ Status: implementation and local behavioral verification complete on 2026-10-05,
 
 - Startup captures/discards both credential-bearing CLI streams and returns only fixed process status. Actual idempotent startup passed without printing keys. No diagnostic credential file is written.
 - The private image handler contains thrown dependency/byte-read errors and preserves its generic 404 and private security headers. Auth and RLS still precede Storage access and decoding.
-- `npm run db:performance` validates local configuration/socket/bindings, runs one fixed synthetic SQL workload, and verifies real authenticated owner visibility plus rollback. Hosted URLs, arbitrary SQL/file paths and forwarded flags are rejected. Eleven query plans and their workload hash are preserved in [the evidence snapshot](evidence/phase6-performance.json).
+- `npm run db:performance` validates local configuration/socket/bindings, runs one fixed synthetic SQL workload, and verifies real authenticated owner visibility plus rollback. Hosted URLs, arbitrary SQL/file paths and forwarded flags are rejected. Eleven query plans and their workload hash are preserved in [the evidence snapshot](../evidence/phase6-performance.json).
 - Added 37 regression cases across image responses, CLI output containment, local performance targeting and evidence validation. CI adds production dependency audit and the fixed performance run; hosted CI itself remains unexecuted.
-- Recorded the dedicated [security audit](SECURITY-AUDIT.md), measured [performance review](PERFORMANCE.md), related decision and development provenance. No application feature, dependency, migration, grant, policy, index or generated type changed. No new commercial code was copied.
+- Recorded the dedicated [security audit](../SECURITY-AUDIT.md), measured [performance review](../PERFORMANCE.md), related decision and development provenance. No application feature, dependency, migration, grant, policy, index or generated type changed. No new commercial code was copied.
 
 ## Verification
 

@@ -4,7 +4,7 @@ Status: Phase 2 complete. All local acceptance gates passed. This is the histori
 
 ## Scope and starting point
 
-Phase 1 was committed and clean before this work. It supplied three RLS-enabled tables with no client grants, local synthetic identities, a static Next.js page and isolated Supabase tooling. The user authorized Phase 2 on 2026-09-28. No changes to the commercial app, production services or hosted Supabase are authorized by this phase.
+Phase 1 was committed and clean before this work. It supplied three RLS-enabled tables with no client grants, local synthetic identities, a static Next.js page and isolated Supabase tooling. I authorized Phase 2 on 2026-09-28. No changes to the commercial app, production services or hosted Supabase are authorized by this phase.
 
 ## Implementation
 
@@ -49,7 +49,7 @@ Executed on 2026-09-28–29 UTC:
 - A browser alert selector also matched Next.js's accessibility announcer: scoped assertions to the main content.
 - Cold local Auth responses exceeded the first short browser assertion deadline: increased the browser allowance; Auth logs confirmed successful requests.
 - The mail helper initially used an Inbucket endpoint: switched to the actual Mailpit API, filtered to the exact synthetic recipient.
-- Automatic approval briefly blocked browser execution because of account usage limits. Tests resumed after the user's continue instruction.
+- Automatic approval briefly blocked browser execution because of account usage limits. Tests resumed after I told the agent to continue.
 
 No required local check remains failing.
 

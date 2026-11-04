@@ -4,7 +4,7 @@ Status: Phase 3 complete. All required local acceptance gates passed on 2026-09-
 
 ## Scope
 
-The user authorized the next phase on 2026-09-29. Phase 2 was committed and clean. This phase reuses the existing Auth client, owner policies and generic components, and adds the owner dashboard, story CRUD UI, private Storage and secure hero-image uploads. The commercial app, its containers and hosted services are outside scope and unchanged.
+I authorized the next phase on 2026-09-29. Phase 2 was committed and clean. This phase reuses the existing Auth client, owner policies and generic components, and adds the owner dashboard, story CRUD UI, private Storage and secure hero-image uploads. The commercial app, its containers and hosted services are outside scope and unchanged.
 
 ## Implementation
 

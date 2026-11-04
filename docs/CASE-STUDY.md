@@ -15,7 +15,7 @@ The working application supports confirmed email accounts, private story drafts 
 | Deterministic mock provider by default | Makes the core reproducible without a paid key, provider availability or transmitting real personal information. Optional Gemini code exists; live paid-provider behavior is unverified. |
 | Private Broadcast as a notification hint | Open tabs refetch authorized persisted state after a change or reconnect. Messages are best-effort, not a durable event queue. |
 | Reserved image paths and reviewed cleanup | Handles failures across Storage and Postgres without pretending there is a distributed transaction. Cleanup is eventual and requires identity/race checks. |
-| Separate public sample and private application | Lets a recruiter understand the project without signing up while retaining owner-only access to actual account data. |
+| Separate public sample and private application | Lets a reviewer understand the project without signing up while retaining owner-only access to actual account data. |
 
 ## A concrete debugging example
 
@@ -23,7 +23,7 @@ An initial private Realtime receive policy checked a field that the authorizatio
 
 ## Verification and limits
 
-The latest Linux CI checkpoint (November 3 UTC, Next.js 16.4.3) passed 308 unit tests, 356 SQL assertions and eight full-app browser scenarios. It also exercised eleven authenticated query plans and a concurrent quota boundary. The separate static showcase passed CI and anonymous production browser acceptance, most recently on November 3. See [the execution record](LOCAL-HARDENING.md) for commands, earlier failures and measurement limits, and [publication progress](PUBLICATION.md) for subsequent demo verification.
+Linux CI passes 308 unit tests, 356 SQL assertions and eight full-app browser scenarios. It also exercises eleven authenticated query plans and a concurrent quota boundary. The separate static showcase passed CI and anonymous production browser acceptance, most recently on November 3. See [the execution record](record/LOCAL-HARDENING.md) for commands, earlier failures and measurement limits, and [publication progress](record/PUBLICATION.md) for subsequent demo verification.
 
 The full-application results establish tested behavior against isolated local Supabase services on the laptop and CI runner. They do not establish hosted capacity, a clean full dependency audit, an independent security audit, human release approval or accepted upstream work. Generation uses bounded requests and manual lease recovery; there is no durable background worker. Public source and static-demo hosting are verified separately in the publication record; full-app cloud hosting remains deferred.
 
@@ -33,4 +33,4 @@ The project was developed with Codex assistance through reviewed phases, using o
 
 ## Reviewer path
 
-Read the [public sample](https://supabase-ai-story-reference.vercel.app/demo), inspect [the architecture](ARCHITECTURE.md), then follow [the 10–15 minute source tour](REVIEWER-GUIDE.md). For an interview, discuss one ownership policy, one failure/recovery path and one deliberately deferred feature. Current public URLs and execution status belong in [PUBLICATION.md](PUBLICATION.md); no unverified deployment or contribution is implied by this case study.
+Read the [public sample](https://supabase-ai-story-reference.vercel.app/demo), inspect [the architecture](ARCHITECTURE.md), then follow [the 10–15 minute source tour](REVIEWER-GUIDE.md). For an interview, discuss one ownership policy, one failure/recovery path and one deliberately deferred feature. Current public URLs and execution status belong in [PUBLICATION.md](record/PUBLICATION.md); no unverified deployment or contribution is implied by this case study.

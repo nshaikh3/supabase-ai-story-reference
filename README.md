@@ -2,56 +2,62 @@
 
 [![Reference checks](https://github.com/nshaikh3/supabase-ai-story-reference/actions/workflows/ci.yml/badge.svg)](https://github.com/nshaikh3/supabase-ai-story-reference/actions/workflows/ci.yml)
 
-A small multi-tenant story application demonstrating Supabase Auth, Postgres/RLS, private Storage, authenticated Edge generation and private Realtime Broadcast with Next.js.
+A multi-tenant Next.js app on Supabase where each account's stories, images, AI generation jobs and live updates stay private. Postgres row-level security enforces it, not the UI, and the tests prove it.
 
-**Live demo:** [read the sample](https://supabase-ai-story-reference.vercel.app/demo) · [architecture tour](https://supabase-ai-story-reference.vercel.app/architecture). The public site is a read-only showcase; [run the complete application locally](#local-setup). **Source:** [public GitHub repository](https://github.com/nshaikh3/supabase-ai-story-reference), licensed under [MIT](LICENSE).
+**[Live demo](https://supabase-ai-story-reference.vercel.app/demo)** · **[Architecture tour](https://supabase-ai-story-reference.vercel.app/architecture)** · **[Reviewer guide (10–15 min)](docs/REVIEWER-GUIDE.md)** · **[Case study](docs/CASE-STUDY.md)**
 
-[Reviewer tour](docs/REVIEWER-GUIDE.md) · [Architecture](docs/ARCHITECTURE.md) · [Security model](docs/SECURITY.md) · [Database](docs/DATABASE.md) · [Deployment preparation](docs/DEPLOYMENT.md) · [Current status](docs/LOCAL-HARDENING.md) · [Original plan review](docs/PLAN-REVIEW.md)
+[![The read-only demo: a five-page fictional story beside a summary of the working application](docs/images/demo-reader.png)](https://supabase-ai-story-reference.vercel.app/demo)
 
-[Case study](docs/CASE-STUDY.md) · [Publication progress](docs/PUBLICATION.md) · [Third-party notices](THIRD_PARTY_NOTICES.md)
+The public site is a read-only sample that needs no account. The full application (sign-up, private stories and images, generation and live updates) runs locally and in CI; see [what this is not](#what-this-is-not).
 
-![The account-free fictional story reader](docs/images/recruiter-demo.png)
+## What it demonstrates
 
-The bundled sample is read-only: no account, stored story or AI request is created. The private application below demonstrates the actual service workflow.
+| Supabase feature | How it is used | Where to look |
+| --- | --- | --- |
+| Auth | Email confirmation, PKCE callback and SSR cookie sessions, re-verified at every data boundary | [Server client](src/lib/supabase/server.ts), [Auth browser tests](tests/e2e/auth.spec.mts) |
+| Postgres + RLS | One immutable owner per story; pages, images and jobs inherit access from it. Column grants stop owners forging status or ownership | [Owner migration](supabase/migrations/20260928202944_add_owner_authorization.sql), [role-based pgTAP tests](supabase/tests/database/authorization.test.sql) |
+| Storage | Private bucket and owner-scoped paths; images are re-encoded and served through an authenticated, uncached route | [Storage policies](supabase/migrations/20260929041425_add_private_story_storage.sql), [image route](src/app/assets/[id]/route.ts) |
+| Edge Functions | Generation runs with the caller's JWT plus a narrow worker capability, never a service-role key. One active job per story, leases and atomic five-page completion | [Edge handler](supabase/functions/generate-story/handler.ts), [lifecycle migration](supabase/migrations/20260929231039_add_generation_lifecycle.sql) |
+| Realtime | Private Broadcast topic per story. Messages are invalidation hints; each tab refetches what it is allowed to see. Reconnect catch-up, no polling | [Receive policy](supabase/migrations/20260930142245_add_private_generation_broadcast.sql), [client lifecycle](src/lib/stories/realtime.ts) |
 
-![A synthetic Nova story with private live updates, generation history and five completed pages](docs/images/story-workspace.png)
+<details>
+<summary>Screenshot of the authenticated workspace (local app, mock generation)</summary>
 
-*Actual local browser-test capture using fictional text and the deterministic mock provider. No customer content, credentials or commercial assets.*
+![A completed fictional story with live updates connected, generation history and five pages](docs/images/story-workspace.png)
 
-## Why this exists
+</details>
 
-This reference makes Noor Shaikh's hands-on software/product work inspectable alongside his consulting and technical program background. The emphasis is on decisions, ownership boundaries, failure handling and reproducible evidence. It is deliberately smaller than a commercial story product and is not a copy of its proprietary features.
+## Three decisions worth discussing
 
-## Current scope
+1. **The database decides ownership.** Only `stories` has an owner column. Children derive access through their parent, so there is no second ownership field to drift. RLS covers rows; column-level grants cover fields like `status` and `owner_id`. Both are tested with real API roles, including direct Data API calls that bypass the UI. ([ADR-003](docs/DECISIONS.md#adr-003-parent-derived-ownership), [ADR-010](docs/DECISIONS.md#adr-010-owner-policies-plus-column-privileges))
+2. **No service-role key in the app.** The Edge Function runs as the caller. The few transitions a user must not perform directly (claiming a job, publishing pages) require both the owner's identity and a worker secret that only the function holds. ([ADR-014](docs/DECISIONS.md#adr-014-caller-authorization-plus-a-narrow-worker-capability))
+3. **Realtime says something changed; the database says what.** Broadcast messages carry IDs and a status, never content. Tabs refetch through RLS after every message and every reconnect, so a lost or out-of-order message cannot show stale or unauthorized data. ([ADR-017](docs/DECISIONS.md#adr-017-private-status-notifications-with-authoritative-reconciliation))
 
-Phases 1–5 provide an isolated local database, migrations, synthetic fixtures, generated types, automated tests, email/password authentication and private live story updates. Selected generic components and tooling were reused from an existing application with the owner's authorization; see the [reuse manifest](docs/REUSE-MANIFEST.json).
+## Evidence
 
-Sign-up, email confirmation, sign-in/out, password recovery and a protected account page are implemented. The owner dashboard, story editor, deletion and private hero-image uploads are implemented. Protected generation jobs run through an authenticated Edge Function with mock generation and optional Gemini. Private Realtime Broadcast updates open story tabs and reconciles missed events after reconnecting; see the phase record for verification status. The public static demo is deployed; these authenticated capabilities run locally.
+[CI](https://github.com/nshaikh3/supabase-ai-story-reference/actions/workflows/ci.yml) runs on pushes and pull requests on a fresh Linux runner: clean install, production dependency audit, a local Supabase stack, then:
 
-Phase 6 adds security regression coverage and a repeatable authenticated query-plan review. See the [audit findings](docs/SECURITY-AUDIT.md) and [performance evidence](docs/PERFORMANCE.md). The runtime patch and local safeguards have since been implemented; one moderate development-only dependency advisory and external deployment controls remain open. Passing local tests is not production approval.
+- **356 pgTAP assertions** across schema, constraints, RLS and grants, Storage, generation, Realtime and quotas
+- **308 unit tests**, TypeScript, lint and a production build
+- **8 browser scenarios**: sign-up through password recovery, Edge generation, two-tab Realtime with offline catch-up and cross-tab sign-out, CSP nonces, private image access and cross-account denial
+- **11 RLS query plans** measured as the `authenticated` role over 10,000 synthetic stories ([results](docs/PERFORMANCE.md))
 
-Phase 7 supplies the reviewer walkthrough, architecture/security handoff and a staged deployment runbook. The later local hardening implements guarded hosted configuration and a separate staging harness; full-application hosted targets remain unconfigured and their checks remain unexecuted. The runbook does not authorize publication. See [Phase 7's execution record](docs/PHASE-7.md) and the [hardening record](docs/LOCAL-HARDENING.md) for their actual checks.
+Also in the repository: the [security model](docs/SECURITY.md), an [agent-run security audit](docs/SECURITY-AUDIT.md) with its open findings, [22 decision records](docs/DECISIONS.md) and [Supabase friction notes](docs/CONTRIBUTION-NOTES.md) collected while building.
 
-The [original-plan review](docs/PLAN-REVIEW.md) identified a missing no-account demo, which is now implemented alongside the architecture tour and landing links. The source is published on GitHub. Both GitHub CI jobs passed on October 9. The read-only showcase passed anonymous HTTPS/browser acceptance on October 11. Full-app cloud hosting remains deferred by choice; human review and a narrated walkthrough remain outstanding.
+## What this is not
 
-| Capability | Inspectable implementation / evidence |
-| --- | --- |
-| Auth and sessions | [SSR client](src/lib/supabase/server.ts), fixed PKCE callback, recovery and [browser flows](tests/e2e/auth.spec.mts) |
-| Postgres and tenancy | [Versioned migrations](supabase/migrations), explicit column grants, parent-derived RLS and [actual-role tests](supabase/tests/database/authorization.test.sql) |
-| Private images | [Storage policies](supabase/migrations/20260929041425_add_private_story_storage.sql), bounded decoding and [authenticated byte route](src/app/assets/[id]/route.ts) |
-| Controlled generation | [Edge handler](supabase/functions/generate-story/handler.ts), caller JWT plus worker capability, leases and atomic five-page completion |
-| Live progress | [Private receive policy](supabase/migrations/20260930142245_add_private_generation_broadcast.sql), [reconnect/session lifecycle](src/lib/stories/realtime.ts), no interval polling |
-| Engineering evidence | [Security audit](docs/SECURITY-AUDIT.md), [query plans](docs/PERFORMANCE.md), [decisions](docs/DECISIONS.md), [AI/reuse provenance](docs/AI-DEVELOPMENT.md) |
+- **Not a hosted product.** The account-based app runs locally and in CI. Hosting it publicly would need abuse and spending controls, production SMTP and a hosted verification pass, which I chose not to take on for a reference project. The [deployment plan](docs/DEPLOYMENT.md) lists those gates.
+- **Not live AI by default.** Generation uses a deterministic mock so it is free and reproducible. An optional Gemini adapter exists but has not been validated against the live API.
+- **Not a durable queue.** Generation is a bounded request with manual lease recovery, and Broadcast is best-effort. Storage and database cleanup are eventually consistent, with reviewed reconciliation tooling.
+- **Not independently audited.** The security audit was run by the coding agent with automated evidence; no human penetration test has been done.
 
-## Requirements
+## How it was built
 
-- Node.js 24 and npm.
-- A running local Docker-compatible daemon, with capacity for an additional Supabase stack.
-- Ports 3100, 55320–55324 and 55328 available.
+I directed the build with an AI coding agent (Codex) through seven phases, each with explicit acceptance checks: foundation, Auth, Storage, generation, Realtime, security and performance review, and deployment preparation. I set the scope and constraints, approved each phase and made the product and release decisions. The [AI-assisted development record](docs/AI-DEVELOPMENT.md) describes the division of work. The [execution record](docs/record/README.md) keeps each phase's dated results, including the failures. Nine generic UI and configuration files came from an existing app of mine, with source hashes in the [reuse manifest](docs/REUSE-MANIFEST.json).
 
-The Supabase CLI is pinned in the development dependencies. A hosted Supabase account or paid AI key is not required for the default mock workflow.
+## Run it locally
 
-## Local setup
+Needs Node 24, Docker and free ports 3100, 55320–55324 and 55328. No Supabase account or AI key is required.
 
 ```bash
 npm ci
@@ -63,124 +69,19 @@ npm run db:types
 npm run dev
 ```
 
-Open http://127.0.0.1:3100. Local mail is http://127.0.0.1:55324. Studio is http://127.0.0.1:55323 when using full mode (`npm run supabase:start`). `local:env` writes only the local public URL, publishable key and application URL to ignored `.env.local`. It never writes privileged keys and refuses to overwrite a differing file. Use `127.0.0.1` consistently so Auth cookies and redirects match.
+Open http://127.0.0.1:3100 and sign up; confirmation emails arrive in the local inbox at http://127.0.0.1:55324. [Local development](docs/LOCAL-DEVELOPMENT.md) covers verification commands, the browser suite, generation settings and the read-only showcase build.
 
-`db:reset` destroys and recreates **this reference project's local database**, including its seed data. It is intended for disposable development fixtures. The wrapper rejects linked projects and remote arguments. The seed identities are database fixtures, not working login accounts.
+## Documentation
 
-Core mode includes eight services: database, API gateway, Auth, Data API, local mail, Storage, Edge Runtime and Realtime. Image transformation, analytics and pooling remain off. Full mode additionally keeps Studio and metadata services for MCP. The stack uses a dedicated network with loopback host bindings, and does not stop another stack to free ports.
+| Document | Contents |
+| --- | --- |
+| [Architecture](docs/ARCHITECTURE.md) | Trust boundaries, request flows, generation and Realtime sequences |
+| [Database](docs/DATABASE.md) | Schema, policies and migration inventory |
+| [Security model](docs/SECURITY.md) · [audit](docs/SECURITY-AUDIT.md) | Threat model, boundaries, findings and their status |
+| [Decisions](docs/DECISIONS.md) | 22 architecture decision records |
+| [Performance](docs/PERFORMANCE.md) | RLS query plans under the authenticated role |
+| [Operations](docs/OPERATIONS.md) · [deployment](docs/DEPLOYMENT.md) | Quotas, cleanup and worker rotation; hosted release gates |
+| [Showcase](docs/SHOWCASE.md) | How the static public demo is built and verified |
+| [Execution record](docs/record/README.md) | Dated phase results, hardening and publication evidence |
 
-A small project-scoped Docker adapter makes those bindings explicit and accommodates Studio's cold-start health check on this laptop. All health checks remain required, and actual bindings are verified after startup. See [ADR-008](docs/DECISIONS.md) before upgrading the pinned CLI.
-
-On a memory-constrained machine, `npm run supabase:start:core` starts the database services without Studio or postgres-meta. Database tests and type generation still work; Studio and MCP are unavailable in this mode. All started services must still pass health checks. To switch modes, stop this reference stack with `npm run supabase:stop`, then run the desired start command. The first image download can take several minutes and has a thirty-minute limit. Reference Storage and Realtime start/restart operations wait up to five minutes for their actual health probes before the CLI continues, including after database reset. A stopped, OOM-killed, probe-less or persistently unhealthy service still fails startup.
-
-Local Edge Functions explicitly use the `oneshot` worker policy recommended for development. Each request gets its own worker; CPU and memory limits remain enforced. This avoids relying on the pinned CLI's different `per_worker` default, which produced cumulative CPU-limit shutdowns during local browser verification. Hosted worker reuse and capacity still require separate validation.
-
-Startup captures and discards CLI output because it contains privileged local credentials. It prints fixed progress/status messages instead. On failure, inspect only reference-container health; do not publish raw startup/status output or enable unreviewed debug logging.
-
-## Read-only showcase without Docker
-
-```bash
-npm run build:showcase
-npm run test:showcase
-npm run preview:showcase
-```
-
-Open `http://127.0.0.1:3101`. The separate public build reuses the sample and architecture pages, with no sign-in, database, Server Actions or backend credentials. The user selected this initial read-only deployment on the existing Vercel Pro team, while retaining the complete application locally. See [the showcase runbook](docs/SHOWCASE.md). Verify the published static site with `npm run test:showcase:live`; this separate command is pinned to the reference demo origin and does not start or modify the local backend.
-
-## Verify
-
-```bash
-npm run db:test
-npm run db:lint
-npm run db:advisors
-npm run db:types:check
-npm run check
-npm run db:performance
-npm audit --omit=dev --audit-level=high
-```
-
-Database tests run against Supabase Postgres using pgTAP. Role tests exercise actual grants and the separate RLS barrier: owner CRUD, cross-user denial, protected columns, parent-derived child reads, anonymous denial and forbidden child writes. Pages remain read-only. Owners can reserve and remove hero-image metadata, with matching private Storage policies and deletion guards. Real Storage API checks are part of the browser suite.
-
-`db:performance` uses fixed synthetic fixtures inside a rolled-back transaction and checks actual non-bypass `authenticated` visibility. It writes full plans to ignored `test-results/database-performance.json`; do not run it concurrently with browser tests or user work. See [measurement limits and results](docs/PERFORMANCE.md). Full `npm audit` currently reports one moderate development-only `minimatch` advisory in the ESLint toolchain, documented in the [audit](docs/SECURITY-AUDIT.md#dependency-follow-up-november-2); the production-only check does not cover development dependencies.
-
-`npm run check` includes `npm run docs:check`, unit tests, TypeScript, lint and production build. The documentation check validates repository Markdown links/anchors and documented npm commands offline; it does not validate external sites or prove deployment readiness. CI runs the same local workflow in [.github/workflows/ci.yml](.github/workflows/ci.yml). [The latest Linux run](https://github.com/nshaikh3/supabase-ai-story-reference/actions/runs/41576484085) passed both the reference and showcase jobs on commit `f531cb1` (November 3 UTC, Next.js 16.4.3); see [publication evidence](docs/PUBLICATION.md).
-
-After editing SQL, reset the local database, run the database suite, regenerate types, and review the resulting diff. Create new migration filenames with `npx supabase migration new <name>`; do not rename existing applied migrations. Migrations are the source of truth.
-
-## Try authentication
-
-1. Open http://127.0.0.1:3100/sign-up and create an account using a synthetic address such as `reader@example.test` and a password of at least 10 characters.
-2. Open the local inbox at http://127.0.0.1:55324. Mail is captured here; it is not delivered to a real email account.
-3. Follow the confirmation link in the same browser used to register. You will reach the protected account page.
-4. Sign out and back in, or use **Forgot password?** to test recovery through the local inbox. Recovery links also need the initiating browser.
-
-Seeded Alice/Bob identities are database test fixtures, not login accounts. New accounts correctly show zero stories. Choose **Open my stories**, then **New story** to create a draft. Every database reset deletes local login accounts and user-created data for this reference stack only.
-
-## Try stories and private images
-
-Create a story with a fictional hero name and prompt. Open the story to edit it or attach one synthetic hero illustration (PNG/JPEG/WebP, at most 2 MiB and 16 megapixels). Uploads become still WebP images up to 1600 pixels per side, with source metadata removed. Remove an existing image before replacing it. A failed upload keeps a removable reservation; use **Remove hero image**, then retry.
-
-Images are served through an authenticated, uncached route, not a public URL. Story deletion requires the form's confirmation checkbox and removes objects before relational rows. Do not delete Storage object metadata through SQL: that does not remove bytes. Cross-service failures and concurrent direct uploads need the [cleanup review](docs/SECURITY.md#private-images-and-cleanup) before production use.
-
-The dashboard displays 20 stories per page in a deterministic order. New stories start in `draft`. Save edits, then choose **Generate story** to produce five pages. Details lock during generation and after completion. Failed stories can be edited and retried, up to three attempts. Open story tabs update automatically through private Broadcast. Reconnecting or returning to a tab reloads authorized database state; **Refresh status** remains a fallback while disconnected. Interrupted runs can be resumed after two minutes. There is no periodic polling.
-
-To try live updates, open the same story in two tabs, wait for **Live updates connected**, then generate in one tab. Both show the saved pages. Signing out also closes other open story tabs' subscriptions and removes their private content.
-
-## Generation configuration
-
-Startup creates ignored `supabase/functions/.env` with `AI_PROVIDER=mock` and a random worker capability (mode 0600). Database reset provisions only its hash in the private schema. After applying migrations without a reset, run `npm run generation:setup`. Keep this file secret: it is separate from the public Next.js `.env.local`. No service-role application client is used.
-
-Mock mode is free and makes no AI network calls. To deliberately enable Gemini, edit the Edge environment file, preserving `GENERATION_WORKER_SECRET`, and set `AI_PROVIDER=gemini`, `GEMINI_API_KEY` and `GEMINI_MODEL` to a currently available generateContent model supporting structured JSON. Then restart **only this reference stack**. Never put the AI key or worker secret in `NEXT_PUBLIC_*` variables. The optional provider sends title, fictional hero name and idea to Google; it does not receive images. Tests refuse to call a paid provider. Live Gemini validation requires your own optional key and is not part of the mock acceptance gate.
-
-The Edge Function authenticates independently of the gateway and uses the caller's RLS context. Narrow lifecycle RPCs require the worker capability as well as owner identity. Database completion is atomic; provider calls and network delivery are not. A lost response should be followed by a status refresh before retrying. The local three-attempt cap does not replace production rate limiting. See [ADR-014–016](docs/DECISIONS.md).
-
-## Browser verification
-
-```bash
-npm run build
-npm run test:e2e
-```
-
-Stop an existing reference web server on port 3100 first; Playwright starts and stops its own production server. Local tests use installed Google Chrome. CI installs Playwright Chromium. Tests use random synthetic credentials and their own local mailboxes; no service-role key or test-only authentication bypass exists. Auth traces, screenshots and videos are disabled to avoid retaining credentials. Story and generation scenarios write explicit desktop/mobile screenshots containing only its fictional story fixture to ignored test-results/. Reset the reference database after a test run to remove test identities.
-
-## Local MCP in Codex
-
-This repository includes `.codex/config.toml`:
-
-```toml
-[mcp_servers.supabase_reference_local]
-url = "http://127.0.0.1:55321/mcp"
-```
-
-That is TOML in a file, not a terminal command. Start full mode (`npm run supabase:start`) first; core mode omits this endpoint. Trust the project, then restart/reload MCP servers in Codex to discover tools. This endpoint connects to the local reference stack only. It does not configure access to a hosted project. The configuration contains no credentials.
-
-The endpoint handshake and discovery of 11 tools passed during Phase 1. Loading those tools into a particular Codex desktop session is a separate client activation step.
-
-Do not point it at another local stack or the commercial production project. Before exposing a service outside this machine, revisit authentication and access controls; local defaults are for development.
-
-## Stop
-
-```bash
-npm run supabase:stop
-```
-
-This targets only `supabase-ai-story-reference` and retains local data. If Docker is unresponsive, inspect Docker Desktop before retrying; do not use a global prune/reset as a recovery shortcut.
-
-## Deployment and next work
-
-The proposed target is Vercel plus a new, dedicated hosted Supabase project. [DEPLOYMENT.md](docs/DEPLOYMENT.md) specifies environment ownership, outstanding release gates, staging acceptance, secrets provisioning, release order, rollback and recovery. The static showcase is live; no hosted Supabase project or full-application domain is configured. Local guards remain in place; hosted paths require separately reviewed exact targets.
-
-The runtime patch baseline, configuration/harness, account/global issuance controls, Storage reconciliation and recruiter demo are locally implemented. The user has authorized public source and a read-only deployment on the existing Vercel Pro plan, with no upgrades or add-ons; [publication evidence](docs/PUBLICATION.md) records the public deployment and acceptance checks. Full-app provider traffic/spending controls, hosted verification and independent review remain open. Cursor pagination remains optional for larger libraries; this reference caps each library at 50 stories. The [user-facing MCP evaluation](docs/MCP-EVALUATION.md) recommends deferral. Real Gemini and real child-data use are not validated by the mock demo.
-
-## Development record
-
-- [Phase 1 results](docs/PHASE-1.md), [Phase 2 results](docs/PHASE-2.md), [Phase 3 results](docs/PHASE-3.md), [Phase 4 results](docs/PHASE-4.md), [Phase 5 results](docs/PHASE-5.md), [Phase 6 results](docs/PHASE-6.md), and [Phase 7 results](docs/PHASE-7.md)
-- [Decisions](docs/DECISIONS.md)
-- [AI-assisted development](docs/AI-DEVELOPMENT.md)
-- [Contribution notes](docs/CONTRIBUTION-NOTES.md)
-
-This project supports an honest account of an experienced technical consultant and program leader developing hands-on software and product expertise. Validation claims are backed by the phase record.
-
-## Local hardening and deployment handoff
-
-The local implementation includes approved-target configuration, nonce CSP, database resource limits, private image-processing leases, reviewed orphan cleanup and worker rotation. Full-application hosted targets remain unconfigured. The separate static showcase is deployed and verified. See [current execution evidence](docs/LOCAL-HARDENING.md), the [operator runbook](docs/OPERATIONS.md), [deployment criteria](docs/DEPLOYMENT.md) and the [optional MCP evaluation](docs/MCP-EVALUATION.md).
+Built by Noor Shaikh · [MIT license](LICENSE) · [Third-party notices](THIRD_PARTY_NOTICES.md)

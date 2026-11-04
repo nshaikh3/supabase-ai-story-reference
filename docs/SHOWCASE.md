@@ -1,10 +1,10 @@
 # Read-only public showcase
 
-The user selected this release on October 8, 2026: publish an account-free demo using free-tier hosting, while keeping the complete private application local. Supabase refused a new free project because the account already has two active free projects. No existing Supabase project is reused or changed. On October 11, the user explicitly authorized the existing Vercel Pro team for this separate showcase, superseding the frontend free-tier-only constraint. No plan upgrade or add-on is authorized.
+I chose this release on October 8, 2026: publish an account-free demo using free-tier hosting, while keeping the complete private application local. Supabase refused a new free project because the account already has two active free projects. No existing Supabase project is reused or changed. On October 11, I authorized my existing Vercel Pro team for this separate showcase, superseding the frontend free-tier-only constraint. No plan upgrade or add-on is authorized.
 
 ## Published demo
 
-The [production demo](https://supabase-ai-story-reference.vercel.app) is live on the authorized existing Pro team. [Release evidence](PUBLICATION.md#october-11-production-showcase-release) records the deployment, commit, remote build and anonymous acceptance. Source is [public on GitHub](https://github.com/nshaikh3/supabase-ai-story-reference) under MIT.
+The [production demo](https://supabase-ai-story-reference.vercel.app) is live on the authorized existing Pro team. [Release evidence](record/PUBLICATION.md#october-11-production-showcase-release) records the deployment, commit, remote build and anonymous acceptance. Source is [public on GitHub](https://github.com/nshaikh3/supabase-ai-story-reference) under MIT.
 
 Run `npm run test:showcase:live` to repeat anonymous acceptance against that exact reference origin. This separate configuration starts no server, loads no credentials and refuses a different publication origin. It checks public navigation/security and sends one deliberately rejected POST to the static demo. Screenshots are ignored under `test-results/showcase-live/`. The local command below still starts its own loopback preview.
 
@@ -27,9 +27,9 @@ The separate [showcase app](../showcase/app) has only `/`, `/demo` and `/archite
 
 [vercel.json](../vercel.json) selects `npm ci` and `npm run build:showcase`, with no framework adapter or server functions. Use the repository root and Node 24. Do not add environment variables, a Supabase integration, paid AI, a paid domain or a paid hosting upgrade. The generated output has no Functions directory. A stable free `vercel.app` URL is sufficient.
 
-Deploy only to the verified existing Pro team and a new reference-only project. Normal deployment and traffic consume that plan's allowance; this is not a guarantee of zero usage charges. Do not change the team plan, spending controls or existing projects. Prefer linking the authorized public repository after the user creates it and source is uploaded. If the official CLI is used, explicitly verify the reference project/team before deployment. Keep preview protection until verified; the requested production showcase must be reachable by an anonymous reviewer.
+Deploy only to the verified existing Pro team and a new reference-only project. Normal deployment and traffic consume that plan's allowance; this is not a guarantee of zero usage charges. Do not change the team plan, spending controls or existing projects. Link the public repository so Vercel builds from Git. If the official CLI is used, explicitly verify the reference project/team before deployment. Keep preview protection until verified; the requested production showcase must be reachable by an anonymous reviewer.
 
-Record the actual deployment ID, source commit, production URL, date and acceptance result in [PUBLICATION.md](PUBLICATION.md). Populate each URL in [publication.json](../deployment/publication.json) only after that resource exists and is verified, then rebuild to show working source links. The repository URL can be recorded before the live deployment URL. A deployment URL or a successful build alone is not acceptance evidence.
+Record the actual deployment ID, source commit, production URL, date and acceptance result in [PUBLICATION.md](record/PUBLICATION.md). Populate each URL in [publication.json](../deployment/publication.json) only after that resource exists and is verified, then rebuild to show working source links. The repository URL can be recorded before the live deployment URL. A deployment URL or a successful build alone is not acceptance evidence.
 
 ## Security and limitations
 
@@ -37,4 +37,4 @@ The public site serves bundled fictional content and makes no backend requests. 
 
 The full application's nonce CSP, owner policies, target manifest and local-only wrappers remain in force. Static deployment is a separate build target, not a relaxation of those controls. Hosted database/Auth/Storage/Edge/Realtime, SMTP, worker rotation, backups and operational review remain unverified and deferred; see [DEPLOYMENT.md](DEPLOYMENT.md).
 
-The development-only dependency advisory remains visible in [PUBLICATION.md](PUBLICATION.md). Build untrusted changes without deployment credentials. Public demo recordings contain only the fictional sample; authenticated browser artifacts remain disabled.
+The development-only dependency advisory remains visible in [PUBLICATION.md](record/PUBLICATION.md). Build untrusted changes without deployment credentials. Public demo recordings contain only the fictional sample; authenticated browser artifacts remain disabled.
