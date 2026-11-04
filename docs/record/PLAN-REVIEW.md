@@ -1,6 +1,6 @@
-# Original plan review and application readiness
+# Original plan review
 
-Reviewed October 7, 2026 against implementation commit `c0fe1ea`, the original 2,449-line `Supabase_Job_Application_Reference_Project_Codex_Plan.md`, and the pasted lead-engineer request. The original brief is retained locally, outside the public source inventory. The earlier local-only instruction was superseded by authorization to publish under `nshaikh3`, using MIT and free-tier resources. On October 8, after Supabase rejected creation at the account's free-project limit, the user selected a public read-only demo and retained the full application locally. On October 11, the user approved hosting the showcase on the existing Vercel Pro plan without upgrades or add-ons.
+Reviewed October 7, 2026 against implementation commit `c0fe1ea`, the original 2,449-line project brief and its lead-engineer request. The original brief is retained locally, outside the public source inventory. The earlier local-only instruction was superseded by authorization to publish under `nshaikh3`, using MIT and free-tier resources. On October 8, after Supabase rejected creation at the account's free-project limit, I chose a public read-only demo and kept the full application local. On October 11, I approved hosting the showcase on the existing Vercel Pro plan without upgrades or add-ons.
 
 ## Verdict
 
@@ -8,7 +8,7 @@ The core engineering requirements have a passing local checkpoint. **The entire 
 
 The [public MIT repository](https://github.com/nshaikh3/supabase-ai-story-reference), successful Linux CI and [live HTTPS showcase](https://supabase-ai-story-reference.vercel.app) are verified. Anonymous desktop/mobile production acceptance passed on October 11. Hosted full-application deployment is now explicitly deferred. The earlier claim that all local work was complete was too broad; historical test evidence remains valid for the code checkpoint it describes.
 
-The project can already support a local interview walkthrough, recorded demonstration and discussion of engineering decisions. The self-service source/demo links are ready to share; personal review and a narrated walkthrough remain below. This review does not certify security, production readiness, candidate expertise or a hiring outcome.
+The project supports a local walkthrough, a recorded demonstration and discussion of its engineering decisions. The source and demo links are ready to share; a narrated walkthrough is still planned. This review does not certify security or production readiness.
 
 ## Requirements matrix
 
@@ -49,25 +49,19 @@ The original October 7 plan review inspected documents, routes, repository/publi
 
 ## Handoff and remaining work
 
-### 1. Personally exercise and explain the reference
-
-Use the [reviewer walkthrough](../REVIEWER-GUIDE.md): register a fictional local identity, confirm through the local inbox in the same browser, create and generate a story, observe a second tab, test a second account's denial, and remove the synthetic content afterward. Seed identities are SQL fixtures, not usable accounts. Do not reset the database while preserving a demonstration account or recording.
-
-Be able to explain parent-derived RLS, caller JWT versus worker capability, private object access, Broadcast as an invalidation hint, lost-response/manual recovery behavior, quota enforcement, and why mock AI is the default. Record what you personally reviewed in [AI-DEVELOPMENT.md](../AI-DEVELOPMENT.md); do not mark security-sensitive review complete merely because tests pass.
-
-### 2. Presentation acceptance — completed
+### 1. Presentation acceptance — completed
 
 The `/demo`, architecture tour and landing links are implemented with bundled fictional content. Shared components serve both the local full app and the separate public showcase. Real source and live URLs are now verified; [PUBLICATION.md](PUBLICATION.md) records static-build and anonymous production browser acceptance.
 
 Acceptance: an anonymous desktop/mobile visitor can understand the application and view the story; the page distinguishes sample content from a live private session; existing owner-only paths and tests remain intact; the application checks/build and relevant browser checks pass. This task does not require hosted credentials or a paid AI key.
 
-### 3. Source publication and CI — completed
+### 2. Source publication and CI — completed
 
-The user created `nshaikh3/supabase-ai-story-reference` with MIT. The implementation was pushed on October 9 after a final history scan, preserving the user-created initial license commit. GitHub CI exposed missing optional dependency metadata in the lockfile; the repair subsequently passed both Linux CI jobs. The exact run and commit are recorded in [PUBLICATION.md](PUBLICATION.md). Review the complete Git history and tracked assets for secrets, personal information and unintended commercial material. Keep the local planning brief and environment files out of the public repository unless deliberately reviewed for publication.
+I created `nshaikh3/supabase-ai-story-reference` with MIT. The implementation was pushed on October 9 after a final history scan, preserving my initial license commit. GitHub CI exposed missing optional dependency metadata in the lockfile; the repair subsequently passed both Linux CI jobs. The exact run and commit are recorded in [PUBLICATION.md](PUBLICATION.md). Review the complete Git history and tracked assets for secrets, personal information and unintended commercial material. Keep the local planning brief and environment files out of the public repository unless deliberately reviewed for publication.
 
 Publication preserved the phase history and user-created MIT license. The public source, independent Linux CI and source-only checks are verified. Rescan future changes before pushing and retain exact commit/run evidence.
 
-### 4. Static showcase — published; full-app hosting — deferred
+### 3. Static showcase — published; full-app hosting — deferred
 
 The static showcase described in [SHOWCASE.md](../SHOWCASE.md) is [live](https://supabase-ai-story-reference.vercel.app) on the existing Vercel Pro team; no plan upgrade or add-on was added. It needs no Supabase capacity, SMTP, worker secret or paid provider. The full account-based app remains local by user choice. Its later hosting would still follow [DEPLOYMENT.md](../DEPLOYMENT.md) and [OPERATIONS.md](../OPERATIONS.md). Supply the reference-only hosting accounts/project choices, region, exact origins, SMTP sender, spending ceiling and release owner. Credentials belong in platform secret stores, not in chat, source or documentation. Do not reuse the commercial project's resources or link the guarded local checkout to a hosted target.
 
@@ -75,24 +69,12 @@ Begin with mock generation and invited test accounts. A public read-only demo ca
 
 The official [Supabase production checklist](https://supabase.com/docs/guides/deployment/going-into-prod) is a release reference alongside this repository's stricter target-specific gates. Local success does not prove real SMTP, hosted JWT compatibility, alert delivery or backup restoration.
 
-### 5. Package evidence for a recruiter
-
-Prepare a two-to-three-minute recording showing the purpose, a completed story, two-tab updates and one owner-isolation example. The [case study](../CASE-STUDY.md) now covers the problem, scope, key decisions, one failure investigated, verification results and known limitations. The verified public demo, repository, reviewer guide and architecture are linked above. Keep a recording as a fallback for a live service interruption.
-
-Use truthful language such as: “Developed an AI-assisted Supabase reference application demonstrating owner-isolated data, private files and authenticated generation, with 308 unit tests, 356 SQL assertions and eight browser scenarios passing on an independent Linux CI runner.” Date the evidence and update the numbers if the code changes. Do not describe the deterministic mock as live paid AI, the app as a production customer deployment, the review as an independent audit, or an unsubmitted candidate as an accepted contribution.
-
-### 6. Tailor the application to a current role
-
-The original plan's role list is a historical starting point. On October 7, the fresh [Supabase careers page](https://supabase.com/careers) listed Customer Solution Architect (AMER) and Product Manager — Auth; the earlier Marketplace PM and Founding TPM titles were not listed on that page. This review did not establish the full requirements or your eligibility for any individual vacancy. Recheck the actual posting and location requirements before applying, especially against the relocation plans in the original brief.
-
-For solutions work, emphasize SQL/RLS diagnosis, explaining tradeoffs and helping another person reproduce the setup. For technical program work, emphasize phased execution, dependencies, risks, failure evidence and release gates. For product work, explain the intended reviewer, why account-free evaluation matters, what was intentionally excluded and how documentation friction informed priorities. Connect these to your actual consulting/program experience without relabeling it as years of professional software engineering.
-
-### 7. Consider an upstream contribution after the core presentation is ready
+### 4. Consider an upstream contribution after the core presentation is ready
 
 Choose one concrete observation from [CONTRIBUTION-NOTES.md](../CONTRIBUTION-NOTES.md), check the current official documentation and existing issues, and reproduce it in a minimal example against a supported version. A precise documentation clarification may be more useful than a feature PR. Several recorded failures were project assumptions or local resource issues, so attribution must remain careful. Submission needs explicit authorization; none has been sent.
 
-## Remaining user involvement
+## Remaining decisions
 
 Repository creation, integration access, source publication, Linux CI and the read-only Vercel production release are complete. No further account setup is needed to share these links. The existing Pro plan is used without upgrades or add-ons. No existing hosted project was paused, deleted or reused.
 
-Personal walkthrough, job-role selection, security-sensitive human review and any upstream submission remain human decisions. Full hosted application gates remain open but are outside the currently selected static-demo release scope.
+Security-sensitive human review and any upstream submission remain my decisions. Full hosted application gates remain open but are outside the currently selected static-demo release scope.
